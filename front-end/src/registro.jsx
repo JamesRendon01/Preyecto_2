@@ -155,7 +155,7 @@ export default function Registro() {
             <label className="mt-4">Numero de celular:</label>
             <input
               type="number"
-              name="numero_celular"
+              name="celular"
               value={formData.numero_celular}
               onChange={handleChange}
               required

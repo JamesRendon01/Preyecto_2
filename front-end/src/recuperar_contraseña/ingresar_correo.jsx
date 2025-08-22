@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; 
 
 export default function IngresarCorreo() {
 
   const [correo, setCorreo] = useState("");
   const [confirmarCorreo, setConfirmarCorreo] = useState("");
+  const navigate = useNavigate(); // Hook para navegación programática
 
   // Manejar envío del formulario
   const handleSubmit = async (e) => {
@@ -16,7 +17,7 @@ export default function IngresarCorreo() {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/administrador/solicitar-recuperacion", {
+      const res = await fetch("http://localhost:8000/turista/solicitar-recuperacion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo }),
@@ -26,8 +27,8 @@ export default function IngresarCorreo() {
 
       if (res.ok) {
         alert("Se ha enviado un PIN a tu correo ✅");
-        // aquí rediriges al componente donde se ingresa el PIN
-        window.location.href = "/ingresar-pin";
+        localStorage.setItem("correoRecuperacion", correo);
+        navigate("/ingresar_pin");
       } else {
         alert("Error: " + (result.detail || "No se pudo enviar el correo"));
       }

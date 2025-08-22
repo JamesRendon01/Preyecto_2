@@ -84,7 +84,7 @@ export default function InicioTurista() {
             />
 
             <p className="text-center mt-4 text-sm">
-              <Link to="/recuperar/ingresar-correo" className="underline text-white">
+              <Link to="/ingresar_correo" className="underline text-white">
                 ¿Olvidaste tu contraseña?
               </Link>
             </p>

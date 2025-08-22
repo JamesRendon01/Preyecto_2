@@ -24,9 +24,9 @@ export default function App() {
         <Route path="/registro" element={<Registro />} />
 
         {/* Flujo de recuperación de contraseña */}
-        <Route path="/recuperar/ingresar-correo" element={<IngresarCorreo />} />
-        <Route path="/recuperar/ingresar-pin" element={<IngresarPin />} />
-        <Route path="/recuperar/nueva-contrasena" element={<NuevaContrasena />} />
+        <Route path="/ingresar_correo" element={<IngresarCorreo />} />
+        <Route path="/ingresar_pin" element={<IngresarPin />} />
+        <Route path="/nueva_contrasena" element={<NuevaContrasena />} />
 
         {/* Redirección para rutas no definidas */}
         <Route path="*" element={<Navigate to="/" />} />
