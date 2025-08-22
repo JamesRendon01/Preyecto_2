@@ -1,5 +1,5 @@
 from db import Base
-from sqlalchemy import Column, Integer, String, Float, Boolean, Date, ForeignKey, VARCHAR, Text
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, VARCHAR, Text, Date
 from sqlalchemy.orm import relationship
 
 class Turista(Base):
@@ -13,3 +13,7 @@ class Turista(Base):
     direccion=Column(VARCHAR(50))
     identificacion=Column(String(20), unique=True)
     contrasena=Column(VARCHAR(100))
+    pin_recuperacion = Column(String, nullable=True)
+    expira_pin = Column(DateTime, nullable=True)
+    token_recuperacion = Column(String, nullable=True)
+    expira_token = Column(DateTime, nullable=True)

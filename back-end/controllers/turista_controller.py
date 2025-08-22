@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import session
 from models.turista import Turista
-from dtos.turista_dto import turistaCreateDTO, turistaUpdateDTO, iniciarSesionDTO, SolicitudRecuperacion
+from dtos.turista_dto import turistaCreateDTO, turistaUpdateDTO, iniciarSesionDTO, SolicitudRecuperacion, CambiarContrasenaDTO
 from db.session import SessionLocal
 from utils.security import hash_password, verify_password
-from utils.tokens import generar_token, verificar_token
 from mails.mailjet_config import enviar_correo_recuperacion
+from datetime import datetime, timedelta
 import uuid
+from random import randint
 
 #obtener el objeto session
 def get_session():
@@ -107,13 +108,56 @@ def solicitar_recuperacion(data: SolicitudRecuperacion, db: session = Depends(ge
     if not turista:
         raise HTTPException(status_code=404, detail="Correo no registrado")
 
-    # Generar token (ejemplo simple, reemplazar con JWT o similar)
-    token = str(uuid.uuid4())
+    #Generar Pin de 6 Digitos
+    pin = f"{randint(100000, 999999)}"
+    turista.pin_recuperacion = pin
+    turista.expira_pin = datetime.utcnow() + timedelta(minutes=10)
+    db.commit()
 
-    # Guardar token temporalmente en la BD si es necesario
-
-    exito = enviar_correo_recuperacion(turista.correo, token)
+    exito = enviar_correo_recuperacion(turista.correo, pin)
     if not exito:
         raise HTTPException(status_code=500, detail="Error enviando correo")
 
     return {"mensaje": "Correo de recuperación enviado"}
+
+@router.post("/verificar-pin")
+def verificar_pin(correo: str, pin: str, db: session = Depends(get_session)):
+    turista = db.query(Turista).filter(Turista.correo == correo).first()
+    if not turista:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    if turista.pin_recuperacion != pin:
+        raise HTTPException(status_code=400, detail="PIN incorrecto")
+
+    if datetime.utcnow() > turista.expira_pin:
+        raise HTTPException(status_code=400, detail="PIN expirado")
+    # Limpiar PIN temporal
+    turista.pin_recuperacion = None
+    turista.expira_pin = None
+
+    # Generar token temporal para cambiar contraseña
+    token = str(uuid.uuid4())
+    turista.token_recuperacion = token
+    turista.expira_token = datetime.utcnow() + timedelta(minutes=15)
+    db.commit()
+
+    return {"token": token}
+
+@router.post("/cambiar-contrasena")
+def cambiar_contrasena(data: CambiarContrasenaDTO, db: session = Depends(get_session)):
+    turista = db.query(Turista).filter(Turista.token_recuperacion == data.token).first()
+    if not turista:
+        raise HTTPException(status_code=404, detail="Token inválido")
+
+    if datetime.utcnow() > turista.expira_token:
+        raise HTTPException(status_code=400, detail="Token expirado")
+
+    # Guardar nueva contraseña
+    turista.contrasena = hash_password(data.nueva_contrasena)
+
+    # Limpiar token
+    turista.token_recuperacion = None
+    turista.expira_token = None
+    db.commit()
+
+    return {"mensaje": "Contraseña cambiada exitosamente"}
