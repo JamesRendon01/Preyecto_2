@@ -15,11 +15,7 @@ from controllers.reserva_controller import router as reserva_router
 
 app = FastAPI()
 
-<<<<<<< HEAD
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-=======
+
 origins = [
     "http://localhost:5173",
 ]
@@ -27,7 +23,6 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
->>>>>>> back-end
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
