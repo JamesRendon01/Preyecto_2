@@ -1,11 +1,7 @@
 from db import Base
 from sqlalchemy import Column, Integer, String, Float, Boolean, Date, ForeignKey, VARCHAR, Text
 from sqlalchemy.orm import relationship
-<<<<<<< HEAD
-# tabla administrador
-=======
 
->>>>>>> back-end
 class Administrador(Base):
     __tablename__ = "administrador"
     id=Column(Integer, primary_key=True)

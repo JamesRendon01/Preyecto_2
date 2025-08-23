@@ -1,14 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import session
 from models.turista import Turista
-<<<<<<< HEAD
-from dtos.turista_dto import turistaCreateDTO, turistaUpdateDTO, iniciarSesionDTO, SolicitudRecuperacion
-from db.session import SessionLocal
-from utils.security import hash_password, verify_password
-from utils.tokens import generar_token, verificar_token
-from mails.mailjet_config import enviar_correo_recuperacion
-import uuid
-=======
 from dtos.turista_dto import turistaCreateDTO, turistaUpdateDTO, iniciarSesionDTO, SolicitudRecuperacion, CambiarContrasenaDTO, VerificarPinDTO
 from db.session import SessionLocal
 from utils.security import hash_password, verify_password
@@ -16,7 +8,6 @@ from mails.mailjet_config import enviar_correo_recuperacion
 from datetime import datetime, timedelta
 import uuid
 from random import randint
->>>>>>> back-end
 
 #obtener el objeto session
 def get_session():
@@ -117,18 +108,6 @@ def solicitar_recuperacion(data: SolicitudRecuperacion, db: session = Depends(ge
     if not turista:
         raise HTTPException(status_code=404, detail="Correo no registrado")
 
-<<<<<<< HEAD
-    # Generar token (ejemplo simple, reemplazar con JWT o similar)
-    token = str(uuid.uuid4())
-
-    # Guardar token temporalmente en la BD si es necesario
-
-    exito = enviar_correo_recuperacion(turista.correo, token)
-    if not exito:
-        raise HTTPException(status_code=500, detail="Error enviando correo")
-
-    return {"mensaje": "Correo de recuperación enviado"}
-=======
     # Generar PIN de 6 dígitos
     pin = str(randint(100000, 999999))
     turista.pin_recuperacion = pin
@@ -183,4 +162,3 @@ def cambiar_contrasena(data: CambiarContrasenaDTO, db: session = Depends(get_ses
     db.commit()
 
     return {"mensaje": "Contraseña cambiada exitosamente"}
->>>>>>> back-end

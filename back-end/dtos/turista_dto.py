@@ -46,12 +46,8 @@ class CambiarContrasenaDTO(BaseModel):
 
 
 class SolicitudRecuperacion(BaseModel):
-<<<<<<< HEAD
-    correo: str
-=======
     correo: str
 
 class VerificarPinDTO(BaseModel):
     correo: str
     pin: str
->>>>>>> back-end
