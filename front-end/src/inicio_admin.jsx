@@ -82,7 +82,8 @@ export default function InicioAdministrador() {
               value={formData.contrasena}
               onChange={handleChange}
               required
-              className="w-full p-2 rounded-md text-black mt-2 bg-gray-200"
+              className="w-full p-2 rounded-md text-black mt-2 bg-gray-200 
+              "
             />
 
             <p className="text-center mt-4 text-sm">
