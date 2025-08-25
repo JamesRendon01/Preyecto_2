@@ -12,7 +12,7 @@ from controllers.plan_controller import router as plan_router
 from controllers.ruta_controller import router as ruta_router
 from controllers.ubicacion_controller import router as ubicacion_router
 from controllers.reserva_controller import router as reserva_router
-
+from controllers.ciudad_controller import router as ciudad_router
 app = FastAPI()
 
 
@@ -41,3 +41,4 @@ app.include_router(plan_router)
 app.include_router(ruta_router)
 app.include_router(ubicacion_router)
 app.include_router(reserva_router)
+app.include_router(ciudad_router)

@@ -10,13 +10,17 @@ class Turista(Base):
     correo=Column(VARCHAR(50), unique=True)
     celular=Column(String(20), unique=True)
     fecha_nacimiento=Column(Date)
-    ciudad_residencia=Column(VARCHAR(20))
     direccion=Column(VARCHAR(50))
-    identificacion=Column(String(20), unique=True)
+    tipo_identificacion=Column(String(5))
+    identificacion=Column(String(30), unique=True)
     contrasena=Column(VARCHAR(100))
 
     pin_recuperacion = Column(String(6), nullable=True)
     expira_pin = Column(DateTime, nullable=True)
     token_recuperacion = Column(String(255), nullable=True)
     expira_token = Column(DateTime, nullable=True)
+<<<<<<< HEAD
 
+=======
+    ciudad_id=Column(Integer, ForeignKey("ciudad.id"))
+>>>>>>> origin/back-end
