@@ -1,4 +1,3 @@
-// App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import InicioTurista from "./inicio_turista";
 import InicioAdministrador from "./inicio_admin";
@@ -7,6 +6,7 @@ import IngresarCorreo from "./recuperar_contraseña/ingresar_correo";
 import IngresarPin from "./recuperar_contraseña/ingresar_pin";
 import NuevaContrasena from "./recuperar_contraseña/nueva_contraseña";
 
+// Componente principal de la aplicación que maneja las rutas
 export default function App() {
   return (
     <Router>

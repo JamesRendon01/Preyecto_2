@@ -2,11 +2,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+// Componente de registro para nuevos turistas
 export default function Registro() {
   const [formData, setFormData] = useState({
+    //Estado para manejar los datos del formulario
     correo: "",
     nombre: "",
     fecha_nacimiento: "",
+    tipo_identificacion: "",
     identificacion: "",
     contrasena: "",
     confirmar_contrasena: "",
@@ -45,33 +48,42 @@ export default function Registro() {
 
       const result = await res.json();
 
+      //Si el registro es exitoso, redirige al turista a la pagina de inicio de sesion
       if (res.ok) {
         alert("Registro exitoso ✅");
-        window.location.href = "/turista"; // Redirige al login
+        window.location.href = "/turista";
       } else {
+        //Si los datos ingresados son incorrectos, envia un mensaje de error
         setError(result.detail || "No se pudo registrar");
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      //si hay algun tipo de error de conexion, muestra un mensaje de error
+      console.error("Error de conexion:", error);
       setError("No se pudo conectar al servidor ❌");
     }
   };
 
+  // Renderizado del formulario de registro
   return (
+    // Contenedor principal
     <div className="w-screen h-300   bg-gradient-to-r from-gray-400 to-white flex flex-col">
       {/* Header */}
       <header className="w-full flex flex-col items-center py-4 relative">
+        {/* Estilos para las imagenes de la empresa */}
+        {/* Imagen animada del avion */}
         <div
           className="w-32 h-20 bg-cover absolute left-40"
           style={{ backgroundImage: "url('/img/avion.gif')" }}
         ></div>
 
+        {/* Logo de la empresa */}
         <img
           className="w-48 h-24 mt-2 absolute left-0 top-0"
           src="/img/logo.png"
           alt="logo"
         />
 
+        {/* Título de la página */}
         <h1 className="font-playfair text-6xl text-black text-center absolute left-140 top-5">
           Registrarse
         </h1>
@@ -79,9 +91,11 @@ export default function Registro() {
 
       {/* Main */}
       <main className="flex flex-col md:flex-row items-center mt-10 space-y-8 md:space-y-0 md:space-x-8">
-        {/* Formulario */}
+        {/* Divisor del formulario */}
         <div className="w-80 md:w-130 h-240 bg-[#003366] border-4 border-black p-6 rounded-lg text-white absolute left-125 top-25 z-10">
+          {/* Formulario de registro */}
           <form className="flex flex-col" onSubmit={handleSubmit}>
+            {/* Campo de correo */}
             <label className="mt-4">Correo:</label>
             <input
               type="email"
@@ -92,6 +106,7 @@ export default function Registro() {
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
             />
 
+            {/* Campo de nombre Completo */}
             <label className="mt-4">Nombre Completo:</label>
             <input
               type="text"
@@ -102,6 +117,7 @@ export default function Registro() {
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
             />
 
+            {/* Campo de fecha de nacimiento */}
             <label className="mt-4">Fecha de nacimiento</label>
             <input
               type="date"
@@ -112,6 +128,24 @@ export default function Registro() {
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
             />
 
+            {/* Campo de tiempo de identificacion */}
+            <label className="mt-4">Tipo de identificacion</label>
+            <select
+              name="tipo_identificacion"
+              value={formData.tipo_identificacion}
+              onChange={handleChange}
+              required
+              className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
+              >
+              <option value="">Seleccione un tipo de documento</option>
+              <option value="cc">Cédula de Ciudadanía</option>
+              <option value="ce">Cédula de Extranjería</option>
+              <option value="ti">Tarjeta de Identidad</option>
+              <option value="pp">Pasaporte</option>
+              <option value="ppt">Permiso por proteccion Temporal</option>
+              </select>
+            
+            {/* Campo de identificacion */}
             <label className="mt-4">Identificacion:</label>
             <input
               type="number"
@@ -122,6 +156,7 @@ export default function Registro() {
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
             />
 
+            {/* Campo de contraseña */}
             <label className="mt-4">Contraseña:</label>
             <input
               type="password"
@@ -132,6 +167,7 @@ export default function Registro() {
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
             />
 
+            {/* Campo de confirmar contraseña */}
             <label className="mt-4">Confirmar contraseña:</label>
             <input
               type="password"
@@ -142,16 +178,26 @@ export default function Registro() {
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
             />
 
+            {/* Campo de ciudad de residencia */}
             <label className="mt-4">Ciudad de residencia:</label>
-            <input
-              type="text"
+            <select
               name="ciudad_residencia"
               value={formData.ciudad_residencia}
               onChange={handleChange}
               required
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
-            />
+            >
+              <option value="">Seleccione una ciudad</option>
+              <option value="bogotá">Bogotá</option>
+              <option value="medellín">Medellín</option>
+              <option value="cali">Cali</option>
+              <option value="barranquilla">Barranquilla</option>
+              <option value="cartagena">Cartagena</option>
+              <option value="bucaramanga">Bucaramanga</option>
+              <option value="pereira">Pereira</option>
+            </select>
 
+            {/* Campo de celular */}
             <label className="mt-4">Numero de celular:</label>
             <input
               type="number"
@@ -162,6 +208,7 @@ export default function Registro() {
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
             />
 
+            {/* Campo de direccion */}
             <label className="mt-4">Direccion:</label>
             <input
               type="text"
@@ -172,12 +219,13 @@ export default function Registro() {
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
             />
 
+            {/* Enlace para iniciar sesion en caso de que ya tenga una cuenta creada */}
             <p className="text-center mt-2 text-sm">
               <Link to="/inicio_turista" className="underline text-white">
                 ¿Ya tienes Cuenta? Inicia Sesion
               </Link>
             </p>
-
+            {/* Boton para enviar el formulario */}
             <button
               type="submit"
               className="bg-gray-200 text-[#003366] px-4 py-2 rounded-md mt-4 hover:bg-gray-300 font-playfair"
@@ -187,7 +235,7 @@ export default function Registro() {
           </form>
         </div>
 
-        {/* Contenedor lateral */}
+        {/* Imagen perfil */}
           <div
             className="w-20 h-20 rounded-full bg-[#0a3273] bg-contain bg-no-repeat absolute right-125 top-3"
             style={{ backgroundImage: "url('/img/imagen.png')" }}
