@@ -10,3 +10,4 @@ from .instancia import Instancia
 from .hotel import Hotel
 from .ubicacion import Ubicacion
 from .ruta import Ruta
+from .ciudad import Ciudad
