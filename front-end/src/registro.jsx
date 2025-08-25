@@ -1,5 +1,5 @@
 // Registro.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 // Componente de registro para nuevos turistas
@@ -13,12 +13,21 @@ export default function Registro() {
     identificacion: "",
     contrasena: "",
     confirmar_contrasena: "",
-    ciudad_residencia: "",
+    ciudad_residencia_id: "",
     celular: "",
     direccion: "",
   });
 
   const [error, setError] = useState("");
+  const [ciudades, setCiudades] = useState([]);
+
+  // Cargar ciudades desde el backend
+  useEffect(() => {
+    fetch("http://localhost:8000/ciudad/")
+      .then(res => res.json())
+      .then(data => setCiudades(data))
+      .catch(err => console.error("Error cargando ciudades:", err));
+  }, []);
 
   // Manejar cambios de inputs
   const handleChange = (e) => {
@@ -138,11 +147,11 @@ export default function Registro() {
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
               >
               <option value="">Seleccione un tipo de documento</option>
-              <option value="cc">Cédula de Ciudadanía</option>
-              <option value="ce">Cédula de Extranjería</option>
-              <option value="ti">Tarjeta de Identidad</option>
-              <option value="pp">Pasaporte</option>
-              <option value="ppt">Permiso por proteccion Temporal</option>
+              <option value="CC">Cédula de Ciudadanía</option>
+              <option value="CE">Cédula de Extranjería</option>
+              <option value="TI">Tarjeta de Identidad</option>
+              <option value="PP">Pasaporte</option>
+              <option value="PPT">Permiso por proteccion Temporal</option>
               </select>
             
             {/* Campo de identificacion */}
@@ -181,20 +190,18 @@ export default function Registro() {
             {/* Campo de ciudad de residencia */}
             <label className="mt-4">Ciudad de residencia:</label>
             <select
-              name="ciudad_residencia"
-              value={formData.ciudad_residencia}
+              name="ciudad_residencia_id"
+              value={formData.ciudad_residencia_id}
               onChange={handleChange}
               required
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
             >
               <option value="">Seleccione una ciudad</option>
-              <option value="bogotá">Bogotá</option>
-              <option value="medellín">Medellín</option>
-              <option value="cali">Cali</option>
-              <option value="barranquilla">Barranquilla</option>
-              <option value="cartagena">Cartagena</option>
-              <option value="bucaramanga">Bucaramanga</option>
-              <option value="pereira">Pereira</option>
+              {ciudades.map((ciudad) => (
+                <option key={ciudad.id} value={ciudad.id}>
+                  {ciudad.nombre}
+                </option>
+              ))}
             </select>
 
             {/* Campo de celular */}
@@ -202,7 +209,7 @@ export default function Registro() {
             <input
               type="number"
               name="celular"
-              value={formData.numero_celular}
+              value={formData.celular}
               onChange={handleChange}
               required
               className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
