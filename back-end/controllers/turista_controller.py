@@ -157,8 +157,4 @@ def cambiar_contrasena(data: CambiarContrasenaDTO, db: Session = Depends(get_ses
     turista.token_recuperacion = None
     turista.expira_token = None
     db.commit()
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/back-end
     return {"mensaje": "Contraseña cambiada exitosamente"}

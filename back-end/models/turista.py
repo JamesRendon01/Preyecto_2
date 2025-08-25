@@ -19,8 +19,4 @@ class Turista(Base):
     expira_pin = Column(DateTime, nullable=True)
     token_recuperacion = Column(String(255), nullable=True)
     expira_token = Column(DateTime, nullable=True)
-<<<<<<< HEAD
-
-=======
     ciudad_id=Column(Integer, ForeignKey("ciudad.id"))
->>>>>>> origin/back-end
