@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import session
+from sqlalchemy.orm import Session
 from models.plan import Plan
-from dtos.plan_dto import planCreateDTO
-from dtos.plan_dto import planUpdateDTO
+from dtos.plan_dto import planCreateDTO, planUpdateDTO, PlanOut
 from db.session import SessionLocal
+from typing import List
 
 #obtener el objeto session
 def get_session():
@@ -17,29 +17,24 @@ def get_session():
 #rutas
 router = APIRouter( prefix='/plan' )
 
-@router.get('/')
-def listar_plan(
-                db: session = Depends(get_session)
-                ):
+@router.get('/', response_model=List[PlanOut])
+def listar_plan(db: Session = Depends(get_session)):
     lp = db.query(Plan).all()
     if not lp:
-         raise HTTPException(status_code=404, detail="No hay Instancia registrados")
+         raise HTTPException(status_code=404, detail="No hay Planes registrados")
     return lp
 
 #Ruta parametrizada
 @router.get('/{id}')
-def listar_por_id(
-                id: int, 
-                db: session = Depends(get_session)
-                ):
+def listar_por_id(id: int, db: Session = Depends(get_session)):
     lp = db.query(Plan).filter(Plan.id == id).first()
     if not lp:
-         raise HTTPException(status_code=404, detail="Instancia no encontrado")
+         raise HTTPException(status_code=404, detail="Plan no encontrado")
     return lp
 
 #Ruta post
 @router.post("/")
-def crear_plan(nuevo_plan: planCreateDTO, db:session = Depends(get_session)):
+def crear_plan(nuevo_plan: planCreateDTO, db:Session = Depends(get_session)):
             
              # Validar que el correo o identificación no se repita
             existente = db.query(Plan).filter(
@@ -69,10 +64,7 @@ def crear_plan(nuevo_plan: planCreateDTO, db:session = Depends(get_session)):
 
 #Ruta update
 @router.put('/{id}')
-def actualizar_plan(
-                id: int, datos: planUpdateDTO,
-                db: session = Depends(get_session)
-                ):
+def actualizar_plan(id: int, datos: planUpdateDTO, db: Session = Depends(get_session)):
     ap = db.query(Plan).filter(Plan.id == id).first()
     if not ap:
         raise HTTPException(status_code=404, detail="Plan no encontrado")
@@ -86,11 +78,11 @@ def actualizar_plan(
 @router.delete('/{id}')
 def eliminar_plan(
                 id: int,
-                db: session = Depends(get_session)
+                db: Session = Depends(get_session)
                 ):
     ep = db.query(Plan).filter(Plan.id == id).first()
     if not ep:
          raise HTTPException(status_code=404, detail="Plan no encontrado")
     db.delete(ep)
     db.commit()
-    return "Se elimino con exito el Plan con el Id:" + str(id)
+    return {"detail": f"Se elimino con exito el Plan con el Id: {id}"}
