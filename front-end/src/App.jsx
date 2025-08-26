@@ -5,6 +5,8 @@ import Registro from "./registro";
 import IngresarCorreo from "./recuperar_contraseña/ingresar_correo";
 import IngresarPin from "./recuperar_contraseña/ingresar_pin";
 import NuevaContrasena from "./recuperar_contraseña/nueva_contraseña";
+import Carousel from "./components/carousel.jsx";
+import Table from "./act_elim_plan.jsx";
 
 // Componente principal de la aplicación que maneja las rutas
 export default function App() {
@@ -12,7 +14,7 @@ export default function App() {
     <Router>
       <Routes>
         {/* Ruta principal */}
-        <Route path="/" element={<InicioTurista />} />
+        <Route path="/" element={<Table />} />
 
         {/* Ruta Turista */}
         <Route path="/turista" element={<InicioTurista />} />
