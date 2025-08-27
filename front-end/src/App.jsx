@@ -1,20 +1,22 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import InicioTurista from "./inicio_turista";
-import InicioAdministrador from "./inicio_admin";
-import Registro from "./registro";
-import IngresarCorreo from "./recuperar_contraseña/ingresar_correo";
-import IngresarPin from "./recuperar_contraseña/ingresar_pin";
-import NuevaContrasena from "./recuperar_contraseña/nueva_contraseña";
-import Carousel from "./components/carousel.jsx";
-import Table from "./act_elim_plan.jsx";
+import InicioTurista from "./pages/turista/inicio_turista.jsx";
+import InicioAdministrador from "./pages/administrador/inicio_admin.jsx";
+import Registro from "./pages/turista/registro.jsx";
+import IngresarCorreo from "./pages/recuperar_contraseña/ingresar_correo.jsx";
+import IngresarPin from "./pages/recuperar_contraseña/ingresar_pin.jsx";
+import NuevaContrasena from "./pages/recuperar_contraseña/nueva_contraseña.jsx";
+import Table from "./pages/administrador/act_elim_plan.jsx";
+import HomePage from "./pages/turista/inicio.jsx";
 
-// Componente principal de la aplicación que maneja las rutas
 export default function App() {
   return (
     <Router>
       <Routes>
+        {/* Ruta de prueba del carrusel */}
+        <Route path="/carousel" element={<HomePage />} />
+
         {/* Ruta principal */}
-        <Route path="/" element={<Table />} />
+        <Route path="/" element={<InicioTurista />} />
 
         {/* Ruta Turista */}
         <Route path="/turista" element={<InicioTurista />} />

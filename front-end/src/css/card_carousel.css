@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+.title{
+    background: linear-gradient(#0000007e, #c5c5c5) ;
+    width: 100%;
+    height: 150px;
+}
+
+.boton {
+        width: 12rem;
+        height: 4rem;
+        margin-top: 1.5rem;
+        margin-left: 600px;
+        background-color: #073c80;
+        border: 3px solid black;
+        border-radius: 1rem;
+        color: rgb(255, 255, 255);
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+
+.boton:hover{
+    background-color: #ffffffa7;
+    color: rgb(0, 0, 0);
+}
+
+.inicio{
+    background: linear-gradient(180deg, #c5c5c5, #fffefe);
+}
+
+/* Contenedor principal del carrusel */
+.carousel-container {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 0;
+}
+
+/* Track de las tarjetas */
+.carousel-track {
+  display: flex;
+  gap: 24px;
+  transition: transform 0.7s ease-in-out;
+}
+
+/* Tarjeta individual */
+.carousel-card {
+  flex-shrink: 0;
+  border-radius: 1rem; /* rounded-2xl */
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* shadow-lg */
+  padding: 1rem; /* p-4 */
+  background:  linear-gradient(0deg, #3432c7, #000000);
+  width: min(220px, 90vw);
+  height: 300px;
+  transform: scale(0.9);
+  opacity: 0.7;
+  transition: all 0.7s ease-in-out;
+  color: #ffffff;
+}
+
+/* Tarjeta central destacada */
+.carousel-card.active {
+  transform: scale(1.1);
+  opacity: 20;
+}
+
+/* Imagen dentro de la tarjeta */
+.carousel-image {
+  width: 100%;
+  height: 160px; /* h-40 */
+  object-fit: cover;
+  border-radius: 0.5rem; /* rounded-lg */
+}
