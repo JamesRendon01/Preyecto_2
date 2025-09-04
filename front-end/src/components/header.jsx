@@ -1,20 +1,36 @@
-export default function Header({ titulo }) {
+export default function Header({ titulo, rol }) {
   return (
-    <header className="header-container">
-      {/* Imagen animada del avión */}
-      <div
-        className="header-avion"
-        style={{ backgroundImage: "url('/img/avion.gif')" }}
-      ></div>
+    <header className={`header-container ${rol}`}>
 
-      {/* Logo */}
-      <img
-        className="header-logo"
-        src="/img/logo.png"
-        alt="logo"
-      />
+      {(rol === "turista" || rol === "admin") &&(
+        <>
+          <div
+            className="header-avion"
+            style={{ backgroundImage: "url('/img/avion.gif')" }}
+          ></div>
 
-      {/* Título dinámico */}
+          {/* Logo */}
+          <img
+            className="header-logo"
+            src="/img/logo.png"
+            alt="logo"
+          />
+
+        </>
+      )}
+
+      {rol === "inicio" &&(
+        <>
+          
+          {/* Logo */}
+          <img
+            className="header-logo"
+            src="/img/logo.png"
+            alt="logo"
+          />
+
+        </>
+      )}
       <h1 className="header-title">
         {titulo}
       </h1>

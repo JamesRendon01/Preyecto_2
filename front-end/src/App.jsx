@@ -7,16 +7,23 @@ import IngresarPin from "./pages/recuperar_contraseña/ingresar_pin.jsx";
 import NuevaContrasena from "./pages/recuperar_contraseña/nueva_contraseña.jsx";
 import Table from "./pages/administrador/act_elim_plan.jsx";
 import HomePage from "./pages/turista/inicio.jsx";
+import Favoritos from "./pages/turista/favoritos.jsx"
 
 export default function App() {
   return (
     <Router>
       <Routes>
+
+        <Route path="/table" element={<Table />} />
+
+        {/* Ruta de prueba de favoritos */}
+        <Route path="/favoritos" element={<Favoritos />} />
+
         {/* Ruta de prueba del carrusel */}
         <Route path="/carousel" element={<HomePage />} />
 
         {/* Ruta principal */}
-        <Route path="/" element={<InicioTurista />} />
+        <Route path="/inicio" element={<HomePage />} />
 
         {/* Ruta Turista */}
         <Route path="/turista" element={<InicioTurista />} />

@@ -10,6 +10,7 @@
         padding-bottom: 1rem;
         position: relative;
     }
+
     .header-avion {
         width: 8rem;
         height: 5rem;
@@ -32,49 +33,67 @@
         font-size: 3.75rem;
         color: #000000;
         text-align: center;
+        font-weight: bold;
     }
 }
 
-@media (max-width: 1024px){
-    .header-title{
+
+.header-container.inicio {
+    background: none;
+}
+
+.header-container.inicio .header-logo{
+    margin-top: 15px;
+}
+
+
+@media (max-width: 1024px) {
+    .header-title {
         margin-left: 13rem;
         font-size: 2rem;
         margin-left: -8rem;
     }
-    .header-logo{
+
+    .header-logo {
         width: 8rem;
         height: 4rem;
     }
-    .header-avion{
+
+    .header-avion {
         width: 6rem;
         height: 4rem;
         left: 8rem;
-        margin-left:-1rem;
+        margin-left: -1rem;
     }
 }
-@media (max-width:768px){
-    .header-title{
+
+@media (max-width:768px) {
+    .header-title {
         margin-left: 3rem;
         font-size: 2rem;
         margin-top: 0%;
     }
-    .header-avion{
+
+    .header-avion {
         display: none;
     }
-    
+
 }
-@media (max-width:425px){
-    .header-avion{
+
+@media (max-width:425px) {
+    .header-avion {
         display: none;
     }
-    .header-title{
+
+    .header-title {
         font-size: 1.5rem;
         margin-left: 5.5rem;
         width: 20rem;
     }
 }
-@media (max-width:375px){
-    .header-title{
+
+@media (max-width:375px) {
+    .header-title {
         font-size: 1.2rem;
         margin-left: 5.8rem;
         width: 10rem;

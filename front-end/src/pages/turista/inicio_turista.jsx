@@ -2,9 +2,12 @@ import { useState } from "react";
 import Header from "../../components/header.jsx";
 import LoginForm from "../../components/login_form.jsx";
 import Sidebar from "../../components/sidebar.jsx";
+import { Navigate, useNavigate } from "react-router-dom";
+
 
 export default function InicioTurista() {
   
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     correo: "",
     contrasena: "",
@@ -29,7 +32,7 @@ export default function InicioTurista() {
 
       if (res.ok) {
         alert("Inicio de sesión exitoso ✅");
-        window.location.href = "/pagina_principal.html";
+        navigate("/inicio");
       } else {
         alert("Error: " + (result.detail || "Credenciales inválidas"));
       }
@@ -41,7 +44,7 @@ export default function InicioTurista() {
 
   return (
     <div className="inicio-container">
-      <Header titulo="Inicio Sesión Turista" />
+      <Header rol="turista" titulo="Inicio Sesión Turista" />
       <main className="inicio-main">
         <LoginForm
           formData={formData}
