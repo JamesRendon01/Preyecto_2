@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+@theme {
+    --color-fondo: #bee9e8;
+    --color-nav: #62b6cb;
+    --font-inter: 'Shantell Sans', cursive;
+}
+
