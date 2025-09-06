@@ -100,7 +100,8 @@ export default function Registro() {
 
       <main className="flex flex-col md:flex-row items-center mt-10 space-y-8 md:space-y-0 md:space-x-8">
         {/* Divisor del formulario */}
-        <div className="w-80 md:w-130 h-240 bg-nav border-4 border-black p-6 rounded-lg text-black absolute left-130 top-25 z-10">
+        <div className="w-80 md:w-130 h-auto bg-nav border-4 border-black p-6 rounded-lg text-black absolute left-130 top-25 z-10">
+          <div className="self-center w-20 h-20 rounded-full bg-fondo bg-contain bg-no-repeat ml-50" style={{ backgroundImage: "url('/img/imagen.png')" }}></div>
           {/* Formulario de registro */}
           <form className="flex flex-col" onSubmit={handleSubmit}>
             {/* Campo de correo */}
@@ -242,10 +243,7 @@ export default function Registro() {
         </div>
 
         {/* Imagen perfil */}
-        <div
-          className="w-20 h-20 rounded-full bg-nav bg-contain bg-no-repeat absolute right-100 top-3"
-          style={{ backgroundImage: "url('/img/imagen.png')" }}
-        ></div>
+
 
       </main>
     </div>
