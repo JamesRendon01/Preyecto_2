@@ -5,5 +5,11 @@
     --color-fondo: #bee9e8;
     --color-nav: #62b6cb;
     --font-inter: 'Shantell Sans', cursive;
+
+    --breakpoint-xl: 1440px;
+    --breakpoint-lg: 1024px;
+    --breakpoint-md: 768px;
+    --breakpoint-sm: 480px;
+
 }
 

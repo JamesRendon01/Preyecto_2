@@ -20,7 +20,7 @@ export default function Sidebar({ rol }) {
       <img
         src="/img/imagen.png"
         alt="Foto de perfil"
-        className="w-[13.5rem] h-[13.5rem] rounded-full border-2 border-black object-cover"
+        className="w-[13.5rem] h-[13.5rem] rounded-full border-2 border-black object-cover bg-fondo"
       />
 
       {/* Botón Cambio de rol "Turista" y "Administrador " */}

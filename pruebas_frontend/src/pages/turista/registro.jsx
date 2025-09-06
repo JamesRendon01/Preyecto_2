@@ -75,33 +75,26 @@ export default function Registro() {
   // Renderizado del formulario de registro
   return (
     // Contenedor principal
-    <div className="w-screen h-300 bg-fondo flex flex-col">
+    <div className="min-h-screen w-full bg-fondo flex flex-col">
       {/* Header */}
-      <header className="w-full flex flex-col items-center py-4 relative">
+      <header className="w-full flex py-4 relative">
         {/* Estilos para las imagenes de la empresa */}
-        {/* Imagen animada del avion */}
-        <div
-          className="w-32 h-20 bg-cover absolute left-40"
-          style={{ backgroundImage: "url('/img/avion.gif')" }}
-        ></div>
-
-        {/* Logo de la empresa */}
-        <img
-          className="w-48 h-24 mt-2 absolute left-0 top-0"
-          src="/img/logo.png"
-          alt="logo"
-        />
-
-        {/* Título de la página */}
-        <h1 className="font-playfair text-6xl text-black font-bold font-inter text-center absolute left-135 top-5">
-          REGISTRARSE
-        </h1>
+        <div className="flex ">
+          {/* Logo de la empresa */}
+          <img className="w-38 h-18 mt-2 sm:w-20 sm:h-12 sm:mt-0 md:w-28 md:h-18 xl:w-40 xl:h-20" src="/img/logo.png" alt="logo" />
+          {/* Imagen animada del avion */}
+          <img className="w-38 h-18 mt-2 sm:w-20 sm:h-12 sm:mt-0 md:w-28 md:h-18 xl:w-40 xl:h-20" src="/img/avion.gif" alt="logo" />
+          {/* Título de la página */}
+          <h1 className="flex text-6xl text-black font-bold font-inter sm:text-4xl md:text-5xl lg:ml-30 xl:text-6xl xl:ml-55">
+            REGISTRARSE
+          </h1>
+        </div>
       </header>
 
-      <main className="flex flex-col md:flex-row items-center mt-10 space-y-8 md:space-y-0 md:space-x-8">
+      <main className="flex flex-col md:flex-row">
         {/* Divisor del formulario */}
-        <div className="w-80 md:w-130 h-auto bg-nav border-4 border-black p-6 rounded-lg text-black absolute left-130 top-25 z-10">
-          <div className="self-center w-20 h-20 rounded-full bg-fondo bg-contain bg-no-repeat ml-50" style={{ backgroundImage: "url('/img/imagen.png')" }}></div>
+        <div className="w-125 h-auto bg-nav border-4 border-black p-6 rounded-lg text-black sm:w-100 sm:ml-10 md:ml-50 lg:ml-80 xl:ml-130 xl:w-120">
+          <div className="self-center w-20 h-20 rounded-full bg-fondo bg-contain bg-no-repeat ml-50 sm:ml-35 xl:ml-45" style={{ backgroundImage: "url('/img/imagen.png')" }}></div>
           {/* Formulario de registro */}
           <form className="flex flex-col" onSubmit={handleSubmit}>
             {/* Campo de correo */}
@@ -241,8 +234,6 @@ export default function Registro() {
             </button>
           </form>
         </div>
-
-        {/* Imagen perfil */}
 
 
       </main>
