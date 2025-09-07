@@ -11,8 +11,9 @@ export default function LoginForm({ formData, handleChange, handleSubmit, rol })
         // Contenedor del formulario
         // Estilos y pocision del formulario
         <div
-            className={` w-96 h-96 bg-login bg-nav text-white p-8 rounded-lg z-30 border-3 absolute top-35 border-black 
-        ${rol === "admin" ? "ml-[300px]" : ""}`}
+            className={`flex w-96 h-96 bg-login bg-nav text-white p-8 rounded-lg z-30 border-3 absolute top-35 border-black md:w-90 md:h-80 xl:w-102 xl:h-90
+            ${rol === "admin" ? "sm:h-85 sm:ml-8 sm:top-70 md:ml-18 md:top-25 lg:ml-55 xl:ml-90 xl:mt-10" : ""}
+            ${rol === "turista" ? "sm:left-15 sm:top-70 md:ml-70 md:top-25 lg:left-50 xl:left-100 xl:top-35" : ""}`}
         >
             {/* Formuario de login */}
             <form className="text-black text-lg font-bold" onSubmit={handleSubmit}>
@@ -24,25 +25,25 @@ export default function LoginForm({ formData, handleChange, handleSubmit, rol })
                     value={formData.correo}
                     onChange={handleChange}
                     required
-                    className="w-full p-2 rounded-md text-black mt-2 bg-gray-200 focus:outline-none "
+                    className="w-full p-2 rounded-md text-black mt-2 bg-gray-200 focus:outline-none md:h-8"
                 />
 
                 {/* Campo para ingresar la contraseña */}
-                <label className="mt-4">Contraseña:</label>
+                <label className="mt-4 md:mt-2">Contraseña:</label>
                 <input
                     type="password"
                     name="contrasena"
                     value={formData.contrasena}
                     onChange={handleChange}
                     required
-                    className="w-full p-2 rounded text-black mt-2 bg-gray-200 focus:outline-none"
+                    className="w-full p-2 rounded text-black mt-2 bg-gray-200 focus:outline-none md:h-8"
                 />
 
                 {/* Caso: turista */}
                 {rol === "turista" && (
                     <>
                         {/* Enlace para recuperacion de contraseña */}
-                        <p className="text-center mt-10 text-sm">
+                        <p className="text-center mt-10 text-sm md:mt-5">
                             <Link to="/ingresar_correo" className="underline text-black">
                                 ¿Olvidaste tu contraseña?
                             </Link>
@@ -61,7 +62,7 @@ export default function LoginForm({ formData, handleChange, handleSubmit, rol })
                     <>
                         {/* Enlace para recuperar contraseña */}
 
-                        <p className="text-center mt-15 text-sm">
+                        <p className="text-center mt-15 text-sm sm:mt-5">
                             <Link to="/ingresar_correo" className="underline text-black">
                                 ¿Olvidaste tu contraseña?
                             </Link>
@@ -73,7 +74,7 @@ export default function LoginForm({ formData, handleChange, handleSubmit, rol })
                 {/* Boton para enviar el formulario */}
                 <button
                     type="submit"
-                    className="bg-fondo border-2 border-black text-login px-4 py-2 rounded-md font-playfair hover:bg-gray-300 transition-colors ml-25 mt-8"
+                    className="bg-fondo border-2 border-black text-login px-4 py-2 rounded-md font-playfair hover:bg-gray-300 transition-colors ml-25 mt-8 md:mt-5 md:ml-20 xl:ml-25"
                 >Continuar
                 </button>
             </form>

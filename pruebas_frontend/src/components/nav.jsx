@@ -3,7 +3,6 @@ import Header from "./header.jsx";
 import SearchBar from "./search.jsx";
 import SearchResults from "./search_result.jsx";
 import FiltroTabs from "./filter.jsx";
-import Profile from "./profile.jsx";
 import Navbar from "./navbar.jsx";
 import ButtonsLogin from "./buttons_login.jsx";
 import { useNavigate } from "react-router-dom";
@@ -15,8 +14,7 @@ export default function Nav({
     hasSearched,
     handleSearch,
     showFilter = true,
-    showTitle = false,
-    showProfile = true,   // 👈 nuevo
+    showTitle = false,  // 👈 nuevo
     showNavbar = true,     // 👈 nuevo
     showSearch = true,
     showButtonsLogin = false,
@@ -66,12 +64,6 @@ export default function Nav({
                     <div className="max-h-12 mt-4">
                         <SearchBar query={query} setQuery={setQuery} onSearch={handleSearch} />
                         <SearchResults results={results} hasSearched={hasSearched} />
-                    </div>
-                )}
-
-                {showProfile && (   // 👈 solo se renderiza si es true
-                    <div className="mt-2">
-                        <Profile />
                     </div>
                 )}
 

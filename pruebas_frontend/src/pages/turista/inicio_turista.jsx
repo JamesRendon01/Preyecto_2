@@ -58,11 +58,11 @@ export default function InicioTurista() {
   };
 
   return (
-    <div className="w-screen min-h-screen flex flex-col items-center bg-gradiente-to-r from-gray-400 to-white">
+    <div className="w-screen min-h-screen flex flex-col bg-gradiente-to-r from-gray-400 to-white">
       <div className="text-center mt-5">
         <Header rol="turista" titulo="INICIO TURISTA" />
       </div>
-      <main className="">
+      <main>
         <LoginForm
           formData={formData}
           handleChange={handleChange}

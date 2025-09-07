@@ -94,7 +94,6 @@ export default function Registro() {
       <main className="flex flex-col md:flex-row">
         {/* Divisor del formulario */}
         <div className="w-125 h-auto bg-nav border-4 border-black p-6 rounded-lg text-black sm:w-100 sm:ml-10 md:ml-50 lg:ml-80 xl:ml-130 xl:w-120">
-          <div className="self-center w-20 h-20 rounded-full bg-fondo bg-contain bg-no-repeat ml-50 sm:ml-35 xl:ml-45" style={{ backgroundImage: "url('/img/imagen.png')" }}></div>
           {/* Formulario de registro */}
           <form className="flex flex-col" onSubmit={handleSubmit}>
             {/* Campo de correo */}
