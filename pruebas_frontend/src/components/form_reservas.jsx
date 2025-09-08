@@ -42,9 +42,9 @@ export default function FormReservas() {
   };
 
   return (
-    <div className="w-125 h-auto bg-nav border-4 border-black p-6 rounded-lg text-black sm:w-100 sm:ml-10 md:ml-50 lg:ml-80 xl:ml-130 xl:w-120">
-      <form className="flex flex-col">
-        <label className="mt-4">Correo:</label>
+    <div className="flex w-125 h-auto bg-nav border-4 border-black p-6 rounded-lg text-black sm:w-90 sm:ml-10 sm:mb-10 md:ml-10 md:mt-30 lg:ml-10 lg:mt-40 xl:ml-30 xl:w-120 xl:mt-50">
+      <form className="flex flex-col lg:text-xl xl:text-2xl xl:ml-5">
+        <label className="mt-4 lg:mt-0">Correo:</label>
         <input
           type="email"
           name="correo"

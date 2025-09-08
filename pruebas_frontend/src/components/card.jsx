@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Heart } from "lucide-react";//Icono de corazón
 import { useFavoritosStore } from "../storage/favoritos_storage.js";// Store para manejar favoritos 
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 //Componente principalque muestra un conjunto de cards
 export default function CardComponent({ showButton, plans: initialPlans }) {
@@ -43,9 +43,14 @@ export default function CardComponent({ showButton, plans: initialPlans }) {
 function Card({ plan, showButton }) {
   const [hovered, setHovered] = useState(false);// Estado para detectar hover
   const { favoritos, toggleFavorito } = useFavoritosStore();// Store para gestionar favoritos
+  const navigate = useNavigate();
 
   // Verifica si la card ya está en favoritos
   const esFavorito = favoritos.some((fav) => fav.id === plan.id);
+
+  const handleReservar = () => {
+    navigate("/reservas", { state: {plan} });
+  }
 
   return (
     // Detecta cuando el mouse entra y sale de la card
@@ -72,11 +77,9 @@ function Card({ plan, showButton }) {
       {showButton && (
         <div className="absolute inset-x-0 bottom-4 flex flex-col items-center opacity-0 hover:opacity-100 transition-opacity duration-300">
           {/* boton de reserva */}
-          <Link to="/reservas">
-          <button className="flex bg-nav mr-20 text-black border-2 border-black font-bold text-sm px-4 py-2 rounded-full mb-2">
+          <button onClick={handleReservar} className="flex bg-nav mr-20 text-black border-2 border-black font-bold text-sm px-4 py-2 rounded-full mb-2">
             Reservar
           </button>
-          </Link>
 
           {/* Boton de favoritos */}
           <button
@@ -88,7 +91,7 @@ function Card({ plan, showButton }) {
             {/* Icono de corazón(Se llena si es favorito) */}
             <Heart
               size={20}
-              color={esFavorito ? "black" : "#62b6cb"}
+              color={esFavorito ? "black" : "black"}
               fill={esFavorito ? "#62b6cb" : "none"}
               strokeWidth={1.5}
             />
