@@ -220,7 +220,7 @@ export default function Registro() {
 
             {/* Enlace para iniciar sesion en caso de que ya tenga una cuenta creada */}
             <p className="text-center mt-2 text-sm">
-              <Link to="/inicio_turista" className="underline text-black">
+              <Link to="/turista" className="underline text-black">
                 ¿Ya tienes Cuenta? Inicia Sesion
               </Link>
             </p>

@@ -9,28 +9,10 @@ import { useFavoritosStore } from "../../storage/favoritos_storage.js";
 // Simula un usuario logueado (reemplaza con tu lógica real de login)
 const USER_ID = 1;
 
-function HoverCardWrapper({ children }) {
-  return (
-    <div className="hover-card">
-      {children}
-      <div className="hover-info">
-        <Button type="primary" shape="round" className="button-reservar">
-          Reservar
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 export default function HomePage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
-
-  const linksParaPagina2 = [
-    { href: "https://open.spotify.com/intl-es", label: "Inicio" },
-    { href: "https://web.whatsapp.com/", label: "Contacto" },
-  ];
 
   const data = [
     "React",
@@ -61,7 +43,6 @@ export default function HomePage() {
   return (
     <div>
       <Nav
-        links={linksParaPagina2}
         query={query}
         setQuery={setQuery}
         results={results}

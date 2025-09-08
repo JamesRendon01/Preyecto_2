@@ -10,6 +10,8 @@ import HomePage from "./pages/turista/inicio.jsx";
 import Favoritos from "./pages/turista/favoritos.jsx"
 import DashbordSinLogin from "./pages/turista/dashbord_sin_login.jsx";
 import MenuConfig from "./pages/turista/menu_config.jsx";
+import Reservas from "./pages/turista/reservas.jsx";
+
 
 export default function App() {
   return (
@@ -30,6 +32,8 @@ export default function App() {
         <Route path="/menu_config" element={<MenuConfig />} />
         {/*Ruta para favoritos.jsx*/}
         <Route path="/favoritos" element={<Favoritos />} />
+
+        <Route path="/reservas" element={<Reservas />} />
 
         {/*Ruta para ingresar_correo.jsx*/}
         <Route path="/ingresar_correo" element={<IngresarCorreo />} />

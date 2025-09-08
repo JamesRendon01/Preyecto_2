@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Heart } from "lucide-react";//Icono de corazón
 import { useFavoritosStore } from "../storage/favoritos_storage.js";// Store para manejar favoritos 
+import { Link } from "react-router-dom";
 
 //Componente principalque muestra un conjunto de cards
 export default function CardComponent({ showButton, plans: initialPlans }) {
@@ -71,22 +72,24 @@ function Card({ plan, showButton }) {
       {showButton && (
         <div className="absolute inset-x-0 bottom-4 flex flex-col items-center opacity-0 hover:opacity-100 transition-opacity duration-300">
           {/* boton de reserva */}
+          <Link to="/reservas">
           <button className="flex bg-nav mr-20 text-black border-2 border-black font-bold text-sm px-4 py-2 rounded-full mb-2">
             Reservar
           </button>
+          </Link>
 
           {/* Boton de favoritos */}
           <button
             onClick={() => toggleFavorito(plan)} // 👈 ya no pasamos userId
             className={`w-8 h-8 flex ml-30 mt-[-45px] mb-0 items-center justify-center p-0 rounded-full border-2 ${
-              esFavorito ? "bg-red-200 border-red-500" : "bg-white border-black"
+              esFavorito ? "bg-fondo border-black" : "bg-white border-black"
             }`}
           >
             {/* Icono de corazón(Se llena si es favorito) */}
             <Heart
               size={20}
-              color={esFavorito ? "red" : "#62b6cb"}
-              fill={esFavorito ? "red" : "none"}
+              color={esFavorito ? "black" : "#62b6cb"}
+              fill={esFavorito ? "#62b6cb" : "none"}
               strokeWidth={1.5}
             />
           </button>

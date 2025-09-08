@@ -44,8 +44,9 @@ export default function InicioTurista() {
       console.log("Respuesta login:", result); 
 
       if (res.ok) {
-        // ⚡ Guardar token en localStorage
-        localStorage.setItem("token", result.token);
+        // Guardar id del turista en localStorage
+        localStorage.setItem("id_turista", result.turista.id_turista);
+
         message.success("Inicio de sesión exitoso");
         navigate("/inicio"); // Redirige a la página principal
       } else {

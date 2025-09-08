@@ -18,7 +18,8 @@ export default function Nav({
     showNavbar = true,     // 👈 nuevo
     showSearch = true,
     showButtonsLogin = false,
-    showConfig = false
+    showConfig = false,
+    showTitleReservas = false
 }) {
     const navigate = useNavigate();
     const [scrolled, setScrolled] = useState(false);
@@ -41,7 +42,7 @@ export default function Nav({
         >
             <div className="flex justify-center gap-x-20 ml-30">
                 <div className="flex mt-0 ml-30">
-                    <Header rol="inicio" titulo="" />
+                    <Header rol="inicio"/>
                 </div>
                 <div>
 
@@ -57,6 +58,11 @@ export default function Nav({
                     <div className="mr-30">
                         {showTitle && (
                             <Header rol="inicio" titulo="FAVORITOS" />
+                        )}
+                    </div>
+                    <div className="mr-30">
+                        {showTitleReservas && (
+                            <Header rol="inicio" titulo="RESERVAS" />
                         )}
                     </div>
                 </div>
