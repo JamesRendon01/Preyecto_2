@@ -1,5 +1,5 @@
 from db import Base
-from sqlalchemy import Column, Integer, String, Float, Boolean, Date, ForeignKey, VARCHAR, Text
+from sqlalchemy import Column, Integer, String, VARCHAR, DateTime
 from sqlalchemy.orm import relationship
 
 class Administrador(Base):
@@ -11,3 +11,5 @@ class Administrador(Base):
     tipo_identificacion=Column(String(5))
     identificacion=Column(String(15), unique=True)
     contrasena=Column(VARCHAR(100))
+    intentos_fallidos = Column(Integer, default = 0)
+    bloqueado_hasta = Column(DateTime, nullable=True)

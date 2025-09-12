@@ -14,6 +14,8 @@ class Turista(Base):
     tipo_identificacion=Column(String(5))
     identificacion=Column(String(30), unique=True)
     contrasena=Column(VARCHAR(100))
+    intentos_fallidos = Column(Integer, default = 0)
+    bloqueado_hasta = Column(DateTime, nullable = True)
     pin_recuperacion = Column(String(6), nullable=True)
     expira_pin = Column(DateTime, nullable=True)
     token_recuperacion = Column(String(255), nullable=True)

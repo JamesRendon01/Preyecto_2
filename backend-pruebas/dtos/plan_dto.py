@@ -32,3 +32,10 @@ class PlanOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+class PlanCardOut(BaseModel):
+    id: int
+    nombre: str
+    descripcion_corta: str
+    descripcion: str
+    imagen: str

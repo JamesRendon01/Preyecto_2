@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
 from models.turista import Turista
 from models.ciudad import Ciudad
@@ -7,6 +7,8 @@ from db.session import SessionLocal
 from utils.security import hash_password, verify_password
 from mails.mailjet_config import enviar_correo_recuperacion
 from datetime import datetime, timedelta
+from utils.jwt_manager import create_access_token, verify_access_token
+from typing import Optional
 import uuid
 from random import randint
 
@@ -105,9 +107,63 @@ def iniciar_sesion(datos: iniciarSesionDTO, db: Session = Depends(get_session)):
     turista = db.query(Turista).filter(Turista.correo == datos.correo).first()
     if not turista:
         raise HTTPException(status_code=401, detail="Correo no registrado")
+    if turista.bloqueado_hasta and datetime.utcnow() < turista.bloqueado_hasta:
+        raise HTTPException(status_code=403, detail=f"Cuenta bloqueada. Intenta de nuevo a las {turista.bloqueado_hasta}")
+    #Validar contraseña
     if not verify_password(datos.contrasena, turista.contrasena):
+        turista.intentos_fallidos += 1
+        #Si alcanza el maximo de intentos => bloquear
+        if turista.intentos_fallidos >=5:
+            turista.intentos_fallidos = 0
+            turista.bloqueado_hasta = datetime.utcnow() + timedelta(minutes=5)
+        db.commit()
         raise HTTPException(status_code=401, detail="Contraseña incorrecta")
-    return {"mensaje": "Inicio de sesión exitoso", "turista": {"id": turista.id, "correo": turista.correo}}
+    
+    #Si la contraseña es correcta => resetea los intentos
+    turista.intentos_fallidos = 0
+    turista.bloqueado_hasta = None
+    db.commit()
+
+    access_token = create_access_token(
+        data = {"sub": str (turista.id), "correo": turista.correo}
+    )
+    return{
+        "access_token": access_token,
+        "token_type": "bearer",
+        "turista": {
+            "id_turista": turista.id,
+            "correo": turista.correo
+        }
+    }
+
+@router.get("/mis-datos")
+def obtener_mis_datos(
+    authorization: Optional[str] = Header(None, alias="Authorization"),
+    db: Session = Depends(get_session)
+):
+
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Token no proporcionado")
+
+    token = authorization.split(" ")[1]
+
+    payload = verify_access_token(token)
+
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+
+    turista_id = payload.get("sub")
+    turista = db.query(Turista).filter(Turista.id == int(turista_id)).first()
+    if not turista:
+        raise HTTPException(status_code=404, detail="Turista no encontrado")
+
+    return {
+        "correo": turista.correo,
+        "nombre": turista.nombre,
+        "tipo_identificacion": turista.tipo_identificacion,
+        "identificacion": turista.identificacion,
+        "celular": turista.celular,
+    }
 
 # Solicitar recuperación
 @router.post("/solicitar-recuperacion")

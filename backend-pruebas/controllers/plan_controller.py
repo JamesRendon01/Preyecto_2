@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from models.plan import Plan
-from dtos.plan_dto import planCreateDTO, planUpdateDTO, PlanOut
+from dtos.plan_dto import planCreateDTO, planUpdateDTO, PlanOut, PlanCardOut
 from db.session import SessionLocal
 from typing import List
 import shutil
@@ -154,3 +154,23 @@ def obtener_planes_card(db: Session = Depends(get_session)):
 
     return card_planes;
 
+@router.get("/buscar", response_model = List[PlanCardOut])
+def buscar_planes(query: str = Query(..., min_lengh=1), db: Session = Depends (get_session)):
+    resultados = db.query(Plan).filter(
+        (Plan.nombre.ilike(f"%{query}%")) |
+        (Plan.descripcion.ilike(f"%{query}%"))
+    ).all()
+
+    if not resultados:
+        return[]
+    
+    planes = []
+    for plan in resultados:
+        planes.append({
+            "id": plan.id,
+            "nombre": plan.nombre,
+            "descripcion_corta": plan.descripcion_corta,
+            "descripcion": plan.descripcion,
+            "imagen": plan.imagen
+        })
+    return planes
