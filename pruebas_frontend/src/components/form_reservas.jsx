@@ -12,10 +12,25 @@ export default function FormReservas() {
   useEffect(() => {
     const fetchTurista = async () => {
       try {
-        const idTurista = localStorage.getItem("id_turista");
-        if (!idTurista) return;
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No hay token en localStorage");
+          return;
+        }
 
-        const res = await fetch(`http://localhost:8000/turista/${idTurista}`);
+        const res = await fetch("http://localhost:8000/turista/mis-datos", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (res.status === 401) {
+          console.error("Token inválido o no proporcionado");
+          return;
+        }
+
         if (!res.ok) throw new Error("Error al obtener los datos del turista");
 
         const data = await res.json();
@@ -27,7 +42,7 @@ export default function FormReservas() {
           celular: data.celular || "",
         });
       } catch (err) {
-        console.error(err);
+        console.error("Fetch error:", err);
       }
     };
 
@@ -35,10 +50,11 @@ export default function FormReservas() {
   }, []);
 
   const handleChange = (e) => {
-    setTurista({
-      ...turista,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setTurista((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
@@ -63,7 +79,7 @@ export default function FormReservas() {
           className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
         />
 
-        <label className="mt-4">Tipo de identificación</label>
+        <label className="mt-4">Tipo de identificación:</label>
         <select
           name="tipo_identificacion"
           value={turista.tipo_identificacion}
@@ -100,7 +116,7 @@ export default function FormReservas() {
         />
 
         <button
-          type="submit"
+          type="button" // Cambié a button para evitar que recargue la página
           className="bg-fondo text-black font-bold px-4 py-2 rounded-md mt-4 hover:bg-white"
         >
           Cancelar

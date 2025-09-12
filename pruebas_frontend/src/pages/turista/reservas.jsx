@@ -30,7 +30,7 @@ export default function Reservas() {
                                 className="w-full h-[200px] object-cover rounded-md md:h-60 xl:h-80"
                             />
                             <h2 className="text-2xl font-bold mt-4 text-center xl:text-4xl">{planSeleccionado.nombre}</h2>
-                            <p className="mt-2 font-piazze text-2xl xl:text-3xl">{planSeleccionado.descripcion}</p>
+                            <p className="mt-2 font-piazze text-1xl xl:text-3xl">{planSeleccionado.descripcion}</p>
                         </div>
                         <div className="flex gap-2">
                             <FormReservas plan={planSeleccionado} />

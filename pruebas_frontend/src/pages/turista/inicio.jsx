@@ -4,6 +4,7 @@ import CardCarousel from "../../components/CardCarousel.jsx";
 import CardComponent from "../../components/card.jsx";
 import { Button } from "antd";
 import Nav from "../../components/nav.jsx";
+import { useNavigate } from "react-router-dom";
 import { useFavoritosStore } from "../../storage/favoritos_storage.js";
 
 // Simula un usuario logueado (reemplaza con tu lógica real de login)
@@ -13,24 +14,26 @@ export default function HomePage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const data = [
-    "React",
-    "Vue",
-    "Angular",
-    "Svelte",
-    "Next.js",
-    "Nuxt.js",
-    "Tailwind CSS",
-    "JavaScript",
-  ];
+  const handleSearch = async () => {
+    if (!query.trim()) return;
 
-  const handleSearch = () => {
-    const filtered = data.filter((item) =>
-      item.toLowerCase().includes(query.toLowerCase())
-    );
-    setResults(filtered);
     setHasSearched(true);
+    setLoading(true); // 👈 ya no da error
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/plan/buscar?query=${encodeURIComponent(query)}`
+      );
+      const data = await response.json();
+      setResults(data);
+    } catch (error) {
+      console.error("Error buscando planes:", error);
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const { cargarFavoritos } = useFavoritosStore();
@@ -49,6 +52,7 @@ export default function HomePage() {
         hasSearched={hasSearched}
         handleSearch={handleSearch}
         showFilter={true}
+        showNavbar = {true}     // 👈 nuevo
       />
 
       <div className="h-24" />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-
+import { Heart } from 'lucide-react';
 // 🔹 Subcomponente reutilizable: Icono de hamburguesa y menú
 const HamburgerMenu = ({ links }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,17 +46,24 @@ const HamburgerMenu = ({ links }) => {
 
       {/* 🔹 Menú desplegable */}
       <div
-        className={`absolute top-full right-0 mt-3 bg-black/80 shadow-md rounded-xl flex-col min-w-[12rem] transition-all duration-300 ${
+        className={`absolute top-full right-0 mt-3 bg-black/70 shadow-md rounded-xl flex-col min-w-[12rem] transition-all duration-300 w-55 ${
           isOpen ? "flex" : "hidden"
         }`}
       >
-        {links.map(({ href, label }) => (
+        {links.map(({ href, label, onClick, icon: Icon }) => (
           <a
             key={href}
             href={href}
-            onClick={() => setIsOpen(false)}
-            className="px-4 py-2 hover:bg-white hover:text-black hover:border-black hover:border-2 hover:rounded-xl text-white text-lg font-medium text-center"
+            onClick={(e) => {
+              if (onClick){
+                e.preventDefault();
+                onClick();
+              }
+              setIsOpen(false)
+            }}
+            className="px-4 py-2 hover:bg-white hover:Icon-color-black hover:text-black hover:border-black hover:border-2 hover:rounded-xl text-white text-lg font-medium text-center flex gap-10 font-general"
           >
+            {Icon && <Icon size={30} className="color-white hover:color-black" />}
             {label}
           </a>
         ))}
@@ -66,7 +73,7 @@ const HamburgerMenu = ({ links }) => {
 };
 
 // 🔹 Componente principal Navbar
-const Navbar = ({ rol, links = [] }) => {
+const Hamburguer = ({ rol, links = [] }) => {
   return (
     <nav className="flex justify-end items-center py-6 px-4 text-black relative z-50 bg-nav">
       {/* Si el rol es "config" u otros, reutilizamos el mismo componente HamburgerMenu */}
@@ -75,4 +82,4 @@ const Navbar = ({ rol, links = [] }) => {
   );
 };
 
-export default Navbar;
+export default Hamburguer;

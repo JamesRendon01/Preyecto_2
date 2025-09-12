@@ -1,6 +1,6 @@
 import { unstableSetRender } from 'antd';
 import { createRoot } from 'react-dom/client';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../components/header.jsx";
 import LoginForm from "../../components/login_form.jsx";
 import Sidebar from "../../components/sidebar.jsx";
@@ -41,12 +41,10 @@ export default function InicioTurista() {
       });
 
       const result = await res.json();
-      console.log("Respuesta login:", result); 
 
       if (res.ok) {
         // Guardar id del turista en localStorage
-        localStorage.setItem("id_turista", result.turista.id_turista);
-
+        localStorage.setItem("token", result.access_token);
         message.success("Inicio de sesión exitoso");
         navigate("/inicio"); // Redirige a la página principal
       } else {

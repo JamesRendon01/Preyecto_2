@@ -11,43 +11,33 @@ import Favoritos from "./pages/turista/favoritos.jsx"
 import DashbordSinLogin from "./pages/turista/dashbord_sin_login.jsx";
 import MenuConfig from "./pages/turista/menu_config.jsx";
 import Reservas from "./pages/turista/reservas.jsx";
+import PrivateRoute from "./components/private_router.jsx";
+import DashbordAdmin from "./pages/administrador/dashboard.jsx";
 
 
 export default function App() {
   return (
     <Router>
       <Routes>
-
-        {/*Ruta inicio de la pagina web*/}
-        <Route path="/" element={< DashbordSinLogin />} />
-
-        {/*Rutas del rol Turista*/}
-        {/*Ruta para registro.jsx*/}
+        {/*Ruta pública*/}
+        <Route path="/" element={<DashbordSinLogin />} />
         <Route path="/registro" element={<Registro />} />
-        {/*Ruta para inicio_turista.jsx*/}
         <Route path="/turista" element={<InicioTurista />} />
-        {/*Ruta para inicio.jsx*/}
-        <Route path="/inicio" element={<HomePage />} />
-        {/*Ruta para menu_config.jsx*/}
-        <Route path="/menu_config" element={<MenuConfig />} />
-        {/*Ruta para favoritos.jsx*/}
-        <Route path="/favoritos" element={<Favoritos />} />
-
-        <Route path="/reservas" element={<Reservas />} />
-
-        {/*Ruta para ingresar_correo.jsx*/}
         <Route path="/ingresar_correo" element={<IngresarCorreo />} />
-        {/*Ruta para ingresar_pin.jsx*/}
         <Route path="/ingresar_pin" element={<IngresarPin />} />
-        {/*Ruta para nueva_contraseña.jsx*/}
         <Route path="/nueva_contrasena" element={<NuevaContrasena />} />
-        {/*Ruta para dashboard_sin_login.jsx*/}
 
-        {/*Rutas del rol Administrador*/}
-        {/*Ruta para inicio_admin.jsx*/}
+        {/*Rutas privadas del turista*/}
+        <Route path="/inicio" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+        <Route path="/menu_config" element={<PrivateRoute><MenuConfig /></PrivateRoute>} />
+        <Route path="/favoritos" element={<PrivateRoute><Favoritos /></PrivateRoute>} />
+        <Route path="/reservas" element={<PrivateRoute><Reservas /></PrivateRoute>} />
+
+        {/*Rutas del administrador*/}
         <Route path="/admin" element={<InicioAdministrador />} />
         <Route path="/table" element={<Table />} />
-        
+        <Route path="/dashboard-administrador" element={<DashbordAdmin />} />
+
       </Routes>
     </Router>
   );

@@ -2,8 +2,23 @@ import { useState } from "react";
 import Header from "../../components/header.jsx";
 import LoginForm from "../../components/login_form.jsx";
 import Sidebar from "../../components/sidebar.jsx";
+import { useNavigate } from "react-router-dom";
+import { unstableSetRender } from 'antd';
+import { message } from "antd";
+
+unstableSetRender((node, container) => {
+  container._reactRoot ||= createRoot(container);
+  const root = container._reactRoot;
+  root.render(node);
+  return async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    root.unmount();
+  };
+});
+
 // Componente de inicio de sesión para administradores
 export default function InicioAdministrador() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     correo: "",
     contrasena: "",
@@ -32,16 +47,18 @@ export default function InicioAdministrador() {
 
       //Si el inicio de sesion es exitoso, redirige al administrador a la pagina principal
       if (res.ok) {
-        alert("Inicio de sesión exitoso ✅");
-        window.location.href = "/pagina_principal.html";
+        // Guarda el token en el local storage
+        localStorage.setItem("token_admin", result.access_token);
+        message.success("Inicio de sesión exitoso ✅");
+        navigate("/dashboard-administrador");
       } else {
         //Si los datos ingresados son incorrectos, envia un mensjae de error
-        alert("Error: " + (result.detail || "Credenciales inválidas"));
+        message.error(result.detail || "Credenciales inválidas");
       }
     } catch (error) {
       //si hay algun tipo de error de conexion, muestra un mensaje de error
       console.error("Error de conexión:", error);
-      alert("No se pudo conectar al servidor ❌");
+      message.error("No se pudo conectar al servidor ❌");
     }
   };
 

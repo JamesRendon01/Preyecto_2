@@ -3,9 +3,10 @@ import Header from "./header.jsx";
 import SearchBar from "./search.jsx";
 import SearchResults from "./search_result.jsx";
 import FiltroTabs from "./filter.jsx";
-import Navbar from "./navbar.jsx";
+import Hamburguer from "./hamburguer.jsx";
 import ButtonsLogin from "./buttons_login.jsx";
 import { useNavigate } from "react-router-dom";
+import { Heart, CircleUserRound, House, CalendarCheck, BellRing, UserRoundCog, LogOut, PhoneCall } from 'lucide-react';
 
 export default function Nav({
     query,
@@ -15,18 +16,42 @@ export default function Nav({
     handleSearch,
     showFilter = true,
     showTitle = false,  // 👈 nuevo
-    showNavbar = true,     // 👈 nuevo
+    showNavbar = false,     // 👈 nuevo
     showSearch = true,
     showButtonsLogin = false,
     showConfig = false,
-    showTitleReservas = false
+    showTitleReservas = false,
+    showTitleAdmin = false,
+    showNavbarAdmin = false 
 }) {
+
     const navigate = useNavigate();
     const [scrolled, setScrolled] = useState(false);
 
+    const handleLogoutTurista = () => {
+        localStorage.removeItem("token"); // Borra token
+        navigate("/"); // Redirige al login
+    };
+
+    const handleLogoutAdmin = () => {
+        localStorage.removeItem("token_admin"); // Borra token
+        navigate("/"); // Redirige al login
+    };
+
     const linksParaPagina2 = [
-        { href: "/inicio", label: "Inicio" },
-        { href: "/favoritos", label: "Favoritos" },
+        { href: "/inicio", icon: House, label: "Inicio" },
+        { href: "/", icon: CircleUserRound, label: "Perfil" },
+        { href: "/", icon: CalendarCheck, label: "Reservas" },
+        { href: "/favoritos", icon: Heart, label: "Favoritos" },
+        { href: "/", icon: BellRing, label: "Novedades" },
+        { href: "/", icon: PhoneCall, label: "Contáctanos" },
+        { href: "/", icon: LogOut, label: "Cerrar Sesión", onClick: handleLogoutTurista }
+    ];
+
+    const linksParaAdmin = [
+        { href: "/inicio", icon: House, label: "Inicio" },
+        { href: "/", icon: CircleUserRound, label: "Perfil" },
+        { href: "/", icon: LogOut, label: "Cerrar Sesión", onClick: handleLogoutAdmin }
     ];
 
     useEffect(() => {
@@ -42,7 +67,7 @@ export default function Nav({
         >
             <div className="flex justify-center gap-x-20 ml-30">
                 <div className="flex mt-0 ml-30">
-                    <Header rol="inicio"/>
+                    <Header rol="inicio" />
                 </div>
                 <div>
 
@@ -65,6 +90,11 @@ export default function Nav({
                             <Header rol="inicio" titulo="RESERVAS" />
                         )}
                     </div>
+                    <div className="mr-70 mt-2">
+                        {showTitleAdmin && (
+                            <Header rol="inicio" titulo="ADMINISTRADOR" />
+                        )}
+                    </div>
                 </div>
                 {showSearch && (
                     <div className="max-h-12 mt-4">
@@ -75,14 +105,20 @@ export default function Nav({
 
                 {showConfig && (   // 👈 solo se renderiza si es true
                     <div className="flex gap-100">
-                        <Header titulo="PERFIL"/>
-                        <Navbar className="w-300"/>
+                        <Header titulo="PERFIL" />
+                        <Hamburguer className="w-300" />
                     </div>
                 )}
 
-                {showNavbar && (   // 👈 solo se renderiza si es true
+                {showNavbar && (
                     <div>
-                        <Navbar links={linksParaPagina2} />
+                        <Hamburguer links={linksParaPagina2} />
+                    </div>
+                )}
+
+                {showNavbarAdmin && (
+                    <div className="mr-50 mt-3">
+                        <Hamburguer links={linksParaAdmin} />
                     </div>
                 )}
 
