@@ -1,8 +1,8 @@
-"""'New_DB'
+"""'BaseDeDatos'
 
-Revision ID: f162ae6f4502
+Revision ID: e73c59afaa7c
 Revises: 
-Create Date: 2025-08-29 11:23:07.169057
+Create Date: 2025-09-14 13:22:36.273726
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f162ae6f4502'
+revision: str = 'e73c59afaa7c'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -29,9 +29,10 @@ def upgrade() -> None:
     sa.Column('tipo_identificacion', sa.String(length=5), nullable=True),
     sa.Column('identificacion', sa.String(length=15), nullable=True),
     sa.Column('contrasena', sa.VARCHAR(length=100), nullable=True),
+    sa.Column('intentos_fallidos', sa.Integer(), nullable=True),
+    sa.Column('bloqueado_hasta', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('celular'),
-    sa.UniqueConstraint('contrasena'),
     sa.UniqueConstraint('correo'),
     sa.UniqueConstraint('identificacion')
     )
@@ -41,6 +42,17 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('nombre')
     )
+    op.create_table('auditoria_plan',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('accion', sa.String(length=10), nullable=False),
+    sa.Column('fecha', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
+    sa.Column('admin_id', sa.Integer(), nullable=True),
+    sa.Column('old_data', sa.JSON(), nullable=True),
+    sa.Column('new_data', sa.JSON(), nullable=True),
+    sa.ForeignKeyConstraint(['admin_id'], ['administrador.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_auditoria_plan_id'), 'auditoria_plan', ['id'], unique=False)
     op.create_table('informe',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('nombre', sa.VARCHAR(length=30), nullable=True),
@@ -60,6 +72,8 @@ def upgrade() -> None:
     sa.Column('tipo_identificacion', sa.String(length=5), nullable=True),
     sa.Column('identificacion', sa.String(length=30), nullable=True),
     sa.Column('contrasena', sa.VARCHAR(length=100), nullable=True),
+    sa.Column('intentos_fallidos', sa.Integer(), nullable=True),
+    sa.Column('bloqueado_hasta', sa.DateTime(), nullable=True),
     sa.Column('pin_recuperacion', sa.String(length=6), nullable=True),
     sa.Column('expira_pin', sa.DateTime(), nullable=True),
     sa.Column('token_recuperacion', sa.String(length=255), nullable=True),
@@ -80,16 +94,19 @@ def upgrade() -> None:
     sa.Column('imagen', sa.VARCHAR(length=255), nullable=True),
     sa.Column('id_ciudad', sa.Integer(), nullable=True),
     sa.Column('id_informe', sa.Integer(), nullable=True),
+    sa.Column('id_Admin', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['id_Admin'], ['administrador.id'], ),
     sa.ForeignKeyConstraint(['id_ciudad'], ['ciudad.id'], ),
     sa.ForeignKeyConstraint(['id_informe'], ['informe.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('descripcion'),
+    sa.UniqueConstraint('descripcion_corta'),
     sa.UniqueConstraint('nombre')
     )
     op.create_table('favorito',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('id_turista', sa.Integer(), nullable=True),
-    sa.Column('id_plan', sa.Integer(), nullable=True),
+    sa.Column('id_turista', sa.Integer(), nullable=False),
+    sa.Column('id_plan', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['id_plan'], ['plan.id'], ),
     sa.ForeignKeyConstraint(['id_turista'], ['turista.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -102,8 +119,10 @@ def upgrade() -> None:
     sa.Column('numero_personas', sa.Integer(), nullable=True),
     sa.Column('id_informe', sa.Integer(), nullable=True),
     sa.Column('id_plan', sa.Integer(), nullable=True),
+    sa.Column('id_turista', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['id_informe'], ['informe.id'], ),
     sa.ForeignKeyConstraint(['id_plan'], ['plan.id'], ),
+    sa.ForeignKeyConstraint(['id_turista'], ['turista.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('ubicacion',
@@ -126,6 +145,8 @@ def downgrade() -> None:
     op.drop_table('plan')
     op.drop_table('turista')
     op.drop_table('informe')
+    op.drop_index(op.f('ix_auditoria_plan_id'), table_name='auditoria_plan')
+    op.drop_table('auditoria_plan')
     op.drop_table('ciudad')
     op.drop_table('administrador')
     # ### end Alembic commands ###

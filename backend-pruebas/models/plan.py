@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from models.informe import Informe
 from models.ciudad import Ciudad
+from models.administrador import Administrador
 
 class Plan(Base):
     __tablename__ = "plan"
@@ -14,5 +15,7 @@ class Plan(Base):
     imagen=Column(VARCHAR(255))
     id_ciudad=Column(Integer, ForeignKey("ciudad.id"))
     id_informe=Column(Integer, ForeignKey("informe.id"))
+    id_Admin=Column(Integer, ForeignKey("administrador.id"))
     ciudad = relationship("Ciudad", back_populates="planes")
     ubicaciones = relationship("Ubicacion", backref="plan")
+    administrador = relationship("Administrador", backref="planes")

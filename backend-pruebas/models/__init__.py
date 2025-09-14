@@ -6,3 +6,4 @@ from .favorito import Favorito
 from .informe import Informe
 from .ubicacion import Ubicacion
 from .ciudad import Ciudad
+from .auditoria_plan import AuditoriaPlan
