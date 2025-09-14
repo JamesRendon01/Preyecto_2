@@ -62,7 +62,7 @@ export default function FormUpdatePlans() {
     if (!plan) return <p className="text-center mt-10">No se encontro el Plan</p>;
 
     return (
-    <div className="p-6 flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="p-6 flex justify-center items-center min-h-screen">
       <form
         onSubmit={handleSubmit}
         className="bg-white shadow-lg rounded-xl p-6 w-96"

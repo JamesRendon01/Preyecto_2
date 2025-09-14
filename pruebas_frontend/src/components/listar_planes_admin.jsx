@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ButtonDelete from "./button_eliminar";
 import ButtonUpdate from "./button_update";
+import { useBreadcrumb } from "../context/breadcrumb_context";
 
 export default function CrudPlanes() {
-    const headers = ["ID","Nombre", "Descripción", "Precio", "Ciudad", "Ubicación"];
+    const headers = ["ID", "Nombre", "Descripción", "Precio", "Ciudad", "Ubicación"];
 
     const [planes, setPlanes] = useState([]);
 
@@ -17,10 +18,16 @@ export default function CrudPlanes() {
             .catch((err) => console.error(err));
     }, []);
 
+    const { addBreadcrumb } = useBreadcrumb();
+
+    useEffect(() => {
+        addBreadcrumb({ title: "Listar Planes", path: "/listar_planes_admin" })
+    }, []);
+
 
 
     return (
-        <div className="overflow-x-auto p-4 w-screen min-h-screen bg-fondo to-white flex items-center justify-center">
+        <div className="overflow-x-auto p-4 w-screen bg-fondo to-white flex justify-center">
 
             <table className="w-300 bg-white border-2 border-black rounded-lg  text-center">
                 {/* Header */}
@@ -33,7 +40,7 @@ export default function CrudPlanes() {
                             </th>
                         ))}
                         <th colSpan={2}>
-                            <ButtonUpdate/>
+                            <ButtonUpdate />
                         </th>
                     </tr>
                 </thead>
@@ -51,12 +58,12 @@ export default function CrudPlanes() {
 
                                 {/* Botón Editar */}
                                 <td className="py-2 px-4 border-b">
-                                    <ButtonUpdate id={plan.id}/>
+                                    <ButtonUpdate id={plan.id} />
                                 </td>
 
                                 {/* Botón Eliminar */}
                                 <td className="py-2 px-4 border-b">
-                                    <ButtonDelete planId={plan.id} onDeleted={(id) => setPlanes(planes.filter(p => p.id !== id))}/>
+                                    <ButtonDelete planId={plan.id} onDeleted={(id) => setPlanes(planes.filter(p => p.id !== id))} />
                                 </td>
                             </tr>
                         ))

@@ -1,10 +1,12 @@
 import Nav from "../../components/nav.jsx";
 import CrudPlanes from "../../components/listar_planes_admin.jsx";
+import BreadcrumbNav from "../../components/breadcrumb.jsx";
+
 export default function ListarPlanesAdmin() {
 
     return (
         <div>
-            <div>
+            <div className="mb-25">
             <Nav
                 showFilter={false}
                 showTitleAdmin={true}
@@ -12,7 +14,8 @@ export default function ListarPlanesAdmin() {
                 showSearch={false}
             />
             </div>
-            <div className="flex items-center justify-center">
+            <div className=" items-center justify-center">
+                <BreadcrumbNav />
                 <CrudPlanes/>
             </div>
         </div>
