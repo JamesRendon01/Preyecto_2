@@ -6,6 +6,7 @@ import { Button } from "antd";
 import Nav from "../../components/nav.jsx";
 import { useNavigate } from "react-router-dom";
 import { useFavoritosStore } from "../../storage/favoritos_storage.js";
+import Footer from "../../components/footer.jsx";
 
 // Simula un usuario logueado (reemplaza con tu lógica real de login)
 const USER_ID = 1;
@@ -61,6 +62,10 @@ export default function HomePage() {
 
       {/* Pasamos userId para que CardComponent gestione favoritos correctamente */}
       <CardComponent showButton userId={USER_ID} />
+
+      <footer>
+        <Footer />
+      </footer>
     </div>
   );
 }

@@ -35,7 +35,7 @@ export default function Nav({
 
     const handleLogoutAdmin = () => {
         localStorage.removeItem("token_admin"); // Borra token
-        navigate("/"); // Redirige al login
+        navigate("/admin"); // Redirige al login
     };
 
     const linksParaPagina2 = [
@@ -49,7 +49,7 @@ export default function Nav({
     ];
 
     const linksParaAdmin = [
-        { href: "/inicio", icon: House, label: "Inicio" },
+        { href: "/dashboard-administrador", icon: House, label: "Inicio" },
         { href: "/", icon: CircleUserRound, label: "Perfil" },
         { href: "/", icon: LogOut, label: "Cerrar Sesión", onClick: handleLogoutAdmin }
     ];

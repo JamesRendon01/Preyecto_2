@@ -1,0 +1,74 @@
+import React, { useEffect, useState } from "react";
+import ButtonDelete from "./button_eliminar";
+import ButtonUpdate from "./button_update";
+
+export default function CrudPlanes() {
+    const headers = ["ID","Nombre", "Descripción", "Precio", "Ciudad", "Ubicación"];
+
+    const [planes, setPlanes] = useState([]);
+
+    useEffect(() => {
+        fetch("http://localhost:8000/plan/listar-planes")
+            .then((res) => {
+                if (!res.ok) throw new Error("Error al obtener los planes");
+                return res.json();
+            })
+            .then((data) => setPlanes(data))
+            .catch((err) => console.error(err));
+    }, []);
+
+
+
+    return (
+        <div className="overflow-x-auto p-4 w-screen min-h-screen bg-fondo to-white flex items-center justify-center">
+
+            <table className="w-300 bg-white border-2 border-black rounded-lg  text-center">
+                {/* Header */}
+                <thead className="bg-gray-100">
+                    <tr>
+                        {headers.map((head, index) => (
+                            <th
+                                key={index} className="py-2 px-4 text-center border-b border-gray-800 font-medium">
+                                {head}
+                            </th>
+                        ))}
+                        <th colSpan={2}>
+                            <ButtonUpdate/>
+                        </th>
+                    </tr>
+                </thead>
+                {/* Filas vacías con botones */}
+                <tbody>
+                    {planes.length > 0 ? (
+                        planes.map((plan) => (
+                            <tr key={plan.id} className="hover:bg-gray-50">
+                                <td className="py-2 px-4 border-b">{plan.id}</td>
+                                <td className="py-2 px-4 border-b">{plan.nombre}</td>
+                                <td className="py-2 px-4 border-b">{plan.descripcion_corta}</td>
+                                <td className="py-2 px-4 border-b">{plan.costo_persona}</td>
+                                <td className="py-2 px-4 border-b">{plan.id_ciudad}</td>
+                                <td className="py-2 px-4 border-b">{plan.ubicaciones.join(", ")}</td>
+
+                                {/* Botón Editar */}
+                                <td className="py-2 px-4 border-b">
+                                    <ButtonUpdate id={plan.id}/>
+                                </td>
+
+                                {/* Botón Eliminar */}
+                                <td className="py-2 px-4 border-b">
+                                    <ButtonDelete planId={plan.id} onDeleted={(id) => setPlanes(planes.filter(p => p.id !== id))}/>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={headers.length} className="text-center py-4">
+                                No hay planes registrados
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+        </div>
+    );
+}

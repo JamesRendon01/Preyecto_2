@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import Nav from "../../components/nav.jsx";
 import ContenedorPlanes from "../../components/planes_admin.jsx";
 import ContenedorReservas from "../../components/reservas_admin.jsx";
-
-export default function DashbordAdmin() {
+import FormUpdatePlans from "../../components/form_update_planes.jsx";
+export default function UpdatePlanes() {
 
     return (
         <div>
@@ -16,8 +16,7 @@ export default function DashbordAdmin() {
                 />
             </div>
             <div className="mt-40 mb-20 flex items-center justify-center gap-16">
-                <ContenedorReservas />
-                <ContenedorPlanes />
+                <FormUpdatePlans />
             </div>
 
         </div>

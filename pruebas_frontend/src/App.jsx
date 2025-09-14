@@ -5,14 +5,16 @@ import Registro from "./pages/turista/registro.jsx";
 import IngresarCorreo from "./pages/recuperar_contraseña/ingresar_correo.jsx";
 import IngresarPin from "./pages/recuperar_contraseña/ingresar_pin.jsx";
 import NuevaContrasena from "./pages/recuperar_contraseña/nueva_contraseña.jsx";
-import Table from "./pages/administrador/act_elim_plan.jsx";
 import HomePage from "./pages/turista/inicio.jsx";
 import Favoritos from "./pages/turista/favoritos.jsx"
 import DashbordSinLogin from "./pages/turista/dashbord_sin_login.jsx";
 import MenuConfig from "./pages/turista/menu_config.jsx";
 import Reservas from "./pages/turista/reservas.jsx";
-import PrivateRoute from "./components/private_router.jsx";
+import PrivateRouteTurista from "./components/private_router_turista.jsx";
 import DashbordAdmin from "./pages/administrador/dashboard.jsx";
+import PrivateRouteAdmin from "./components/private_router_admin.jsx";
+import ListarPlanesAdmin from "./pages/administrador/planes.jsx";
+import UpdatePlanes from "./pages/administrador/update_planes.jsx";
 
 
 export default function App() {
@@ -28,15 +30,18 @@ export default function App() {
         <Route path="/nueva_contrasena" element={<NuevaContrasena />} />
 
         {/*Rutas privadas del turista*/}
-        <Route path="/inicio" element={<PrivateRoute><HomePage /></PrivateRoute>} />
-        <Route path="/menu_config" element={<PrivateRoute><MenuConfig /></PrivateRoute>} />
-        <Route path="/favoritos" element={<PrivateRoute><Favoritos /></PrivateRoute>} />
-        <Route path="/reservas" element={<PrivateRoute><Reservas /></PrivateRoute>} />
+        <Route path="/inicio" element={<PrivateRouteTurista><HomePage /></PrivateRouteTurista>} />
+        <Route path="/menu_config" element={<PrivateRouteTurista><MenuConfig /></PrivateRouteTurista>} />
+        <Route path="/favoritos" element={<PrivateRouteTurista><Favoritos /></PrivateRouteTurista>} />
+        <Route path="/reservas" element={<PrivateRouteTurista><Reservas /></PrivateRouteTurista>} />
 
         {/*Rutas del administrador*/}
+        {/*Rutas privadas del Administrador*/}
         <Route path="/admin" element={<InicioAdministrador />} />
-        <Route path="/table" element={<Table />} />
-        <Route path="/dashboard-administrador" element={<DashbordAdmin />} />
+        <Route path="/listar_planes_admin" element={<PrivateRouteAdmin><ListarPlanesAdmin /></PrivateRouteAdmin>} />
+        <Route path="/dashboard-administrador" element={ <PrivateRouteAdmin><DashbordAdmin /></PrivateRouteAdmin>} />
+        <Route path="/update-planes/:id" element={ <PrivateRouteAdmin><UpdatePlanes /></PrivateRouteAdmin>} />
+
 
       </Routes>
     </Router>

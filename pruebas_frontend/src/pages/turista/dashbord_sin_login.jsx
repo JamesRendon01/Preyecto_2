@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Nav from "../../components/nav.jsx";
 import CardCarousel from "../../components/CardCarousel.jsx";
 import CardComponent from "../../components/card.jsx";
-
+import Footer from "../../components/footer.jsx";
 export default function DashbordSinLogin() {
 
     const [query, setQuery] = useState("");
@@ -39,6 +39,9 @@ export default function DashbordSinLogin() {
             <div>
                 <CardComponent showButton/>
             </div>
+            <footer>
+                <Footer />
+            </footer>
 
         </div>
     );

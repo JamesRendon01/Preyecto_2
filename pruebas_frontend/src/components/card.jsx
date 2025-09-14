@@ -61,7 +61,7 @@ function Card({ plan, showButton }) {
     >
       {/* Imagen del plan */}
       <img
-        src={`http://localhost:8000${plan.imagen}`}
+        src={`http://localhost:8000/uploads/planes_img/${plan.imagen}`}
         alt={plan.nombre}
         className="w-full h-[180px] object-cover rounded-t-md block"
       />

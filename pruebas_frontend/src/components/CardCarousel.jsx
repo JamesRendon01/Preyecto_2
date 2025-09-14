@@ -64,7 +64,7 @@ export default function CardCarousel({ interval = 3000 }) {
             
             {/* Imagen del Plan */}
             <img
-              src={`http://localhost:8000${card.imagen}`}
+              src={`http://localhost:8000/uploads/planes_img/${card.imagen}`}
               alt={card.nombre}
               className="w-full h-full object-cover rounded-sm mb-2"
             />
