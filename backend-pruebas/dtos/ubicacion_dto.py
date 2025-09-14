@@ -11,3 +11,6 @@ class ubicacionUpdateDTO(BaseModel):
     longitud: Optional[str] = None
     latitud: Optional[str] = None
     id_plan: Optional[int] = None
+
+class UbicacionOut(BaseModel):
+    id: int

@@ -5,7 +5,7 @@ from models.ciudad import Ciudad
 from dtos.turista_dto import turistaCreateDTO, turistaUpdateDTO, iniciarSesionDTO, SolicitudRecuperacion, CambiarContrasenaDTO, VerificarPinDTO
 from db.session import SessionLocal
 from utils.security import hash_password, verify_password
-from mails.mailjet_config import enviar_correo_recuperacion
+from mails.mailjet_config import enviar_correo_recuperacion, enviar_correo_bienvenida
 from datetime import datetime, timedelta
 from utils.jwt_manager import create_access_token, verify_access_token
 from typing import Optional
@@ -70,6 +70,9 @@ def crear_turista(nuevo_turista: turistaCreateDTO, db: Session = Depends(get_ses
     db.add(nt)
     db.commit()
     db.refresh(nt)
+
+    enviar_correo_bienvenida(nt.correo, nt.nombre)
+
     return nt
 
 # Actualizar turista

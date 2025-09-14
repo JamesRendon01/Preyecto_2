@@ -15,3 +15,4 @@ class Plan(Base):
     id_ciudad=Column(Integer, ForeignKey("ciudad.id"))
     id_informe=Column(Integer, ForeignKey("informe.id"))
     ciudad = relationship("Ciudad", back_populates="planes")
+    ubicaciones = relationship("Ubicacion", backref="plan")

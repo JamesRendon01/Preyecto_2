@@ -1,6 +1,7 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
+from dtos.ubicacion_dto import UbicacionOut
 
 class planCreateDTO(BaseModel):
     nombre: str
@@ -39,3 +40,20 @@ class PlanCardOut(BaseModel):
     descripcion_corta: str
     descripcion: str
     imagen: str
+
+class ListarPlanAdmin(BaseModel):
+    id: int
+    nombre: str
+    descripcion_corta: str
+    costo_persona: int
+    id_ciudad: str
+    ubicaciones: List[int] = []
+
+class planUpdateIdDTO(BaseModel):
+    id: Optional[int] = None
+    nombre: Optional[str] = None
+    descripcion_corta: Optional[str] = None
+    costo_persona: Optional[int] = None
+    id_ciudad: Optional[int] = None
+    imagen: Optional[str] = None
+

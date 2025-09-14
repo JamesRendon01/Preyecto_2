@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Form, UploadFile, File
 from sqlalchemy.orm import Session
 from models.plan import Plan
-from dtos.plan_dto import planCreateDTO, planUpdateDTO, PlanOut, PlanCardOut
+from dtos.plan_dto import planCreateDTO, planUpdateDTO, PlanOut, PlanCardOut, ListarPlanAdmin,  planUpdateIdDTO
 from db.session import SessionLocal
 from typing import List
 import shutil
@@ -20,7 +20,7 @@ def get_session():
 #rutas
 router = APIRouter( prefix='/plan' )
 
-@router.get('/', response_model=List[PlanOut])
+@router.get('/listar-planes', response_model=List[ListarPlanAdmin])
 def listar_plan(db: Session = Depends(get_session)):
     lp = db.query(Plan).all()
     if not lp:
@@ -30,19 +30,23 @@ def listar_plan(db: Session = Depends(get_session)):
          result.append({
             "id": plan.id,
             "nombre": plan.nombre,
-            "descripcion": plan.descripcion,
             "descripcion_corta": plan.descripcion_corta,
             "costo_persona": plan.costo_persona,
-            "id_ciudad": plan.id_ciudad, 
-            "id_informe": plan.id_informe,
-            "nombre_ciudad": plan.ciudad.nombre if plan.ciudad else None,
-            "imagen": plan.imagen
+            "id_ciudad": plan.ciudad.nombre if plan.ciudad else None,
+            "ubicaciones": [ubicacion.id for ubicacion in (plan.ubicaciones or [])]
          })
-    return result
+    return result   
+
+@router.get('/listar-plan-id/{id}', response_model=planUpdateIdDTO)
+def obtener_plan_id(id: int, db: Session = Depends(get_session)):
+     plan = db.query(Plan).filter(Plan.id == id).first()
+     if not plan:
+        raise HTTPException(status = 404, detail="Plan no encontrado")
+     return plan
 
 
 #Ruta post
-@router.post("/")
+@router.post("/crear-plan")
 def crear_plan(nuevo_plan: planCreateDTO, db:Session = Depends(get_session)):
             
              # Validar que el correo o identificación no se repita
@@ -73,16 +77,37 @@ def crear_plan(nuevo_plan: planCreateDTO, db:Session = Depends(get_session)):
             return np
 
 #Ruta update
-@router.put('/{id}')
-def actualizar_plan(id: int, datos: planUpdateDTO, db: Session = Depends(get_session)):
+@router.put("/update/{id}")
+def actualizar_plan(
+    id: int,
+    nombre: str = Form(...),
+    descripcion_corta: str = Form(...),
+    costo_persona: int = Form(...),
+    id_ciudad: int = Form(...),
+    imagen: UploadFile = File(None),  # Puede venir vacío
+    db: Session = Depends(get_session)
+):
     ap = db.query(Plan).filter(Plan.id == id).first()
     if not ap:
         raise HTTPException(status_code=404, detail="Plan no encontrado")
-    for key, value in datos.dict(exclude_unset=True).items():
-         setattr(ap, key, value)
+
+    # Actualizar los campos
+    ap.nombre = nombre
+    ap.descripcion_corta = descripcion_corta
+    ap.costo_persona = costo_persona
+    ap.id_ciudad = id_ciudad
+
+    # Si el usuario envió una nueva imagen
+    if imagen:
+        file_path = f"uploads/planes_img/{imagen.filename}"
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(imagen.file, buffer)
+        ap.imagen = imagen.filename  # guardamos solo el nombre en la BD
+
     db.commit()
     db.refresh(ap)
-    return "Se modifico exitosamente el Plan con el Id:" + str(id)
+
+    return {"detail": f"Se modificó exitosamente el plan con Id: {id}"}
 
 #Ruta delet
 @router.delete('/{id}')
