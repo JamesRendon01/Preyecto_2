@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr, validator
 from typing import Optional
 import re
+from security.validators import validate_email, validate_string
 
 class turistaCreateDTO(BaseModel):
     nombre: str
@@ -26,6 +27,18 @@ class turistaCreateDTO(BaseModel):
         if value not in tipos_validos:
             raise ValueError(f"Tipo de identificación inválido. Debe ser uno de {tipos_validos}")
         return value
+    
+    @validator("correo")
+    def validar_correo(cls, v):
+        return validate_email(v)
+
+    @validator("nombre", "direccion", "tipo_identificacion", "identificacion")
+    def validar_strings(cls, v):
+        return validate_string(v, max_length=255)
+
+    @validator("contrasena")
+    def validar_contrasena(cls, v):
+        return validate_string(v, max_length=100)
 
 class turistaUpdateDTO(BaseModel):
     nombre: Optional[str] = None

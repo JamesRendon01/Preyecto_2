@@ -6,7 +6,6 @@ from db.session import SessionLocal
 from utils.jwt_manager import create_access_token, verify_access_token
 from datetime import datetime, timedelta
 from utils.security import hash_password, verify_password
-
 #obtener el objeto session
 def get_session():
     db = SessionLocal()
@@ -43,6 +42,7 @@ def listar_por_id(
 
 @router.post("/iniciarsesion")
 def iniciar_sesion(datos: iniciarSesionDTO, db: session = Depends(get_session)):
+    
     administrador = db.query(Administrador).filter(Administrador.correo == datos.correo).first()
 
     if not administrador:

@@ -41,7 +41,7 @@ def listar_por_id(id: int, db: Session = Depends(get_session)):
 # Crear turista
 @router.post("/registrar")
 def crear_turista(nuevo_turista: turistaCreateDTO, db: Session = Depends(get_session)):
-
+    
     # Validar correo, celular e identificación únicos
     if db.query(Turista).filter(Turista.correo == nuevo_turista.correo).first():
         raise HTTPException(status_code=409, detail={"campo": "correo", "mensaje": "El correo ya está registrado"})

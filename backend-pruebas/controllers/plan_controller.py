@@ -82,6 +82,7 @@ def actualizar_plan(
     id: int,
     nombre: str = Form(...),
     descripcion_corta: str = Form(...),
+    descripcion: str = Form(...),
     costo_persona: int = Form(...),
     id_ciudad: int = Form(...),
     imagen: UploadFile = File(None),  # Puede venir vacío
@@ -94,6 +95,7 @@ def actualizar_plan(
     # Actualizar los campos
     ap.nombre = nombre
     ap.descripcion_corta = descripcion_corta
+    ap.descripcion = descripcion
     ap.costo_persona = costo_persona
     ap.id_ciudad = id_ciudad
 

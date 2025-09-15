@@ -10,8 +10,11 @@ from controllers.reserva_controller import router as reserva_router
 from controllers.ciudad_controller import router as ciudad_router
 from controllers.filtro_controller import router as filtro_router
 from fastapi.staticfiles import StaticFiles
+from security.headers import security_headers
 
 app = FastAPI()
+
+app.middleware("http")(security_headers)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
