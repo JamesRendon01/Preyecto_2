@@ -2,11 +2,12 @@
 import { useState, useEffect } from "react";
 import CardCarousel from "../../components/CardCarousel.jsx";
 import CardComponent from "../../components/card.jsx";
-import { Button } from "antd";
+import { Button, Pagination } from "antd";
 import Nav from "../../components/nav.jsx";
 import { useNavigate } from "react-router-dom";
 import { useFavoritosStore } from "../../storage/favoritos_storage.js";
 import Footer from "../../components/footer.jsx";
+import Paginacion from "../../components/paginacion.jsx";
 
 // Simula un usuario logueado (reemplaza con tu lógica real de login)
 const USER_ID = 1;
@@ -62,6 +63,7 @@ export default function HomePage() {
 
       {/* Pasamos userId para que CardComponent gestione favoritos correctamente */}
       <CardComponent showButton userId={USER_ID} />
+      <Paginacion />
 
       <footer>
         <Footer />

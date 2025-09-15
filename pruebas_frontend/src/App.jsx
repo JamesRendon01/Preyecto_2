@@ -15,7 +15,6 @@ import DashbordAdmin from "./pages/administrador/dashboard.jsx";
 import PrivateRouteAdmin from "./components/private_router_admin.jsx";
 import ListarPlanesAdmin from "./pages/administrador/planes.jsx";
 import UpdatePlanes from "./pages/administrador/update_planes.jsx";
-import Breadcrumb from "./components/breadcrumb.jsx";
 
 export default function App() {
   return (
