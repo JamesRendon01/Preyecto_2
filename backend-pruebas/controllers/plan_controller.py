@@ -110,7 +110,7 @@ def actualizar_plan(
     return {"detail": f"Se modificó exitosamente el plan con Id: {id}"}
 
 #Ruta delet
-@router.delete('/{id}')
+@router.delete('/delet/{id}')
 def eliminar_plan(
                 id: int,
                 db: Session = Depends(get_session)

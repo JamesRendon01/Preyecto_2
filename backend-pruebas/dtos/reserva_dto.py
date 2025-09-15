@@ -1,14 +1,17 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime, date
+from datetime import date
 
 class reservaCreateDTO(BaseModel):
     fecha_reserva: date
     costo_final: int
-    disponibilidad: str
+    disponibilidad: bool
     numero_personas: int
-    id_informe: str
-    id_plan: str
+    id_informe: int
+    id_plan: int
+    id_turista: int
+    email_cliente: str  # coincide con lo que envía el frontend
+    token_tarjeta: str
 
 class reservaUpdateDTO(BaseModel):
     fecha_reserva: Optional[date] = None
