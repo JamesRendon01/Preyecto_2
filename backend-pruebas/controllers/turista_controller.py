@@ -64,7 +64,8 @@ def crear_turista(nuevo_turista: turistaCreateDTO, db: Session = Depends(get_ses
         ciudad_id=nuevo_turista.ciudad_residencia_id, 
         tipo_identificacion=nuevo_turista.tipo_identificacion,
         identificacion=nuevo_turista.identificacion,
-        contrasena=hash_password(nuevo_turista.contrasena)
+        contrasena=hash_password(nuevo_turista.contrasena),
+        acepto_terminos=nuevo_turista.acepto_terminos
     )
 
     db.add(nt)
