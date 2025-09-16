@@ -32,9 +32,9 @@ export default function CardComponent({ showButton, plans: initialPlans }) {
         plans.map((plan) => (
           <Card key={plan.id} plan={plan} showButton={showButton} />
         ))
-      ) : (
+      ) : 
         <p className="text-center text-gray-700">No hay planes disponibles</p>
-      )}
+      }
     </div>
   );
 }
