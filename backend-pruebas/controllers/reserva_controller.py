@@ -15,10 +15,10 @@ def get_session():
     finally:
         db.close()
         
-#objeto que contiene este grupo
-#rutas
+# Creacion del Router con el prefijo /reserva
 router = APIRouter( prefix='/reserva' )
 
+#Endoint para listar todas las reservas
 @router.get('/')
 def listar_reserva(
                 db: session = Depends(get_session)
@@ -26,8 +26,10 @@ def listar_reserva(
     lr = db.query(Reserva).all()
     if not lr:
          raise HTTPException(status_code=404, detail="No hay Reservas registradas")
+    # Retorna con la lista de reservas
     return lr
 
+# Endpoint para listar reservas por id
 @router.get('/{id}')
 def listar_por_id(
                 id: int, 
@@ -36,15 +38,17 @@ def listar_por_id(
     lr = db.query(Reserva).filter(Reserva.id == id).first()
     if not lr:
          raise HTTPException(status_code=404, detail="Ruta no encontrada")
+    # Retorna con la lista de reservas
     return lr
 
+# Endpoint para crear una nueva reserva
 @router.post("/crear_reserva")
 def crear_reserva(nuevo_reserva: reservaCreateDTO, db: session = Depends(get_session)):
     # Validación de fecha
     if not nuevo_reserva.fecha_reserva or not isinstance(nuevo_reserva.fecha_reserva, date):
         raise HTTPException(status_code=400, detail="Fecha de reserva inválida")
 
-    # Validación token
+    # Validación token de pago
     if not nuevo_reserva.token_tarjeta:
         raise HTTPException(status_code=400, detail="Token de pago requerido")
 
@@ -84,10 +88,10 @@ def crear_reserva(nuevo_reserva: reservaCreateDTO, db: session = Depends(get_ses
         db.refresh(reserva)
 
     except HTTPException:
-        db.rollback()
+        db.rollback() # Revertit si hubo un HTTPExceptuion
         raise
     except Exception as e:
-        db.rollback()
+        db.rollback() # Revertir cambios si hubo un error inesperado
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
     return {
@@ -104,30 +108,27 @@ def crear_reserva(nuevo_reserva: reservaCreateDTO, db: session = Depends(get_ses
         "pago": pago
     }
 
-#Ruta update
+#Endpoint para actualizar reservas
 @router.put('/{id}')
-def actualizar_reserva(
-                id: int, datos: reservaUpdateDTO,
-                db: session = Depends(get_session)
-                ):
+def actualizar_reserva(id: int, datos: reservaUpdateDTO,db: session = Depends(get_session)):
+    #Buscar resserva por id
     ar = db.query(Reserva).filter(Reserva.id == id).first()
+    # Actualizar solo los campos proporcionados
     if not ar:
         raise HTTPException(status_code=404, detail="Reserva no encontrado")
     for key, value in datos.dict(exclude_unset=True).items():
          setattr(ar, key, value)
-    db.commit()
+    db.commit() #Guardar cambios
     db.refresh(ar)
     return "Se modifico exitosamente la Reserva con el Id:" + str(id)
 
-#Ruta delet
+#Endpoint para eliminar reservas
 @router.delete('/{id}')
-def eliminar_reserva(
-                id: int,
-                db: session = Depends(get_session)
-                ):
+def eliminar_reserva(id: int,db: session = Depends(get_session)):
+    # Busca la reserva por ID
     er = db.query(Reserva).filter(Reserva.id == id).first()
     if not er:
          raise HTTPException(status_code=404, detail="Reserva no encontrado")
-    db.delete(er)
-    db.commit()
+    db.delete(er)# Elimina la reserva
+    db.commit() # Guarda cambios
     return "Se elimino con exito la Reserva con el Id:" + str(id)

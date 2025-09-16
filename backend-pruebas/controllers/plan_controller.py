@@ -8,8 +8,9 @@ import shutil
 import os
 import uuid
 
+# Carpeta donde se guardan las imagenes de los planes
 UPLOAD_DIR = "uploads/planes_img"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(UPLOAD_DIR, exist_ok=True) #Crea la carpeta si no existe
 
 #obtener el objeto session
 def get_session():
@@ -19,15 +20,17 @@ def get_session():
     finally:
         db.close()
         
-#objeto que contiene este grupo
-#rutas
+# Creacion del Router con el prefijo /plans
 router = APIRouter( prefix='/plan' )
 
+# Endpoint para listar todos los planes
 @router.get('/listar-planes', response_model=List[ListarPlanAdmin])
 def listar_plan(db: Session = Depends(get_session)):
     lp = db.query(Plan).all()
+    # Si no existe ningun plan maneja el error y muestra el siguiente mensaje "No hay planes registrados"
     if not lp:
          raise HTTPException(status_code=404, detail="No hay Planes registrados")
+    # Transforma los datos para la respuesta
     result = []
     for plan in lp:
          result.append({
@@ -39,18 +42,22 @@ def listar_plan(db: Session = Depends(get_session)):
             "id_ciudad": plan.ciudad.nombre if plan.ciudad else None,
             "ubicaciones": [ubicacion.id for ubicacion in (plan.ubicaciones or [])]
          })
+    # Retorna con los datos generados
     return result   
 
+# Endpoint para listar planes por ID
 @router.get('/listar-plan-id/{id}', response_model=planUpdateIdDTO)
 def obtener_plan_id(id: int, db: Session = Depends(get_session)):
+     # Consulta los planes por el Id ingresado
      plan = db.query(Plan).filter(Plan.id == id).first()
      if not plan:
         raise HTTPException(status = 404, detail="Plan no encontrado")
      return plan
 
-
+# Endpoint para crear un nuevo plan
 @router.post("/crear-plan")
 def crear_plan(
+    # Datos del formulario
     nombre: str = Form(...),
     descripcion_corta: str = Form(...),
     descripcion: str = Form(...),
@@ -62,13 +69,13 @@ def crear_plan(
 ):
     filename = None
 
-    # Guardar imagen si existe
+    # Guardar imagen si se envia
     if imagen:
-        ext = os.path.splitext(imagen.filename)[1]  # extensión
-        filename = f"{uuid.uuid4().hex}{ext}"
+        ext = os.path.splitext(imagen.filename)[1]  # Obtiene la extencion
+        filename = f"{uuid.uuid4().hex}{ext}" #Genera un nombre unico para almacenar la imagen
         file_path = os.path.join(UPLOAD_DIR, filename)
         with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(imagen.file, buffer)
+            shutil.copyfileobj(imagen.file, buffer) # Guarda el archivo
 
     # Crear plan en la DB
     nuevo_plan = Plan(
@@ -81,14 +88,17 @@ def crear_plan(
         imagen=filename
     )
     db.add(nuevo_plan)
+    # Guarda cambios
     db.commit()
-    db.refresh(nuevo_plan)
+    db.refresh(nuevo_plan) # Refresca objeto para obtener ID generado
 
+    # Retorna con un mensaje y el id del nuevo plan
     return {"detail": "Plan creado correctamente", "id": nuevo_plan.id}
 
-
+# Endpoint para actualizar plan existente
 @router.put("/update/{id}")
 def actualizar_plan(
+    # Datos del formulario de actualiziacion
     id: int,
     nombre: str = Form(...),
     descripcion_corta: str = Form(...),
@@ -98,10 +108,12 @@ def actualizar_plan(
     imagen: UploadFile = File(None),
     db: Session = Depends(get_session)
 ):
+    #busca el plan
     plan = db.query(Plan).filter(Plan.id == id).first()
     if not plan:
         raise HTTPException(status_code=404, detail="Plan no encontrado")
 
+    # Actualiza los campos
     plan.nombre = nombre
     plan.descripcion_corta = descripcion_corta
     plan.descripcion = descripcion
@@ -112,32 +124,31 @@ def actualizar_plan(
     if imagen:
         import uuid
         ext = os.path.splitext(imagen.filename)[1]
-        filename = f"{uuid.uuid4().hex}{ext}"
+        filename = f"{uuid.uuid4().hex}{ext}" # Genera un nombre unico
         file_path = os.path.join(UPLOAD_DIR, filename)
         import shutil
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(imagen.file, buffer)
         plan.imagen = filename
 
-    db.commit()
+    db.commit() # Guarda cambios
     db.refresh(plan)
 
     return {"detail": f"Plan actualizado correctamente", "id": plan.id}
 
-#Ruta delet
+# Endpoint para eliminar planes existentes
 @router.delete('/delet/{id}')
-def eliminar_plan(
-                id: int,
-                db: Session = Depends(get_session)
-
-                ):
+def eliminar_plan(id: int, db: Session = Depends(get_session)):
+    # Busca el plan el plan
     ep = db.query(Plan).filter(Plan.id == id).first()
     if not ep:
          raise HTTPException(status_code=404, detail="Plan no encontrado")
-    db.delete(ep)
-    db.commit()
+    db.delete(ep) # Elimina el plan
+    db.commit() # Guarda los cambios
+    #Retorna con un mensaje y con el ID del plan eliminado
     return {"detail": f"Se elimino con exito el Plan con el Id: {id}"}
 
+# Ruta para obtener planes para carrucel (No trae todos los campos de los planes)
 @router.get("/api/planes")
 def obtener_planes(db: Session = Depends(get_session)):
     """
@@ -151,6 +162,7 @@ def obtener_planes(db: Session = Depends(get_session)):
         Plan.imagen
     ).all()
 
+    # Si no hay ningun plan maneja el error y muestra el siguiente mensaje "No hay planes disponibles"
     if not resultados:
         raise HTTPException(status_code=404, detail="No hay planes disponibles")
     
@@ -164,7 +176,7 @@ def obtener_planes(db: Session = Depends(get_session)):
         })
 
     return planes;
-
+# Endpoint para obtener planes para las CARDS
 @router.get("/card_planes")
 def obtener_planes_card(db: Session = Depends(get_session)):
     """
@@ -178,7 +190,8 @@ def obtener_planes_card(db: Session = Depends(get_session)):
         Plan.descripcion,
         Plan.imagen
     ).all()
-
+    
+    # Si no hay ningun plan maneja el error y muestra el siguiente mensaje "No hay planes disponibles"
     if not resultados:
         raise HTTPException(status_code=404, detail="No hay planes disponibles")
     
@@ -194,6 +207,7 @@ def obtener_planes_card(db: Session = Depends(get_session)):
 
     return card_planes;
 
+# Endpoint para buscar planes por nombre o desripciones
 @router.get("/buscar", response_model = List[PlanCardOut])
 def buscar_planes(query: str = Query(..., min_lengh=1), db: Session = Depends (get_session)):
     resultados = db.query(Plan).filter(
@@ -202,7 +216,7 @@ def buscar_planes(query: str = Query(..., min_lengh=1), db: Session = Depends (g
     ).all()
 
     if not resultados:
-        return[]
+        return[] # Retorna lista vacia si noe encuentra resultados
     
     planes = []
     for plan in resultados:
