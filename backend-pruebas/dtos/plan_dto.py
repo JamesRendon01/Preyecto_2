@@ -54,6 +54,7 @@ class planUpdateIdDTO(BaseModel):
     id: Optional[int] = None
     nombre: Optional[str] = None
     descripcion_corta: Optional[str] = None
+    descripcion: Optional[str] = None
     costo_persona: Optional[int] = None
     id_ciudad: Optional[int] = None
     imagen: Optional[str] = None

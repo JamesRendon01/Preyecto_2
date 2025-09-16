@@ -6,8 +6,10 @@ from db.session import SessionLocal
 from typing import List, Optional
 import shutil
 import os
+import uuid
 
 UPLOAD_DIR = "uploads/planes_img"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 #obtener el objeto session
 def get_session():
@@ -53,18 +55,20 @@ def crear_plan(
     descripcion_corta: str = Form(...),
     descripcion: str = Form(...),
     costo_persona: float = Form(...),
-    id_ciudad: int = Form(...),
-    id_informe: int = Form(...),
-    imagen: UploadFile = File(None),
+    id_ciudad: Optional[int] = Form(None),
+    id_informe: Optional[int] = Form(None),
+    imagen: Optional[UploadFile] = File(None),
     db: Session = Depends(get_session)
 ):
-    # Guardar imagen si existe
     filename = None
+
+    # Guardar imagen si existe
     if imagen:
-        os.makedirs("./uploads/planes_img", exist_ok=True)
-        filename = imagen.filename
-        with open(f"./uploads/planes_img/{filename}", "wb") as f:
-            f.write(imagen.file.read())
+        ext = os.path.splitext(imagen.filename)[1]  # extensión
+        filename = f"{uuid.uuid4().hex}{ext}"
+        file_path = os.path.join(UPLOAD_DIR, filename)
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(imagen.file, buffer)
 
     # Crear plan en la DB
     nuevo_plan = Plan(
@@ -82,40 +86,43 @@ def crear_plan(
 
     return {"detail": "Plan creado correctamente", "id": nuevo_plan.id}
 
-#Ruta update
+
 @router.put("/update/{id}")
 def actualizar_plan(
     id: int,
     nombre: str = Form(...),
     descripcion_corta: str = Form(...),
     descripcion: str = Form(...),
-    costo_persona: int = Form(...),
+    costo_persona: float = Form(...),
     id_ciudad: int = Form(...),
-    imagen: UploadFile = File(None),  # Puede venir vacío
+    imagen: UploadFile = File(None),
     db: Session = Depends(get_session)
 ):
-    ap = db.query(Plan).filter(Plan.id == id).first()
-    if not ap:
+    plan = db.query(Plan).filter(Plan.id == id).first()
+    if not plan:
         raise HTTPException(status_code=404, detail="Plan no encontrado")
 
-    # Actualizar los campos
-    ap.nombre = nombre
-    ap.descripcion_corta = descripcion_corta
-    ap.descripcion = descripcion
-    ap.costo_persona = costo_persona
-    ap.id_ciudad = id_ciudad
+    plan.nombre = nombre
+    plan.descripcion_corta = descripcion_corta
+    plan.descripcion = descripcion
+    plan.costo_persona = costo_persona
+    plan.id_ciudad = id_ciudad
 
-    # Si el usuario envió una nueva imagen
+    # Guardar nueva imagen si se envía
     if imagen:
-        file_path = f"uploads/planes_img/{imagen.filename}"
+        import uuid
+        ext = os.path.splitext(imagen.filename)[1]
+        filename = f"{uuid.uuid4().hex}{ext}"
+        file_path = os.path.join(UPLOAD_DIR, filename)
+        import shutil
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(imagen.file, buffer)
-        ap.imagen = imagen.filename  # guardamos solo el nombre en la BD
+        plan.imagen = filename
 
     db.commit()
-    db.refresh(ap)
+    db.refresh(plan)
 
-    return {"detail": f"Se modificó exitosamente el plan con Id: {id}"}
+    return {"detail": f"Plan actualizado correctamente", "id": plan.id}
 
 #Ruta delet
 @router.delete('/delet/{id}')
