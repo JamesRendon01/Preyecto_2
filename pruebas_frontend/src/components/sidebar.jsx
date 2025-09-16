@@ -13,8 +13,8 @@ export default function Sidebar({ rol }) {
     //Divisor principal
     <div
       className={`w-80 relative bg-white border-3 border-black p-6 rounded-md flex flex-col items-center z-0 sm:w-85 sm:mt-0 md:w-70 md:h-70 xl:w-90 xl:h-80
-      ${rol === "turista" ? "sm:ml-20 md:ml-20 md:mt-7 lg:ml-55 xl:ml-90 xl:mt-15" : ""}
-      ${rol === "admin" ? " absolute sm:ml-13 md:ml-105 md:mt-7 lg:ml-140 xl:ml-190 xl:mt-15" : ""}`}
+      ${rol === "turista" ? "sm:ml-20 md:ml-20 md:mt-7 lg:ml-55 xl:ml-90 xl:mt-12" : ""}
+      ${rol === "admin" ? " absolute sm:ml-13 md:ml-105 md:mt-7 lg:ml-140 xl:ml-190 xl:mt-12" : ""}`}
     >
       {/* Imagen de perfil */}
       <img

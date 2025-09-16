@@ -2,7 +2,7 @@ import { Twitter, Instagram, Facebook } from 'lucide-react';
 
 export default function Footer() {
     return (
-        <div className="bg-black/40 w-full h-60">
+        <div className="bg-black/40 w-full h-60 font-general">
             <div className='flex items-center justify-center gap-60'>
                 <div className="flex flex-col font-general text-1xl text-center gap-y-4">
                     <p className=''>
@@ -19,7 +19,7 @@ export default function Footer() {
                 </div>
 
                 <div className="flex flex-col text-center gap-y-4">
-                    <h3 className="font-bold font-inter">
+                    <h3 className="font-bold font-title">
                         SOBRE ESCAPADE PARFAITE
                     </h3>
                     <p className="font-general text-1xlm">
@@ -32,7 +32,7 @@ export default function Footer() {
             </div>
             <div className="border-t-2 border-black flex items-center justify-center gap-60 pt-3 font-general text-1xl font-bold">
                 <p>© 2025 EscapadeParafaite</p>
-                <p>Términos y condiciones</p>
+                <a href="/pdf/TerminosyCondiciones.pdf" target="_blank" rel="noopener noreferrer" className="cursor-pointer hover:underline">Términos y condiciones</a>
             </div>
         </div>
     );

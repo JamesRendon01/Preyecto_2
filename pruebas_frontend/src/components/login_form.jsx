@@ -11,12 +11,12 @@ export default function LoginForm({ formData, handleChange, handleSubmit, rol })
         // Contenedor del formulario
         // Estilos y pocision del formulario
         <div
-            className={`flex w-96 h-96 bg-login bg-nav text-white p-8 rounded-lg z-30 border-3 absolute top-35 border-black md:w-90 md:h-80 xl:w-102 xl:h-90
+            className={`flex w-96 h-96  bg-nav text-white p-8 rounded-lg z-30 border-3 absolute top-35 border-black md:w-90 md:h-80 xl:w-102 xl:h-90
             ${rol === "admin" ? "sm:h-85 sm:ml-8 sm:top-70 md:ml-18 md:top-25 lg:ml-55 xl:ml-90 xl:mt-10" : ""}
             ${rol === "turista" ? "sm:left-15 sm:top-70 md:ml-70 md:top-25 lg:left-50 xl:left-100 xl:top-35" : ""}`}
         >
             {/* Formuario de login */}
-            <form className="text-black text-lg font-bold" onSubmit={handleSubmit}>
+            <form className="text-black text-lg font-bold font-general" onSubmit={handleSubmit}>
                 {/* Campo para ingresar el correo */}
                 <label>Correo:</label>
                 <input
@@ -74,7 +74,7 @@ export default function LoginForm({ formData, handleChange, handleSubmit, rol })
                 {/* Boton para enviar el formulario */}
                 <button
                     type="submit"
-                    className="bg-fondo border-2 border-black text-login px-4 py-2 rounded-md font-playfair hover:bg-gray-300 transition-colors ml-25 mt-8 md:mt-5 md:ml-20 xl:ml-25"
+                    className="bg-fondo border-2 border-black px-4 py-2 rounded-md font-playfair hover:bg-gray-300 transition-colors ml-25 mt-8 md:mt-5 md:ml-20 xl:mr-50"
                 >Continuar
                 </button>
             </form>

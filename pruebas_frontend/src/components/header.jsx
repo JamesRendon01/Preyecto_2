@@ -32,7 +32,7 @@ export default function Header({ titulo, rol }) {
       )}
 
       {/* Titulo del header */}
-      <h1 className={'font-title text-6xl font-bold text-black sm:text-3xl sm:ml-0 md:text-4xl md:mt-3 md:ml-10 lg:text-5xl lg:ml-25 xl:text-6xl xl:ml-0'}>
+      <h1 className={'font-title text-6xl font-bold text-black sm:text-3xl sm:ml-0 md:text-4xl md:mt-3 md:ml-10 lg:text-5xl lg:ml-25 xl:text-6xl xl:ml-40'}>
         {titulo}
       </h1>
     </header>

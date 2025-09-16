@@ -72,7 +72,7 @@ export default function InicioTurista() {
   };
 
   return (
-    <div className="w-screen min-h-screen flex flex-col bg-gradient-to-r from-gray-400 to-white">
+    <div className="w-screen min-h-screen flex flex-col bg-fondo">
       <div className="text-center mt-5">
         <Header rol="turista" titulo="INICIO TURISTA" />
       </div>

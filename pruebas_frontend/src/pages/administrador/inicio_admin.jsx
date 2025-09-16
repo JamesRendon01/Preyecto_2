@@ -71,7 +71,7 @@ export default function InicioAdministrador() {
 
   // Renderizado del formulario de inicio de sesión para el administrador
   return (
-    <div className="w-screen min-h-screen bg-gradiente-to-r from-gray-400 to-white">
+    <div className="w-screen min-h-screen">
       <div className="mt-5">
         <Header rol="admin" titulo="ADMINISTRADOR" />
       </div>

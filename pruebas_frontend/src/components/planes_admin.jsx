@@ -14,7 +14,7 @@ export default function ContenedorPlanes(){
                 <div className=" w-85 h-85 items-center object-cover" >
                 <CalendarCheck size={340}/>
                 </div>
-                <h1 className="font-inter text-6xl text-center">
+                <h1 className="font-title text-6xl text-center">
                     PLANES
                 </h1>
             </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Nav from "../../components/nav.jsx";
 import CardComponent from "../../components/card.jsx";
 import { useFavoritosStore } from "../../storage/favoritos_storage.js";
+import Footer from "../../components/footer.jsx";
 
 export default function Favoritos() {
   const { favoritos, cargarFavoritos } = useFavoritosStore();
@@ -36,6 +37,7 @@ export default function Favoritos() {
         handleSearch={handleSearch}
         showFilter={false}
         showTitle={true}
+        showNavbar={true}
       />
 
       <main className="p-4 mt-30">
@@ -49,6 +51,9 @@ export default function Favoritos() {
           <CardComponent showButton plans={planesAMostrar} />
         )}
       </main>
+      <footer>
+        <Footer />
+      </footer>
     </div>
   );
 }

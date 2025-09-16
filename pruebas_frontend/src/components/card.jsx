@@ -57,7 +57,7 @@ function Card({ plan, showButton }) {
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="w-full sm:w-[250px] h-[350px] bg-white text-black text-sm mb-16 p-2 rounded-md opacity-90 transform transition-transform duration-300 hover:scale-110 hover:shadow-[10px_10px_20px_rgba(0,0,0,0.2)] border-black border-2 relative"
+      className="w-full sm:w-[250px] h-[350px] bg-white text-black font-general text-sm mb-16 p-2 rounded-md opacity-90 transform transition-transform duration-300 hover:scale-110 hover:shadow-[10px_10px_20px_rgba(0,0,0,0.2)] border-black border-2 relative"
     >
       {/* Imagen del plan */}
       <img
@@ -68,7 +68,7 @@ function Card({ plan, showButton }) {
 
       {/* Contenido textual */}
       <div className="mt-2">
-        <h3 className="font-bold text-lg">{plan.nombre}</h3>
+        <h3 className="font-bold font-title text-lg">{plan.nombre}</h3>
       {/* Muestra descripcion corta o larga segun el hover*/}
         <p className="text-black">{hovered ? plan.descripcion : plan.descripcion_corta}</p>
       </div>
