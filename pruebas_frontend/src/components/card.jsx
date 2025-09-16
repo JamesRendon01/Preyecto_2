@@ -4,37 +4,25 @@ import { useFavoritosStore } from "../storage/favoritos_storage.js";// Store par
 import { useNavigate } from "react-router-dom";
 
 //Componente principalque muestra un conjunto de cards
-export default function CardComponent({ showButton, plans: initialPlans }) {
-  //Estado para almacenar los planes
-  const [plans, setPlans] = useState(initialPlans || []);
+export default function CardComponent({ showButton, plans= [] }) {
   //Acceso al store de favoritos
   const { favoritos, cargarFavoritos } = useFavoritosStore();
-
-  // Para cargar planes desde el backend solo si no vienen como props
-  useEffect(() => {
-    if (!initialPlans) {
-      fetch("http://localhost:8000/plan/card_planes")
-        .then((res) => res.json())
-        .then((data) => setPlans(data))// guardamos la data en el estado
-        .catch((err) => console.error("Error cargando planes:", err));
-    }
-  }, [initialPlans]);
 
   // Para inicializar los favoritos
   useEffect(() => {
     cargarFavoritos();
   }, [cargarFavoritos]);
 
-  //Renderiza o muestra los planes
   return (
-    <div className="flex flex-wrap justify-center gap-4 mt-16 mb-16">
+    <div className="flex flex-wrap justify-center gap-4 mt-0 mb-16">
       {Array.isArray(plans) && plans.length > 0 ? (
         plans.map((plan) => (
           <Card key={plan.id} plan={plan} showButton={showButton} />
         ))
       ) : (
-        <p className="text-center text-gray-700">No hay planes disponibles</p>
-      )}
+        <p></p>
+      )
+      }
     </div>
   );
 }

@@ -5,7 +5,7 @@ export default function Header({ titulo, rol }) {
   return (
     //Contenedor principal header
     //se concadena con rol
-    <header className={`w-full flex relative${rol}`}>
+    <header className={`w-full flex relative ${rol}`}>
 
       {/* Caso: Turista o Admin */}
       {(rol === "turista" || rol === "admin") && (

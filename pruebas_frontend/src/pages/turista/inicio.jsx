@@ -17,42 +17,64 @@ export default function HomePage() {
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleSearch = async () => {
-    if (!query.trim()) return;
-
-    setHasSearched(true);
-    setLoading(true); // 👈 ya no da error
-
-    try {
-      const response = await fetch(
-        `http://localhost:8000/plan/buscar?query=${encodeURIComponent(query)}`
-      );
-      const data = await response.json();
-      setResults(data);
-    } catch (error) {
-      console.error("Error buscando planes:", error);
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [plans, setPlans] = useState([]); // 👉 todos los planes
+  const [filteredPlans, setFilteredPlans] = useState([]); // 👉 filtrados por búsqueda
 
   const { cargarFavoritos } = useFavoritosStore();
+
+    // Simula carga inicial de planes desde API
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/plan/card_planes");
+        const data = await res.json();
+        console.log("Planes recibidos:", data); // 👈 DEBUG
+        setPlans(data);
+        setFilteredPlans(data); // al inicio no hay filtro
+      } catch (error) {
+        console.error("Error cargando planes:", error);
+      }
+    };
+    fetchPlans();
+    cargarFavoritos(USER_ID);
+  }, []);
+
+  // Filtrado en tiempo real
+  useEffect(() => {
+    if (query.trim() === "") {
+      setFilteredPlans(plans);
+    } else {
+      const lowerQuery = query.toLowerCase();
+      const filtered = plans.filter(
+        (plan) =>
+          plan.nombre.toLowerCase().includes(lowerQuery) ||
+          plan.descripcion.toLowerCase().includes(lowerQuery)
+      );
+      setFilteredPlans(filtered);
+    }
+  }, [query, plans]);
 
   // Cargar favoritos desde backend para este usuario al iniciar
   useEffect(() => {
     cargarFavoritos(USER_ID);
   }, []);
 
+  //limpia resultados y estado cuando query esta vacio
+  useEffect(() => {
+    if (query.trim() === "") {
+      setHasSearched(false);
+      setResults([]);
+    }
+  }, [query]);
+
   return (
     <div>
       <Nav
         query={query}
         setQuery={setQuery}
-        results={results}
-        hasSearched={hasSearched}
-        handleSearch={handleSearch}
+        // results={results}
+        // hasSearched={hasSearched}
+        // handleSearch={handleSearch}
         showFilter={true}
         showNavbar = {true}     // 👈 nuevo
       />
@@ -63,6 +85,15 @@ export default function HomePage() {
 
       {/* Pasamos userId para que CardComponent gestione favoritos correctamente */}
       <CardComponent showButton userId={USER_ID} />
+
+      {filteredPlans.length > 0 ? (
+        <CardComponent showButton userId={USER_ID} plans={filteredPlans} />
+      ) : (
+        <p className="text-center text-gray-700">
+          No se encontraron resultados
+        </p>
+      )}
+
       <Paginacion />
 
       <footer>
