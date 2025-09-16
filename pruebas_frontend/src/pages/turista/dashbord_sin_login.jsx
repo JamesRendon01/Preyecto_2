@@ -32,7 +32,7 @@ export default function DashbordSinLogin() {
                 showButtonsLogin={true}
             />
 
-            <div>
+            <div className="mt-25">
                 <CardCarousel />
             </div>
 

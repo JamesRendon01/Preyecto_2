@@ -32,7 +32,7 @@ export default function App() {
 
         {/* Rutas privadas del turista */}
         <Route path="/inicio" element={<PrivateRouteTurista><HomePage /></PrivateRouteTurista>} />
-        <Route path="/menu_config" element={<PrivateRouteTurista><MenuConfig /></PrivateRouteTurista>} />
+        <Route path="/turista/editar/:id" element={<PrivateRouteTurista><MenuConfig /></PrivateRouteTurista>} />
         <Route path="/favoritos" element={<PrivateRouteTurista><Favoritos /></PrivateRouteTurista>} />
         <Route path="/reservas" element={<PrivateRouteTurista><Reservas /></PrivateRouteTurista>} />
 

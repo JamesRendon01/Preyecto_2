@@ -8,7 +8,7 @@ const SearchBar = ({ query, setQuery, onSearch }) => {
     };
 
     return (
-        <div className="relative flex items-center w-full max-w-[28rem]">
+        <div className=" flex items-center max-w-[28rem]">
             {/* Icono de búsqueda */}
             {!query && (
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />

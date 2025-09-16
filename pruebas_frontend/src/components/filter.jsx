@@ -70,7 +70,7 @@ const FiltroTabs = ({ onChange }) => {
     //Divisor principal
     <div className="flex flex-col flex-1 mt-2">
       {/* Divisor donde se encuentra el Filtro */}
-      <div className="flex flex-wrap gap-4 my-2">
+      <div className="flex gap-2 font-title">
         {/* Select de País */}
         <select
           value={filtroSeleccionado.pais}
@@ -79,7 +79,7 @@ const FiltroTabs = ({ onChange }) => {
           className={`bg-white text-black px-4 py-2 rounded-4xl border-2 border-black cursor-pointer font-bold text-[15px] w-[140px] h-[40px] text-center
                       focus:outline-none focus:shadow-[0_0_4px_rgba(44,44,229,0.4)]
                       valid:bg-white valid:text-black valid:border-black
-                      disabled:opacity-50 disabled:cursor-not-allowed`}
+                      disabled:opacity-50 disabled:cursor-not-allowed sm:w-20 lg:w-30`}
         >
           <option value="">País</option>
           {paises.map((pais, index) => (
@@ -96,7 +96,7 @@ const FiltroTabs = ({ onChange }) => {
           className={`bg-white text-black px-4 py-2 rounded-4xl border-2 border-black cursor-pointer font-bold text-[15px] w-[140px] h-[40px] text-center
                       focus:outline-none focus:shadow-[0_0_4px_rgba(44,44,229,0.4)]
                       valid:bg-white valid:text-black valid:border-black
-                      disabled:opacity-50 disabled:cursor-not-allowed`}
+                      disabled:opacity-50 disabled:cursor-not-allowed sm:w-20 lg:w-30`}
         >
           <option value="">Ciudad</option>
           {ciudades.map((ciudad, index) => (
@@ -113,7 +113,7 @@ const FiltroTabs = ({ onChange }) => {
           className={`bg-white text-vlack px-4 py-2 rounded-4xl border-2 border-black cursor-pointer font-bold text-[15px] w-[140px] h-[40px] text-center
                       focus:outline-none focus:shadow-[0_0_4px_rgba(44,44,229,0.4)]
                       valid:bg- valid:text-black valid:border-black
-                      disabled:opacity-50 disabled:cursor-not-allowed`}
+                      disabled:opacity-50 disabled:cursor-not-allowed sm:w-20 lg:w-30`}
         >
           <option value="">Lugar</option>
           {lugares.map((lugar, index) => (

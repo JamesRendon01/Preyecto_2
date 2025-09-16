@@ -11,7 +11,7 @@ export default function MenuConfig() {
         const filtered = favoritos.filter((item) =>
             item.nombre.toLowerCase().includes(query.toLowerCase())
         );
-        setResults(filtered); 
+        setResults(filtered);
         setHasSearched(true);
     };
     return (
@@ -25,7 +25,7 @@ export default function MenuConfig() {
                 showFilter={false}
                 showTitle={false}
                 showProfile={false}
-                showNavbar={false}
+                showNavbar={true}
                 showSearch={false}
                 showButtonsLogin={false}
                 showConfig={true}
