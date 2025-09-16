@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Nav from "../../components/nav.jsx";
+import ButtonDeleteTurista from "../../components/button_delet_turista.jsx";
 
 export default function MenuConfig() {
 
@@ -30,6 +31,9 @@ export default function MenuConfig() {
                 showButtonsLogin={false}
                 showConfig={true}
             />
+            <div className="mt-50">
+                <ButtonDeleteTurista />
+            </div>
         </div>
     );
 }
