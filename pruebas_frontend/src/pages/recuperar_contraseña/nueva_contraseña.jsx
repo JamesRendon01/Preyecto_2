@@ -26,7 +26,7 @@ export default function nuevaContrasena() {
   }
     // Conexion y envio de datos de la nueva contraseña al backend
     try {
-      const res = await fetch("http://localhost:8000/turista/cambiar-contrasena", {
+      const res = await fetch("http://192.168.20.62:8000/turista/cambiar-contrasena", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, nueva_contrasena: password, }),

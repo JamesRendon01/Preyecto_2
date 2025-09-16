@@ -10,7 +10,7 @@ export default function CrudPlanes() {
     const [planes, setPlanes] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost:8000/plan/listar-planes")
+        fetch("http://192.168.20.62:8000/plan/listar-planes")
             .then((res) => {
                 if (!res.ok) throw new Error("Error al obtener los planes");
                 return res.json();

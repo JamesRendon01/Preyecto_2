@@ -18,7 +18,7 @@ export default function FormUpdatePlans() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`http://localhost:8000/plan/listar-plan-id/${id}`)
+        fetch(`http://192.168.20.62:8000/plan/listar-plan-id/${id}`)
             .then((res) => res.json())
             .then((data) => {
                 setPlan({
@@ -58,7 +58,7 @@ export default function FormUpdatePlans() {
         }
 
         try {
-            const res = await fetch(`http://localhost:8000/plan/update/${id}`, {
+            const res = await fetch(`http://192.168.20.62:8000/plan/update/${id}`, {
                 method: "PUT",
                 body: formData,
             });
@@ -98,7 +98,7 @@ export default function FormUpdatePlans() {
                 />
                 {!(plan.imagen instanceof File) && plan.imagen && (
                     <img
-                        src={`http://localhost:8000/uploads/planes_img/${plan.imagen}`} 
+                        src={`http://192.168.20.62:8000/uploads/planes_img/${plan.imagen}`} 
                         alt="Imagen actual"
                         className="w-full h-40 object-cover rounded mb-4"
                     />

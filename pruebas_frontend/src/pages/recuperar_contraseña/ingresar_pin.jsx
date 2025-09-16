@@ -35,7 +35,7 @@ export default function IngresarPin() {
 
     //Conexion y envio de datos del form al backend
     try {
-      const res = await fetch("http://localhost:8000/turista/verificar-pin", {
+      const res = await fetch("http://192.168.20.62:8000/turista/verificar-pin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo, pin: codigo }),

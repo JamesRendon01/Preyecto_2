@@ -25,7 +25,7 @@ export default function Reservas() {
                     <div className="flex">
                         <div className="w-full bg-white text-black text-sm p-2 rounded-md opacity-90 transform transition-transform duration-300 hover:scale-110 hover:shadow-[10px_10px_20px_rgba(0,0,0,0.2)] border-black border-2 relative  sm:w-70 sm:h-90 sm:mt-30 sm:ml-20 sm:mb-0 md:mt-50 md:w-80 md:h-100 md:ml-6 lg:w-90 lg:h-110 lg:ml-40 lg:mt-60 xl:w-110 xl:h-130 xl:ml-55 xl:mt-70">
                             <img
-                                src={`http://localhost:8000${planSeleccionado.imagen}`}
+                                src={`http://192.168.20.62:8000${planSeleccionado.imagen}`}
                                 alt={planSeleccionado.nombre}
                                 className="w-full h-[200px] object-cover rounded-md md:h-60 xl:h-80"
                             />

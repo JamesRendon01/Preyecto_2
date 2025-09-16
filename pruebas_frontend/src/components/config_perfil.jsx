@@ -51,7 +51,7 @@ export default function ActualizarTurista() {
     setTuristaId(Number(decoded.sub));
 
     // Traer datos actuales del usuario
-    fetch("http://localhost:8000/turista/mis-datos", {
+    fetch("http://192.168.20.62/turista/mis-datos", {
       method: "GET",
       headers: { "Authorization": `Bearer ${token}` },
     })
@@ -98,7 +98,7 @@ export default function ActualizarTurista() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/turista/${turistaId}`, {
+      const response = await fetch(`http://192.168.20.62:8000/turista/${turistaId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

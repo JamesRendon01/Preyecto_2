@@ -11,7 +11,7 @@ export default function ButtonDeleteTurista({ onDeleted }) {
         if (!confirm2) return;
 
         try {
-            const response = await fetch("http://localhost:8000/turista/eliminar-perfil", {
+            const response = await fetch("http://192.168.20.62:8000/turista/eliminar-perfil", {
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem("token")}`

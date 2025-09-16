@@ -31,7 +31,7 @@ export default function FormReservas({ idPlan = 1, idInforme = 1 }) {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const res = await fetch("http://localhost:8000/turista/mis-datos", {
+        const res = await fetch("http://192.168.20.62:8000/turista/mis-datos", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ export default function FormReservas({ idPlan = 1, idInforme = 1 }) {
 
       console.log("Enviando al backend:", body);
 
-      const res = await fetch("http://localhost:8000/reserva/crear_reserva", {
+      const res = await fetch("http://192.168.20.62:8000/reserva/crear_reserva", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

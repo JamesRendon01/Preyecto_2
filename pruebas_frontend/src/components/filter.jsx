@@ -15,7 +15,7 @@ const FiltroTabs = ({ onChange }) => {
 
   // Carga los filtros desde el backend
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/filtro")
+    fetch("http://192.168.20.62:8000/filtro")
       .then(res => res.json())
       .then(data => setDatos(data))
       .catch(err => console.error("Error al cargar filtros:", err));

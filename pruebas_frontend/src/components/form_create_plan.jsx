@@ -85,7 +85,7 @@ export default function FormCrearPlan() {
         }
 
         try {
-            const res = await fetch("http://localhost:8000/plan/crear-plan", {
+            const res = await fetch("http://192.168.20.62:8000/plan/crear-plan", {
                 method: "POST",
                 body: formData,
             });

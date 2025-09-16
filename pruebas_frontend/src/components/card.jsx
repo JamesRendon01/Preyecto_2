@@ -49,7 +49,7 @@ function Card({ plan, showButton }) {
     >
       {/* Imagen del plan */}
       <img
-        src={`http://localhost:8000/uploads/planes_img/${plan.imagen}`}
+        src={`http://192.168.20.62:8000/uploads/planes_img/${plan.imagen}`}
         alt={plan.nombre}
         className="w-full h-[180px] object-cover rounded-t-md block"
       />

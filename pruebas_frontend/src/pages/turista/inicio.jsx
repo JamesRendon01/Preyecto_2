@@ -26,7 +26,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const res = await fetch("http://localhost:8000/plan/card_planes");
+        const res = await fetch("http://192.168.20.62:8000/plan/card_planes");
         const data = await res.json();
         console.log("Planes recibidos:", data); // 👈 DEBUG
         setPlans(data);

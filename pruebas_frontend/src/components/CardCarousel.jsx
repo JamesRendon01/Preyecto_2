@@ -11,7 +11,7 @@ export default function CardCarousel({ interval = 3000 }) {
 
   //Para recargar los planes desde la API
   useEffect(() => {
-    fetch("http://localhost:8000/plan/api/planes")
+    fetch("http://192.168.20.62:8000/plan/api/planes")
       .then((res) => res.json())
       .then((data) => setCards(data))//Guardamos los estados en estado
       .catch((err) => console.error("Error cargando planes", err));
@@ -64,7 +64,7 @@ export default function CardCarousel({ interval = 3000 }) {
             
             {/* Imagen del Plan */}
             <img
-              src={`http://localhost:8000/uploads/planes_img/${card.imagen}`}
+              src={`http://192.168.20.62:8000/uploads/planes_img/${card.imagen}`}
               alt={card.nombre}
               className="w-full h-full object-cover rounded-sm mb-2"
             />

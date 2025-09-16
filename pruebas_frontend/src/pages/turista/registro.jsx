@@ -36,7 +36,7 @@ export default function Registro() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:8000/ciudad/")
+    fetch("http://192.168.20.62:8000/ciudad/")
       .then(res => res.json())
       .then(data => setCiudades(data))
       .catch(err => console.error("Error cargando ciudades:", err));
@@ -64,7 +64,7 @@ export default function Registro() {
     const dataToSend = { ...formData, acepto_terminos: acceptedTerms}
 
     try {
-      const res = await fetch("http://localhost:8000/turista/registrar", {
+      const res = await fetch("http://192.168.20.62/turista/registrar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSend),

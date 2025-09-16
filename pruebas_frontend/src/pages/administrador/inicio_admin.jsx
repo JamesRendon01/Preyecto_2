@@ -39,7 +39,7 @@ export default function InicioAdministrador() {
     
     //Conexion y envio de datos del form al backend
     try {
-      const res = await fetch("http://localhost:8000/administrador/iniciarsesion", {
+      const res = await fetch("http://192.168.20.62:8000/administrador/iniciarsesion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

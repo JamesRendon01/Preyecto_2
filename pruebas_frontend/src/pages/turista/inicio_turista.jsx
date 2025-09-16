@@ -38,7 +38,7 @@ export default function InicioTurista() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8000/turista/iniciarsesion", {
+      const res = await fetch("http://192.168.20.62:8000/turista/iniciarsesion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

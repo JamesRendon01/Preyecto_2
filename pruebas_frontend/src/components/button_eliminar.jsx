@@ -13,7 +13,7 @@ export default function ButtonDelete({ planId, onDeleted }) {
         if (!confirm2) return;
 
         try {
-            const response = await fetch(`http://localhost:8000/plan/delet/${planId}`, {
+            const response = await fetch(`http://192.168.20.62:8000/plan/delet/${planId}`, {
                 method: "DELETE",
             });
 

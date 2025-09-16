@@ -70,7 +70,7 @@ export default function Nav({
     return (
         <div className={` fixed top-0 left-0 w-full h-24 bg-nav z-50 transition-shadow ${scrolled ? "shadow-2" : "shadow-none"}`}>
             <div className="flex gap-x-20 ml-30">
-                <div className="flex mt-0 ml-30">
+                <div className="flex mt-0 absolute xl:left-0 sm:left-0 left-0 top-0 sm:top-5 lg:top-2 ">
                     <Header rol="inicio" />
                 </div>
 
