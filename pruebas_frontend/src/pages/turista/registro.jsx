@@ -3,6 +3,7 @@ import { message } from "antd";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createRoot } from "react-dom/client";
+import TermsModal from '../../components/terminos_condiciones';
 
 unstableSetRender((node, container) => {
   container._reactRoot ||= createRoot(container);
@@ -15,7 +16,6 @@ unstableSetRender((node, container) => {
 });
 
 export default function Registro() {
-  // 🔹 Hook de mensajes de Ant Design
   const [messageApi, contextHolder] = message.useMessage();
 
   const [formData, setFormData] = useState({
@@ -32,8 +32,9 @@ export default function Registro() {
   });
 
   const [ciudades, setCiudades] = useState([]);
+  const [showTerms, setShowTerms] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
-  // Cargar ciudades desde el backend
   useEffect(() => {
     fetch("http://localhost:8000/ciudad/")
       .then(res => res.json())
@@ -42,27 +43,31 @@ export default function Registro() {
   }, []);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validar que las contraseñas coincidan
+    if (!acceptedTerms) {
+      messageApi.warning("Debes aceptar los términos y condiciones ⚠️");
+      return;
+    }
+
     if (formData.contrasena !== formData.confirmar_contrasena) {
       messageApi.error("Las contraseñas no coinciden ❌");
       return;
     }
+
     delete formData.confirmar_contrasena;
+
+    const dataToSend = { ...formData, acepto_terminos: acceptedTerms}
 
     try {
       const res = await fetch("http://localhost:8000/turista/registrar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
       const result = await res.json();
@@ -71,7 +76,6 @@ export default function Registro() {
         messageApi.success("Registro exitoso ✅");
         setTimeout(() => window.location.href = "/turista", 1000);
       } else {
-        // 🔹 Manejo de objetos devueltos por el backend
         if (typeof result.detail === "object") {
           const errores = Array.isArray(result.detail) ? result.detail : [result.detail];
           errores.forEach(err => {
@@ -89,7 +93,6 @@ export default function Registro() {
 
   return (
     <div className="min-h-screen w-full bg-fondo flex flex-col">
-      {/* 🔹 Context holder para mensajes */}
       {contextHolder}
 
       {/* Header */}
@@ -97,7 +100,7 @@ export default function Registro() {
         <div className="flex">
           <img className="w-38 h-18 mt-2 sm:w-20 sm:h-12 sm:mt-0 md:w-28 md:h-18 xl:w-40 xl:h-20" src="/img/logo.png" alt="logo" />
           <img className="w-38 h-18 mt-2 sm:w-20 sm:h-12 sm:mt-0 md:w-28 md:h-18 xl:w-40 xl:h-20" src="/img/avion.gif" alt="logo" />
-          <h1 className="flex text-6xl text-black font-bold font-inter sm:text-4xl md:text-5xl lg:ml-30 xl:text-6xl xl:ml-55">
+          <h1 className="flex text-6xl text-black font-bold font-title sm:text-4xl md:text-5xl lg:ml-30 xl:text-6xl xl:ml-55">
             REGISTRARSE
           </h1>
         </div>
@@ -106,20 +109,17 @@ export default function Registro() {
       {/* Formulario */}
       <main className="flex flex-col md:flex-row">
         <div className="w-125 h-auto bg-nav border-4 border-black p-6 rounded-lg text-black sm:w-100 sm:ml-10 md:ml-50 lg:ml-80 xl:ml-130 xl:w-120">
-          <form className="flex flex-col" onSubmit={handleSubmit}>
-            {/* Correo */}
+          <form className="flex flex-col font-general" onSubmit={handleSubmit}>
+            {/* Inputs */}
             <label className="mt-4">*Correo:</label>
             <input type="email" name="correo" value={formData.correo} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
-            {/* Nombre */}
             <label className="mt-4">*Nombre Completo:</label>
             <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
-            {/* Fecha nacimiento */}
             <label className="mt-4">*Fecha de nacimiento</label>
             <input type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
-            {/* Tipo de identificación */}
             <label className="mt-4">*Tipo de identificacion</label>
             <select name="tipo_identificacion" value={formData.tipo_identificacion} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200">
               <option value="">Seleccione un tipo de documento</option>
@@ -130,39 +130,53 @@ export default function Registro() {
               <option value="PPT">Permiso por proteccion Temporal</option>
             </select>
 
-            {/* Identificación */}
             <label className="mt-4">*Identificacion:</label>
             <input type="number" name="identificacion" value={formData.identificacion} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
-            {/* Contraseña */}
             <label className="mt-4">*Contraseña:</label>
             <input type="password" name="contrasena" value={formData.contrasena} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
-            {/* Confirmar contraseña */}
             <label className="mt-4">*Confirmar contraseña:</label>
             <input type="password" name="confirmar_contrasena" value={formData.confirmar_contrasena} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
-            {/* Ciudad */}
             <label className="mt-4">*Ciudad de residencia:</label>
             <select name="ciudad_residencia_id" value={formData.ciudad_residencia_id} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200">
               <option value="">Seleccione una ciudad</option>
               {ciudades.map(ciudad => <option key={ciudad.id} value={ciudad.id}>{ciudad.nombre}</option>)}
             </select>
 
-            {/* Celular */}
             <label className="mt-4">*Numero de celular:</label>
             <input type="number" name="celular" value={formData.celular} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
-            {/* Dirección */}
             <label className="mt-4">*Direccion:</label>
             <input type="text" name="direccion" value={formData.direccion} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
-            {/* Link a login */}
+            {/* Link login */}
             <p className="text-center mt-2 text-sm">
               <Link to="/turista" className="underline text-black">
                 ¿Ya tienes Cuenta? Inicia Sesion
               </Link>
             </p>
+
+            {/* Checkbox de Términos */}
+            <div className="flex items-center mt-4">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mr-2"
+              />
+              <span>
+                Acepto los{" "}
+                <button
+                  type="button"
+                  className="text-blue-600 underline"
+                  onClick={() => setShowTerms(true)}
+                >
+                  términos y condiciones
+                </button>
+              </span>
+            </div>
 
             {/* Botón */}
             <button type="submit" className="bg-fondo text-black font-bold px-4 py-2 rounded-md mt-4 hover:bg-white">
@@ -171,6 +185,13 @@ export default function Registro() {
           </form>
         </div>
       </main>
+
+      {/* Modal */}
+      <TermsModal
+        isOpen={showTerms}
+        onClose={() => setShowTerms(false)}
+        onAccept={() => setAcceptedTerms(true)}
+      />
     </div>
   );
 }

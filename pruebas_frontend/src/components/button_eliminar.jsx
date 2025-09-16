@@ -33,7 +33,7 @@ export default function ButtonDelete({ planId, onDeleted }) {
     return (
         <button
             onClick={handleDelete}
-            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 border-2 border-black"
+            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 border-2 border-black font-bold"
         >
             Eliminar
         </button>

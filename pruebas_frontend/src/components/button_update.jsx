@@ -10,7 +10,7 @@ export default function ButtonUpdate({ id }) {
     return (
         <button
             onClick={handleUpdate}
-            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 border-2 border-black"
+            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 border-2 border-black font-bold"
         >
             Editar
         </button>

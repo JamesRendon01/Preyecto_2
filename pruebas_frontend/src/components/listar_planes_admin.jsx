@@ -5,7 +5,7 @@ import { useBreadcrumb } from "../context/breadcrumb_context";
 import ButtonCreatePlan from "./button_create_plan";
 
 export default function CrudPlanes() {
-    const headers = ["ID", "Nombre", "Descripción Corta", "Descripción", "Precio", "Ciudad", "Ubicación"];
+    const headers = ["ID", "Nombre", "Descripción Corta", "Descripción Larga", "Precio", "Ciudad", "Ubicación"];
 
     const [planes, setPlanes] = useState([]);
 
@@ -27,9 +27,9 @@ export default function CrudPlanes() {
 
     return (
         <div className="overflow-x-auto p-4 w-screen bg-fondo flex justify-center">
-            <table className="w-300 bg-white border-2 border-black rounded-lg text-center">
+            <table className="w-300 bg-white border-2 border-black rounded-lg text-center font-general">
                 {/* Header */}
-                <thead className="bg-gray-100">
+                <thead className="bg-gray-100 font-title">
                     <tr>
                         {headers.map((head) => (
                             <th

@@ -5,7 +5,7 @@
 @theme {
     --color-fondo: #bee9e8;
     --color-nav: #62b6cb;
-    --font-inter: 'Shantell Sans', cursive;
+    --font-title: 'Shantell Sans', cursive;
     --font-general: 'Piazzolla';
 
     --breakpoint-xl: 1440px;
