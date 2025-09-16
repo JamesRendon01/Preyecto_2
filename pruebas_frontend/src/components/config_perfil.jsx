@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ButtonDeleteTurista from "./button_delet_turista.jsx";
 
 export default function ActualizarTurista() {
   const [formData, setFormData] = useState({
@@ -6,7 +7,7 @@ export default function ActualizarTurista() {
     correo: "",
     celular: "",
     fecha_nacimiento: "",
-    ciudad: "",
+    ciudad_residencia_id: 1, // ID por defecto, cambia según tu ciudad
     tipo_identificacion: "",
     identificacion: "",
     direccion: ""
@@ -20,9 +21,12 @@ export default function ActualizarTurista() {
     try {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-      ).join(''));
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
       return JSON.parse(jsonPayload);
     } catch (e) {
       return null;
@@ -44,20 +48,24 @@ export default function ActualizarTurista() {
       return;
     }
 
-    setTuristaId(decoded.sub);
+    setTuristaId(Number(decoded.sub));
 
     // Traer datos actuales del usuario
     fetch("http://localhost:8000/turista/mis-datos", {
-      headers: { Authorization: `Bearer ${token}` }
+      method: "GET",
+      headers: { "Authorization": `Bearer ${token}` },
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Error obteniendo datos");
+        return res.json();
+      })
       .then(data => {
         setFormData({
           nombre: data.nombre || "",
           correo: data.correo || "",
           celular: data.celular || "",
           fecha_nacimiento: data.fecha_nacimiento || "",
-          ciudad: data.ciudad || "",
+          ciudad_residencia_id: data.ciudad_residencia_id || 1, // Ajusta si tu backend devuelve id
           tipo_identificacion: data.tipo_identificacion || "",
           identificacion: data.identificacion || "",
           direccion: data.direccion || ""
@@ -116,7 +124,18 @@ export default function ActualizarTurista() {
   if (loading) return <p>Cargando...</p>;
 
   return (
-    <div className="p-6 flex justify-center items-center min-h-screen">
+    <div className="p-6 justify-center items-center min-h-screen">
+      <div className="w-96 h-60 bg-white border-black border-2 font-title rounded-2xl">
+        <img
+          src="/img/imagen.png"
+          alt="perfil"
+          className="w-30 rounded-full border-2 ml-35 border-black object-cover bg-fondo sm:mt-0 sm:h-25 sm:w-25 md:mt-5 xl:w-40 xl:h-40"
+        />
+        <div className="flex mt-10 gap-10 justify-center">
+          <ButtonDeleteTurista />
+        </div>
+      </div>
+
       <form className="bg-white shadow-lg rounded-xl p-6 w-96" onSubmit={handleSubmit}>
         {/* Nombre */}
         <label className="block mb-2 font-medium">Nombre</label>

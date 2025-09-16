@@ -36,7 +36,7 @@ export default function ButtonDeleteTurista({ onDeleted }) {
     return (
         <button
             onClick={handleDelete}
-            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 border-2 border-black font-bold"
+            className="w-30 h-12 rounded-xl bg-red-500 text-white px-3 py-1 hover:bg-red-600 border-2 border-black font-bold"
         >
             Eliminar mi cuenta
         </button>
