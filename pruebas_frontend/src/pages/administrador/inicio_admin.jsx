@@ -5,6 +5,7 @@ import Sidebar from "../../components/sidebar.jsx";
 import { useNavigate } from "react-router-dom";
 import { unstableSetRender } from 'antd';
 import { message } from "antd";
+import { jwtDecode } from "jwt-decode";
 
 unstableSetRender((node, container) => {
   container._reactRoot ||= createRoot(container);
@@ -49,7 +50,13 @@ export default function InicioAdministrador() {
       if (res.ok) {
         // Guarda el token en el local storage
         localStorage.setItem("token_admin", result.access_token);
-        message.success("Inicio de sesión exitoso ✅");
+        
+        const decoded = jwtDecode(result.access_token)
+
+        localStorage.setItem("nombre", decoded.nombre);
+
+        message.success(`Bienvenido, ${decoded.nombre}`);
+
         navigate("/dashboard-administrador");
       } else {
         //Si los datos ingresados son incorrectos, envia un mensjae de error

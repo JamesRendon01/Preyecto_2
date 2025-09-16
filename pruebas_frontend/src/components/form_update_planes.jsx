@@ -33,6 +33,7 @@ export default function FormUpdatePlans() {
         const formData = new FormData();
         formData.append("nombre", plan.nombre);
         formData.append("descripcion_corta", plan.descripcion_corta);
+        formData.append("descripcion", plan.descripcion);
         formData.append("costo_persona", plan.costo_persona);
         formData.append("id_ciudad", plan.id_ciudad);
 
@@ -99,10 +100,19 @@ export default function FormUpdatePlans() {
         />
 
         {/* Descripción */}
-        <label className="block mb-2 font-medium">Descripción</label>
+        <label className="block mb-2 font-medium">Descripción Corta</label>
         <textarea
           name="descripcion_corta"
           value={plan.descripcion_corta}
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded mb-4"
+          required
+        />
+
+        <label className="block mb-2 font-medium">Descripción</label>
+        <textarea
+          name="descripcion"
+          value={plan.descripcion}
           onChange={handleChange}
           className="w-full border px-3 py-2 rounded mb-4"
           required

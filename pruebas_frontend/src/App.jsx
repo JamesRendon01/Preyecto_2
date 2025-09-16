@@ -15,6 +15,7 @@ import DashbordAdmin from "./pages/administrador/dashboard.jsx";
 import PrivateRouteAdmin from "./components/private_router_admin.jsx";
 import ListarPlanesAdmin from "./pages/administrador/planes.jsx";
 import UpdatePlanes from "./pages/administrador/update_planes.jsx";
+import CreatePlan from "./pages/administrador/crear_plan.jsx";
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/listar_planes_admin" element={<PrivateRouteAdmin><ListarPlanesAdmin /></PrivateRouteAdmin>} />
         <Route path="/dashboard-administrador" element={<PrivateRouteAdmin><DashbordAdmin /></PrivateRouteAdmin>} />
         <Route path="/update-planes/:id" element={<PrivateRouteAdmin><UpdatePlanes /></PrivateRouteAdmin>} />
+        <Route path="/create-plan" element={<PrivateRouteAdmin><CreatePlan /></PrivateRouteAdmin>} />
       </Routes>
     </>
   );

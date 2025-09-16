@@ -1,12 +1,14 @@
 import { unstableSetRender } from 'antd';
 import { createRoot } from 'react-dom/client';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Header from "../../components/header.jsx";
 import LoginForm from "../../components/login_form.jsx";
 import Sidebar from "../../components/sidebar.jsx";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
+import { jwtDecode } from "jwt-decode"; // 👈 Importar jwt-decode
 
+// Render helper para antd
 unstableSetRender((node, container) => {
   container._reactRoot ||= createRoot(container);
   const root = container._reactRoot;
@@ -24,6 +26,7 @@ export default function InicioTurista() {
     contrasena: "",
   });
 
+  // Manejo de inputs
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -31,6 +34,7 @@ export default function InicioTurista() {
     });
   };
 
+  // Manejo de submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -43,10 +47,21 @@ export default function InicioTurista() {
       const result = await res.json();
 
       if (res.ok) {
-        // Guardar id del turista en localStorage
+        // 🔹 Guardar token en localStorage
         localStorage.setItem("token", result.access_token);
-        message.success("Inicio de sesión exitoso");
-        navigate("/inicio"); // Redirige a la página principal
+
+        // 🔹 Decodificar el token para obtener el nombre del turista
+        const decoded = jwtDecode(result.access_token);
+        console.log("Nombre del turista:", decoded.nombre);
+
+        // 🔹 Guardar el nombre en localStorage para usarlo en la Navbar
+        localStorage.setItem("nombre", decoded.nombre);
+
+        // Mensaje de bienvenida
+        message.success(`Bienvenido, ${decoded.nombre}`);
+
+        // Redirigir al inicio
+        navigate("/inicio");
       } else {
         message.error(result.detail || "Credenciales inválidas");
       }
@@ -57,7 +72,7 @@ export default function InicioTurista() {
   };
 
   return (
-    <div className="w-screen min-h-screen flex flex-col bg-gradiente-to-r from-gray-400 to-white">
+    <div className="w-screen min-h-screen flex flex-col bg-gradient-to-r from-gray-400 to-white">
       <div className="text-center mt-5">
         <Header rol="turista" titulo="INICIO TURISTA" />
       </div>

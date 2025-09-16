@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ButtonDelete from "./button_eliminar";
 import ButtonUpdate from "./button_update";
 import { useBreadcrumb } from "../context/breadcrumb_context";
+import ButtonCreatePlan from "./button_create_plan";
 
 export default function CrudPlanes() {
     const headers = ["ID", "Nombre", "Descripción", "Precio", "Ciudad", "Ubicación"];
@@ -40,7 +41,7 @@ export default function CrudPlanes() {
                             </th>
                         ))}
                         <th colSpan={2}>
-                            <ButtonUpdate />
+                            <ButtonCreatePlan />
                         </th>
                     </tr>
                 </thead>

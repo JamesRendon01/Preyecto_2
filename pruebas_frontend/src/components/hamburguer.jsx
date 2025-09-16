@@ -1,67 +1,46 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Heart } from 'lucide-react';
-// 🔹 Subcomponente reutilizable: Icono de hamburguesa y menú
-const HamburgerMenu = ({ links }) => {
+import React, { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+
+// 🔹 Subcomponente del menú hamburguesa
+const HamburgerMenu = ({ links, nombre }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef();
-
-  const toggleMenu = () => setIsOpen(!isOpen);
-
-  // 🔹 Cierra el menú al hacer click fuera
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
-    <div className="relative" ref={menuRef}>
-      {/* 🔹 Icono hamburguesa */}
+    <div className="relative">
+      {/* Icono hamburguesa */}
       <button
-        onClick={toggleMenu}
+        onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
         aria-expanded={isOpen}
         className="flex flex-col justify-between w-8 h-6 focus:outline-none"
       >
-        <span
-          className={`block h-0.5 bg-black transition-transform duration-300 ${
-            isOpen ? "rotate-45 translate-y-2" : ""
-          }`}
-        />
-        <span
-          className={`block h-0.5 bg-black transition-opacity duration-300 ${
-            isOpen ? "opacity-0" : ""
-          }`}
-        />
-        <span
-          className={`block h-0.5 bg-black transition-transform duration-300 ${
-            isOpen ? "-rotate-45 -translate-y-2" : ""
-          }`}
-        />
+        <span className={`block h-0.5 bg-black transition-transform duration-300 ${isOpen ? "rotate-45 translate-y-2" : ""}`} />
+        <span className={`block h-0.5 bg-black transition-opacity duration-300 ${isOpen ? "opacity-0" : ""}`} />
+        <span className={`block h-0.5 bg-black transition-transform duration-300 ${isOpen ? "-rotate-45 -translate-y-2" : ""}`} />
       </button>
 
-      {/* 🔹 Menú desplegable */}
-      <div
-        className={`absolute top-full right-0 mt-3 bg-black/70 shadow-md rounded-xl flex-col min-w-[12rem] transition-all duration-300 w-55 ${
-          isOpen ? "flex" : "hidden"
-        }`}
-      >
+      {/* Menú desplegable */}
+      <div className={`absolute top-full right-0 mt-3 bg-black/70 shadow-md rounded-xl flex-col min-w-[12rem] transition-all duration-300 w-55 ${isOpen ? "flex" : "hidden"}`}>
+        {/* Nombre arriba */}
+        {nombre && (
+          <div className="px-4 py-3 border-b border-gray-500 text-white font-bold text-lg text-center">
+            {nombre}
+          </div>
+        )}
+
+        {/* Links dinámicos */}
         {links.map(({ href, label, onClick, icon: Icon }) => (
           <a
             key={href}
             href={href}
             onClick={(e) => {
-              if (onClick){
+              if (onClick) {
                 e.preventDefault();
                 onClick();
               }
-              setIsOpen(false)
+              setIsOpen(false);
             }}
-            className="px-4 py-2 hover:bg-white hover:Icon-color-black hover:text-black hover:border-black hover:border-2 hover:rounded-xl text-white text-lg font-medium text-center flex gap-10 font-general"
+            className="px-4 py-2 hover:bg-white hover:text-black hover:border-black hover:border-2 hover:rounded-xl text-white text-lg font-medium text-center flex gap-10 font-general"
           >
             {Icon && <Icon size={30} className="color-white hover:color-black" />}
             {label}
@@ -72,12 +51,34 @@ const HamburgerMenu = ({ links }) => {
   );
 };
 
-// 🔹 Componente principal Navbar
-const Hamburguer = ({ rol, links = [] }) => {
+// 🔹 Navbar principal
+const Hamburguer = ({ links = [], rol }) => {
+  const [nombre, setNombre] = useState(null);
+
+  useEffect(() => {
+    try {
+      if (rol === "admin") {
+        const tokenAdmin = localStorage.getItem("token_admin");
+        if (tokenAdmin) {
+          const decoded = jwtDecode(tokenAdmin);
+          setNombre(decoded.nombre || "Administrador");
+        }
+      } else if (rol === "turista") {
+        const tokenTurista = localStorage.getItem("token");
+        if (tokenTurista) {
+          const decoded = jwtDecode(tokenTurista);
+          setNombre(decoded.nombre || "Turista");
+        }
+      }
+    } catch (error) {
+      console.error("Error decodificando token:", error);
+      setNombre(null);
+    }
+  }, [rol]);
+
   return (
     <nav className="flex justify-end items-center py-6 px-4 text-black relative z-50 bg-nav">
-      {/* Si el rol es "config" u otros, reutilizamos el mismo componente HamburgerMenu */}
-      <HamburgerMenu links={links} />
+      <HamburgerMenu links={links} nombre={nombre} />
     </nav>
   );
 };

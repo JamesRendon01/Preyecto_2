@@ -9,9 +9,10 @@ export default function ListarPlanesAdmin() {
             <div className="mb-25">
             <Nav
                 showFilter={false}
-                showTitleAdmin={true}
+                showTitleAdmin={false}
                 showNavbarAdmin={true}
                 showSearch={false}
+                showTitlePlanesAdmin={true}
             />
             </div>
             <div className=" items-center justify-center">

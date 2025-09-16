@@ -18,9 +18,10 @@ export default function UpdatePlanes() {
             <div>
                 <Nav
                     showFilter={false}
-                    showTitleAdmin={true}
+                    showTitleAdmin={false}
                     showNavbarAdmin={true}
                     showSearch={false}
+                    showTitleUpdatePlanesAdmin = {true}
                 />
             </div>
             <div className="mt-25 mb-20 items-center justify-center gap-16">
