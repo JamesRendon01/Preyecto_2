@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from models.plan import Plan
 from dtos.plan_dto import planCreateDTO, planUpdateDTO, PlanOut, PlanCardOut, ListarPlanAdmin,  planUpdateIdDTO
 from db.session import SessionLocal
-from typing import List
+from typing import List, Optional
 import shutil
+import os
 
 UPLOAD_DIR = "uploads/planes_img"
 
@@ -31,6 +32,7 @@ def listar_plan(db: Session = Depends(get_session)):
             "id": plan.id,
             "nombre": plan.nombre,
             "descripcion_corta": plan.descripcion_corta,
+            "descripcion": plan.descripcion, 
             "costo_persona": plan.costo_persona,
             "id_ciudad": plan.ciudad.nombre if plan.ciudad else None,
             "ubicaciones": [ubicacion.id for ubicacion in (plan.ubicaciones or [])]
@@ -45,36 +47,40 @@ def obtener_plan_id(id: int, db: Session = Depends(get_session)):
      return plan
 
 
-#Ruta post
 @router.post("/crear-plan")
-def crear_plan(nuevo_plan: planCreateDTO, db:Session = Depends(get_session)):
-            
-             # Validar que el correo o identificación no se repita
-            existente = db.query(Plan).filter(
-                (Plan.nombre == nuevo_plan.nombre) |
-                (Plan.descripcion == nuevo_plan.descripcion)
-            ).first()
+def crear_plan(
+    nombre: str = Form(...),
+    descripcion_corta: str = Form(...),
+    descripcion: str = Form(...),
+    costo_persona: float = Form(...),
+    id_ciudad: int = Form(...),
+    id_informe: int = Form(...),
+    imagen: UploadFile = File(None),
+    db: Session = Depends(get_session)
+):
+    # Guardar imagen si existe
+    filename = None
+    if imagen:
+        os.makedirs("./uploads/planes_img", exist_ok=True)
+        filename = imagen.filename
+        with open(f"./uploads/planes_img/{filename}", "wb") as f:
+            f.write(imagen.file.read())
 
-            if existente:
-                raise HTTPException(status_code=400, detail="Plan ya existe")
+    # Crear plan en la DB
+    nuevo_plan = Plan(
+        nombre=nombre,
+        descripcion_corta=descripcion_corta,
+        descripcion=descripcion,
+        costo_persona=costo_persona,
+        id_ciudad=id_ciudad,
+        id_informe=id_informe,
+        imagen=filename
+    )
+    db.add(nuevo_plan)
+    db.commit()
+    db.refresh(nuevo_plan)
 
-            #crear categoria
-            np = Plan(
-                    nombre = nuevo_plan.nombre,
-                    descripcion = nuevo_plan.descripcion,
-                    descripcion_corta = nuevo_plan.descripcion_corta,
-                    costo_persona = nuevo_plan.costo_persona,
-                    imagen = nuevo_plan.imagen,
-                    id_ciudad = nuevo_plan.id_ciudad,
-                    id_informe = nuevo_plan.id_informe,
-            )
-            #inserto la nueva categoria
-            db.add(np)
-            #confirmo la transaccion manualmente
-            db.commit()
-            #nueva categoria la dispongo en memoria
-            db.refresh(np)
-            return np
+    return {"detail": "Plan creado correctamente", "id": nuevo_plan.id}
 
 #Ruta update
 @router.put("/update/{id}")

@@ -9,7 +9,7 @@ class planCreateDTO(BaseModel):
     descripcion_corta: str
     costo_persona: int
     imagen: Optional[str] = None
-    id_ciudad: int
+    id_ciudad: Optional [int] = None
     id_informe: Optional[int] = None
 
 class planUpdateDTO(BaseModel):
@@ -45,6 +45,7 @@ class ListarPlanAdmin(BaseModel):
     id: int
     nombre: str
     descripcion_corta: str
+    descripcion: str
     costo_persona: int
     id_ciudad: str
     ubicaciones: List[int] = []

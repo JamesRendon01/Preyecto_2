@@ -9,8 +9,8 @@ class Plan(Base):
     __tablename__ = "plan"
     id=Column(Integer, primary_key=True)
     nombre=Column(VARCHAR(30), unique=True)
-    descripcion=Column(String(100), unique=True)
-    descripcion_corta=Column(String(40), unique=True)
+    descripcion=Column(String(200), unique=True)
+    descripcion_corta=Column(String(100), unique=True)
     costo_persona=Column(Integer)
     imagen=Column(VARCHAR(255))
     id_ciudad=Column(Integer, ForeignKey("ciudad.id"))
