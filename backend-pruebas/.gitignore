@@ -1,53 +1,7 @@
-# Entornos virtuales
-venv/
-env/
-ENV/
-.venv/
-.env/
-
-# Archivos de configuración sensibles
-*.env
-.env.
-
-# Cachés de Python
-__pycache__
-*.py[cod]
-*$py.class
+# Ignorar carpetas __pycache__ y archivos .pyc
+__pycache__/
 *.pyc
-# Archivos de compilación
-build/
-dist/
-*.egg-info/
-.eggs/
-*.egg
-*.so
 
-# IDEs y editores
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Bases de datos locales
-*.db
-*.sqlite3
-
-# Logs
-*.log
-logs/
-
-# Pruebas y cobertura
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-
-# macOS
-.DS_Store
-
-# Otros
-*.zip
-*.tar.gz
-*.bak
-*.tmp
+# Ignorar caches en subcarpetas
+**/__pycache__/
+**/*.pyc
