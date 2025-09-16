@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Nav from "../../components/nav.jsx";
 import ButtonDeleteTurista from "../../components/button_delet_turista.jsx";
+import ActualizarTurista from "../../components/config_perfil.jsx";
 
 export default function MenuConfig() {
 
@@ -31,9 +32,17 @@ export default function MenuConfig() {
                 showButtonsLogin={false}
                 showConfig={true}
             />
-            <div className="mt-50">
-                <ButtonDeleteTurista />
+            <div className="flex mt-30 gap-10 items-center justify-center">
+                
+                <div className="flex h-90">
+                    <ButtonDeleteTurista />
+                </div>
+                <div>
+                    <ActualizarTurista />
+                </div>
+                
             </div>
+
         </div>
     );
 }
