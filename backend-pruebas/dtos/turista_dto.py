@@ -13,6 +13,7 @@ class turistaCreateDTO(BaseModel):
     tipo_identificacion: str 
     identificacion: str
     contrasena: str
+    acepto_terminos: bool
 
     @validator("contrasena")
     def validar_contrasena_segura(cls, value):
