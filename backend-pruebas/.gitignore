@@ -1,0 +1,53 @@
+# Entornos virtuales
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Archivos de configuración sensibles
+*.env
+.env.
+
+# Cachés de Python
+_pycache_/
+*.py[cod]
+*$py.class
+
+# Archivos de compilación
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+*.so
+
+# IDEs y editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Bases de datos locales
+*.db
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Pruebas y cobertura
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# macOS
+.DS_Store
+
+# Otros
+*.zip
+*.tar.gz
+*.bak
+*.tmp
