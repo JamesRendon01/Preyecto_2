@@ -10,7 +10,7 @@ ENV/
 .env.
 
 # Cachés de Python
-_pycache_/
+__pycache__/
 *.py[cod]
 *$py.class
 
