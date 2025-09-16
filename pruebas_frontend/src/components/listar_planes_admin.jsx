@@ -5,7 +5,7 @@ import { useBreadcrumb } from "../context/breadcrumb_context";
 import ButtonCreatePlan from "./button_create_plan";
 
 export default function CrudPlanes() {
-    const headers = ["ID", "Nombre", "Descripción", "Precio", "Ciudad", "Ubicación"];
+    const headers = ["ID", "Nombre", "Descripción Corta", "Descripción", "Precio", "Ciudad", "Ubicación", "Imagen"];
 
     const [planes, setPlanes] = useState([]);
 
@@ -22,21 +22,20 @@ export default function CrudPlanes() {
     const { addBreadcrumb } = useBreadcrumb();
 
     useEffect(() => {
-        addBreadcrumb({ title: "Listar Planes", path: "/listar_planes_admin" })
+        addBreadcrumb({ title: "Listar Planes", path: "/listar_planes_admin" });
     }, []);
-
-
 
     return (
         <div className="overflow-x-auto p-4 w-screen bg-fondo to-white flex justify-center">
-
-            <table className="w-300 bg-white border-2 border-black rounded-lg  text-center">
+            <table className="w-300 bg-white border-2 border-black rounded-lg text-center">
                 {/* Header */}
                 <thead className="bg-gray-100">
                     <tr>
                         {headers.map((head, index) => (
                             <th
-                                key={index} className="py-2 px-4 text-center border-b border-gray-800 font-medium">
+                                key={index}
+                                className="py-2 px-4 text-center border-b border-gray-800 font-medium"
+                            >
                                 {head}
                             </th>
                         ))}
@@ -45,7 +44,8 @@ export default function CrudPlanes() {
                         </th>
                     </tr>
                 </thead>
-                {/* Filas vacías con botones */}
+
+                {/* Filas con datos */}
                 <tbody>
                     {planes.length > 0 ? (
                         planes.map((plan) => (
@@ -53,9 +53,21 @@ export default function CrudPlanes() {
                                 <td className="py-2 px-4 border-b">{plan.id}</td>
                                 <td className="py-2 px-4 border-b">{plan.nombre}</td>
                                 <td className="py-2 px-4 border-b">{plan.descripcion_corta}</td>
+                                <td className="py-2 px-4 border-b">{plan.descripcion}</td> {/* descripción completa */}
                                 <td className="py-2 px-4 border-b">{plan.costo_persona}</td>
                                 <td className="py-2 px-4 border-b">{plan.id_ciudad}</td>
-                                <td className="py-2 px-4 border-b">{plan.ubicaciones.join(", ")}</td>
+                                <td className="py-2 px-4 border-b">{plan.ubicaciones?.join(", ")}</td>
+                                <td className="py-2 px-4 border-b">
+                                    {plan.imagen ? (
+                                        <img
+                                            src={`http://localhost:8000/uploads/planes_img/${plan.imagen}`}
+                                            alt={plan.nombre}
+                                            className="w-24 h-16 object-cover mx-auto rounded"
+                                        />
+                                    ) : (
+                                        "Sin imagen"
+                                    )}
+                                </td>
 
                                 {/* Botón Editar */}
                                 <td className="py-2 px-4 border-b">
@@ -64,13 +76,18 @@ export default function CrudPlanes() {
 
                                 {/* Botón Eliminar */}
                                 <td className="py-2 px-4 border-b">
-                                    <ButtonDelete planId={plan.id} onDeleted={(id) => setPlanes(planes.filter(p => p.id !== id))} />
+                                    <ButtonDelete
+                                        planId={plan.id}
+                                        onDeleted={(id) =>
+                                            setPlanes(planes.filter((p) => p.id !== id))
+                                        }
+                                    />
                                 </td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={headers.length} className="text-center py-4">
+                            <td colSpan={headers.length + 2} className="text-center py-4">
                                 No hay planes registrados
                             </td>
                         </tr>

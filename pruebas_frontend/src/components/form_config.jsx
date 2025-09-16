@@ -1,38 +1,18 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function FormUpdatePlans() {
-    const { id } = useParams();
+export default function FormCrearPlan() {
     const navigate = useNavigate();
 
-    // Inicializamos el estado con valores por defecto
     const [plan, setPlan] = useState({
         nombre: "",
         descripcion_corta: "",
         descripcion: "",
         costo_persona: "",
         id_ciudad: "",
+        id_informe: "",
         imagen: null
     });
-
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetch(`http://localhost:8000/plan/listar-plan-id/${id}`)
-            .then((res) => res.json())
-            .then((data) => {
-                setPlan({
-                    nombre: data.nombre || "",
-                    descripcion_corta: data.descripcion_corta || "",
-                    descripcion: data.descripcion || "",
-                    costo_persona: data.costo_persona || "",
-                    id_ciudad: data.id_ciudad || "",
-                    imagen: data.imagen || null
-                });
-                setLoading(false);
-            })
-            .catch((err) => console.error("Error al cargar el plan", err));
-    }, [id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -51,58 +31,40 @@ export default function FormUpdatePlans() {
         formData.append("descripcion_corta", plan.descripcion_corta);
         formData.append("descripcion", plan.descripcion);
         formData.append("costo_persona", plan.costo_persona);
-        formData.append("id_ciudad", plan.id_ciudad);
-
+        if (plan.id_ciudad) formData.append("id_ciudad", Number(plan.id_ciudad));
+        if (plan.id_informe) formData.append("id_informe", Number(plan.id_informe));
         if (plan.imagen instanceof File) {
             formData.append("imagen", plan.imagen);
         }
 
         try {
-            const res = await fetch(`http://localhost:8000/plan/update/${id}`, {
-                method: "PUT",
+            const res = await fetch("http://localhost:8000/plan/crear-plan", {
+                method: "POST",
                 body: formData,
             });
 
             if (res.ok) {
-                alert("Plan actualizado correctamente");
+                alert("Plan creado correctamente");
                 navigate("/listar_planes_admin");
             } else {
-                alert("Error al actualizar el plan");
+                const errorData = await res.json();
+                alert(errorData.detail || "Error al crear el plan");
             }
         } catch (error) {
-            console.error("Error en la actualizacion:", error);
-            alert("Error de conexion al servidor");
+            console.error("Error en la creación:", error);
+            alert("Error de conexión al servidor");
         }
     };
 
-    if (loading) return <p className="text-center mt-10">Cargando...</p>;
-    if (!plan) return <p className="text-center mt-10">No se encontró el Plan</p>;
 
     return (
         <div className="p-6 flex justify-center items-center min-h-screen">
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white shadow-lg rounded-xl p-6 w-96"
-            >
-                <h2 className="text-xl font-bold mb-4 text-center">
-                    Editar Plan #{id}
-                </h2>
+            <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-xl p-6 w-96">
+                <h2 className="text-xl font-bold mb-4 text-center">Crear Nuevo Plan</h2>
 
                 {/* Imagen */}
                 <label className="block mb-2 font-medium">Imagen</label>
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="mb-4"
-                />
-                {!(plan.imagen instanceof File) && plan.imagen && (
-                    <img
-                        src={`http://localhost:8000/uploads/planes_img/${plan.imagen}`} 
-                        alt="Imagen actual"
-                        className="w-full h-40 object-cover rounded mb-4"
-                    />
-                )}
+                <input type="file" accept="image/*" onChange={handleFileChange} className="mb-4" />
 
                 {/* Nombre */}
                 <label className="block mb-2 font-medium">Nombre</label>
@@ -115,7 +77,7 @@ export default function FormUpdatePlans() {
                     required
                 />
 
-                {/* Descripción corta */}
+                {/* Descripción */}
                 <label className="block mb-2 font-medium">Descripción Corta</label>
                 <textarea
                     name="descripcion_corta"
@@ -125,17 +87,17 @@ export default function FormUpdatePlans() {
                     required
                 />
 
-                {/* Descripción larga */}
                 <label className="block mb-2 font-medium">Descripción</label>
                 <textarea
                     name="descripcion"
                     value={plan.descripcion}
                     onChange={handleChange}
                     className="w-full border px-3 py-2 rounded mb-4"
+                    required
                 />
 
                 {/* Precio */}
-                <label className="block mb-2 font-medium">Precio</label>
+                <label className="block mb-2 font-medium">Precio por Persona</label>
                 <input
                     type="number"
                     name="costo_persona"
@@ -146,14 +108,23 @@ export default function FormUpdatePlans() {
                 />
 
                 {/* Ciudad */}
-                <label className="block mb-2 font-medium">Ciudad</label>
+                <label className="block mb-2 font-medium">ID Ciudad</label>
                 <input
                     type="text"
                     name="id_ciudad"
                     value={plan.id_ciudad}
                     onChange={handleChange}
                     className="w-full border px-3 py-2 rounded mb-4"
-                    required
+                />
+
+                {/* Informe */}
+                <label className="block mb-2 font-medium">ID Informe</label>
+                <input
+                    type="text"
+                    name="id_informe"
+                    value={plan.id_informe}
+                    onChange={handleChange}
+                    className="w-full border px-3 py-2 rounded mb-4"
                 />
 
                 {/* Botón */}
@@ -161,7 +132,7 @@ export default function FormUpdatePlans() {
                     type="submit"
                     className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-full"
                 >
-                    Guardar cambios
+                    Crear Plan
                 </button>
             </form>
         </div>

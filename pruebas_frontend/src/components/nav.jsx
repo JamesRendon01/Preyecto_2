@@ -45,7 +45,7 @@ export default function Nav({
     // 🔹 Links para turista
     const linksParaPagina2 = [
         { href: "/inicio", icon: House, label: "Inicio" },
-        { href: "/", icon: CircleUserRound, label: "Perfil" },
+        { href: "/menu_config", icon: CircleUserRound, label: "Perfil" },
         { href: "/", icon: CalendarCheck, label: "Reservas" },
         { href: "/favoritos", icon: Heart, label: "Favoritos" },
         { href: "/", icon: BellRing, label: "Novedades" },

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import Nav from "../../components/nav.jsx";
+import Nav from "../../components/nav.jsx"
+import FormCrearPlan from "../../components/form_config.jsx";
 
 export default function CreatePlan() {
 
@@ -18,6 +19,8 @@ export default function CreatePlan() {
 
             </div>
             <div className="mt-40 mb-20 flex items-center justify-center gap-16">
+                
+            <FormCrearPlan />
             </div>
 
         </div>

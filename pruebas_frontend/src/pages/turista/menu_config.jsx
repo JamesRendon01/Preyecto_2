@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Nav from "../../components/nav.jsx";
+import FormConfig from "../../components/form_config.jsx";
 
 export default function MenuConfig() {
 
@@ -25,7 +26,7 @@ export default function MenuConfig() {
                 showFilter={false}
                 showTitle={false}
                 showProfile={false}
-                showNavbar={true}
+                showNavbar={false}
                 showSearch={false}
                 showButtonsLogin={false}
                 showConfig={true}
