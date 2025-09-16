@@ -19,8 +19,11 @@ app.middleware("http")(security_headers)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 origins = [
-    "http://localhost:5173",
-    "http://localhost:4000",
+    "http://localhost:5173",   # Vite por defecto
+    "http://localhost:3000",   # CRA por defecto
+    "http://localhost:4000",   # el que te está apareciendo en el error
+    "http://192.168.20.62:3000", # si pruebas con IP local
+    "http://192.168.20.62:4000"  # si pruebas con IP local en otro puerto
 ]
 
 app.add_middleware(
