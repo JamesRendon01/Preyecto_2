@@ -128,7 +128,7 @@ def iniciar_sesion(datos: iniciarSesionDTO, db: Session = Depends(get_session)):
     db.commit()
 
     access_token = create_access_token(
-        data = {"sub": str (turista.id), "correo": turista.correo}
+        data = {"sub": str (turista.id), "correo": turista.correo, "nombre": turista.nombre, }
     )
     return{
         "access_token": access_token,
