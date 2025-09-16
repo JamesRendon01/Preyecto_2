@@ -1,6 +1,6 @@
 import Nav from "../../components/nav.jsx";
-import CrudPlanes from "../../components/listar_planes_admin.jsx";
 import BreadcrumbNav from "../../components/breadcrumb.jsx";
+import CrudPlanes from "../../components/listar_planes_admin.jsx";
 
 export default function ListarPlanesAdmin() {
 

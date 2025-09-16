@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Nav from "../../components/nav.jsx";
-import FormConfig from "../../components/form_config.jsx";
 
 export default function MenuConfig() {
 
@@ -12,7 +11,7 @@ export default function MenuConfig() {
         const filtered = favoritos.filter((item) =>
             item.nombre.toLowerCase().includes(query.toLowerCase())
         );
-        setResults(filtered);
+        setResults(filtered); 
         setHasSearched(true);
     };
     return (

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Nav from "../../components/nav.jsx"
-import FormCrearPlan from "../../components/form_config.jsx";
+import FormCrearPlan from "../../components/form_create_plan.jsx";
 
 export default function CreatePlan() {
 

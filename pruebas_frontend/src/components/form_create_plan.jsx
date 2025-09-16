@@ -14,27 +14,74 @@ export default function FormCrearPlan() {
         imagen: null
     });
 
+    const [preview, setPreview] = useState(null); // Vista previa de la imagen
+
+    // Manejo de inputs de texto
     const handleChange = (e) => {
         const { name, value } = e.target;
         setPlan({ ...plan, [name]: value });
     };
 
+    // Manejo de imagen
     const handleFileChange = (e) => {
-        setPlan({ ...plan, imagen: e.target.files[0] });
+        const file = e.target.files[0];
+        setPlan({ ...plan, imagen: file });
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => setPreview(reader.result);
+            reader.readAsDataURL(file);
+        } else {
+            setPreview(null);
+        }
     };
 
+    // Enviar formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validaciones básicas
+        if (!plan.nombre.trim()) {
+            alert("El nombre es obligatorio");
+            return;
+        }
+        if (!plan.descripcion_corta.trim()) {
+            alert("La descripción corta es obligatoria");
+            return;
+        }
+        if (!plan.descripcion.trim()) {
+            alert("La descripción es obligatoria");
+            return;
+        }
+        if (!plan.costo_persona) {
+            alert("El precio por persona es obligatorio");
+            return;
+        }
 
         const formData = new FormData();
         formData.append("nombre", plan.nombre);
         formData.append("descripcion_corta", plan.descripcion_corta);
         formData.append("descripcion", plan.descripcion);
-        formData.append("costo_persona", plan.costo_persona);
-        if (plan.id_ciudad) formData.append("id_ciudad", Number(plan.id_ciudad));
-        if (plan.id_informe) formData.append("id_informe", Number(plan.id_informe));
+
+        // Convertimos costo_persona a float
+        formData.append("costo_persona", parseFloat(plan.costo_persona));
+
+        // Solo enviamos id_ciudad o id_informe si tienen valor numérico válido
+        if (plan.id_ciudad && !isNaN(plan.id_ciudad)) {
+            formData.append("id_ciudad", Number(plan.id_ciudad));
+        }
+        if (plan.id_informe && !isNaN(plan.id_informe)) {
+            formData.append("id_informe", Number(plan.id_informe));
+        }
+
+        // Imagen
         if (plan.imagen instanceof File) {
             formData.append("imagen", plan.imagen);
+        }
+
+        // DEBUG: ver qué estamos enviando
+        for (let pair of formData.entries()) {
+            console.log(pair[0], pair[1]);
         }
 
         try {
@@ -65,6 +112,9 @@ export default function FormCrearPlan() {
                 {/* Imagen */}
                 <label className="block mb-2 font-medium">Imagen</label>
                 <input type="file" accept="image/*" onChange={handleFileChange} className="mb-4" />
+                {preview && (
+                    <img src={preview} alt="Vista previa" className="mb-4 w-full h-48 object-cover rounded" />
+                )}
 
                 {/* Nombre */}
                 <label className="block mb-2 font-medium">Nombre</label>
