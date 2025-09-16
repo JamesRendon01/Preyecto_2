@@ -11,6 +11,7 @@ from utils.jwt_manager import create_access_token, verify_access_token
 from typing import Optional
 import uuid
 from random import randint
+from utils.dependencies import get_current_user
 
 # Session dependency
 def get_session():
@@ -96,7 +97,7 @@ def actualizar_turista(id: int, datos: turistaUpdateDTO, db: Session = Depends(g
     return {"mensaje": f"El turista {id} fue actualizado exitosamente"}
 
 # Eliminar turista
-@router.delete('/{id}')
+@router.delete('/delet/{id}')
 def eliminar_turista(id: int, db: Session = Depends(get_session)):
     et = db.query(Turista).filter(Turista.id == id).first()
     if not et:
@@ -218,3 +219,12 @@ def cambiar_contrasena(data: CambiarContrasenaDTO, db: Session = Depends(get_ses
     turista.expira_token = None
     db.commit()
     return {"mensaje": "Contraseña cambiada exitosamente"}
+
+@router.delete("/eliminar-perfil")
+def eliminar_perfil(
+    current_user=Depends(get_current_user)  # ⚠️ Usa la misma sesión que get_current_user
+):
+    db: Session = current_user.__dict__['_sa_instance_state'].session  # Obtener la sesión del objeto
+    db.delete(current_user)
+    db.commit()
+    return {"mensaje": "Perfil eliminado correctamente"}
