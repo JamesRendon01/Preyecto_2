@@ -13,7 +13,7 @@ ENV/
 __pycache__
 *.py[cod]
 *$py.class
-
+*.pyc
 # Archivos de compilación
 build/
 dist/
