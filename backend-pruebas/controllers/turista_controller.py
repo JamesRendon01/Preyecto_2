@@ -141,7 +141,7 @@ def iniciar_sesion(datos: iniciarSesionDTO, db: Session = Depends(get_session)):
         }
     }
 
-@router.get("/mis-datos")
+@router.get("/reservas/mis-datos")
 def obtener_mis_datos(
     authorization: Optional[str] = Header(None, alias="Authorization"),
     db: Session = Depends(get_session)
@@ -163,6 +163,7 @@ def obtener_mis_datos(
         raise HTTPException(status_code=404, detail="Turista no encontrado")
 
     return {
+        "id": turista.id,
         "correo": turista.correo,
         "nombre": turista.nombre,
         "tipo_identificacion": turista.tipo_identificacion,

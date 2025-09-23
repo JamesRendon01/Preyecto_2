@@ -4,14 +4,14 @@ from datetime import date
 
 class reservaCreateDTO(BaseModel):
     fecha_reserva: date
-    costo_final: int
+    costo_final: float
     disponibilidad: bool
     numero_personas: int
-    id_informe: int
+    id_informe: Optional[int] = None
     id_plan: int
-    id_turista: int
-    email_cliente: str  # coincide con lo que envía el frontend
     token_tarjeta: str
+    email_cliente: str
+    
 
 class reservaUpdateDTO(BaseModel):
     fecha_reserva: Optional[date] = None

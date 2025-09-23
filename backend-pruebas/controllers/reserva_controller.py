@@ -1,58 +1,77 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import session
+from fastapi import APIRouter, Depends, HTTPException, Header
+from sqlalchemy.orm import Session, joinedload
 from models.reserva import Reserva
-from dtos.reserva_dto import reservaCreateDTO
-from dtos.reserva_dto import reservaUpdateDTO
+from dtos.reserva_dto import reservaCreateDTO, reservaUpdateDTO
 from db.session import SessionLocal
-from services.mercadopago_service import crear_pago
-from datetime import date
+from datetime import date, datetime
+import io
+from typing import Optional
+from utils.jwt_manager import verify_access_token
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from mails.mailjet_config import enviar_comprobante  # Para enviar por correo
 
-#obtener el objeto session
+
+# obtener el objeto session
 def get_session():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-        
-# Creacion del Router con el prefijo /reserva
-router = APIRouter( prefix='/reserva' )
 
-#Endoint para listar todas las reservas
-@router.get('/')
-def listar_reserva(
-                db: session = Depends(get_session)
-                ):
+
+# Creación del Router con el prefijo /reserva
+router = APIRouter(prefix="/reserva")
+
+
+# Endpoint para listar todas las reservas
+@router.get("/")
+def listar_reserva(db: Session = Depends(get_session)):
     lr = db.query(Reserva).all()
     if not lr:
-         raise HTTPException(status_code=404, detail="No hay Reservas registradas")
-    # Retorna con la lista de reservas
+        raise HTTPException(status_code=404, detail="No hay Reservas registradas")
     return lr
+
 
 # Endpoint para listar reservas por id
-@router.get('/{id}')
-def listar_por_id(
-                id: int, 
-                db: session = Depends(get_session)
-                ):
+@router.get("/{id}")
+def listar_por_id(id: int, db: Session = Depends(get_session)):
     lr = db.query(Reserva).filter(Reserva.id == id).first()
     if not lr:
-         raise HTTPException(status_code=404, detail="Ruta no encontrada")
-    # Retorna con la lista de reservas
+        raise HTTPException(status_code=404, detail="Reserva no encontrada")
     return lr
 
-# Endpoint para crear una nueva reserva
+
+# Endpoint para crear reserva
 @router.post("/crear_reserva")
-def crear_reserva(nuevo_reserva: reservaCreateDTO, db: session = Depends(get_session)):
+def crear_reserva(
+    nuevo_reserva: reservaCreateDTO,
+    authorization: Optional[str] = Header(None, alias="Authorization"),
+    db: Session = Depends(get_session),
+):
+    # Validación de token
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Token no proporcionado")
+
+    token = authorization.split(" ")[1]
+    payload = verify_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+
+    turista_id = payload.get("sub")
+    if not turista_id:
+        raise HTTPException(status_code=401, detail="No se pudo obtener el id del turista")
+
     # Validación de fecha
     if not nuevo_reserva.fecha_reserva or not isinstance(nuevo_reserva.fecha_reserva, date):
         raise HTTPException(status_code=400, detail="Fecha de reserva inválida")
 
-    # Validación token de pago
+    # Validación de token de pago
     if not nuevo_reserva.token_tarjeta:
         raise HTTPException(status_code=400, detail="Token de pago requerido")
 
-    # Crear objeto reserva (sin commit todavía)
+    # Crear objeto reserva
     reserva = Reserva(
         fecha_reserva=nuevo_reserva.fecha_reserva,
         costo_final=nuevo_reserva.costo_final,
@@ -60,75 +79,153 @@ def crear_reserva(nuevo_reserva: reservaCreateDTO, db: session = Depends(get_ses
         numero_personas=nuevo_reserva.numero_personas,
         id_informe=nuevo_reserva.id_informe,
         id_plan=nuevo_reserva.id_plan,
-        id_turista=nuevo_reserva.id_turista
+        id_turista=int(turista_id),
     )
 
+    # Guardar en DB
+    db.add(reserva)
+    db.commit()
+    db.refresh(reserva)
+
+    # 🔹 Recargar la reserva con relaciones para poder acceder a turista y plan
+    reserva = db.query(Reserva).options(
+        joinedload(Reserva.turista),
+        joinedload(Reserva.plan)
+    ).filter(Reserva.id == reserva.id).first()
+
+    # 🔹 Generar comprobante PDF
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+    pdf.setTitle("Comprobante de Pago")
+
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawCentredString(300, 750, "COMPROBANTE DE PAGO")
+    pdf.setFont("Helvetica", 10)
+    pdf.drawRightString(550, 730, f"Nº {reserva.id:05d}")
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawCentredString(300, 710, "Reservación Exitosa ✅")
+
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(50, 680, f"Fecha: Bogotá, {datetime.now().strftime('%d/%m/%Y')}")
+    pdf.drawString(50, 660, f"Turista: {reserva.turista.nombre}")
+    pdf.drawString(50, 640, f"CC: {reserva.turista.identificacion}")
+    pdf.drawString(50, 620, f"Teléfono: {reserva.turista.celular}")
+    pdf.drawString(50, 600, f"Plan: {reserva.plan.nombre}")
+
+    pdf.drawString(50, 570, f"Fecha reserva: {reserva.fecha_reserva}")
+    pdf.drawString(50, 550, f"Personas: {reserva.numero_personas}")
+    pdf.drawString(50, 530, f"Precio plan: ${reserva.plan.costo_persona:,}")
+    pdf.drawString(50, 510, f"Método de pago: Tarjeta de crédito")
+
+    total = reserva.plan.costo_persona + (reserva.numero_personas * 100000)
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(50, 480, f"TOTAL: ${total:,}")
+
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(50, 440, "Firma del responsable: Escapade Parfaite")
+    pdf.drawString(50, 420, f"Firma del Turista: {reserva.turista.nombre}")
+
+    pdf.save()
+    buffer.seek(0)
+    pdf_bytes = buffer.getvalue()
+
+    # Guardar PDF en DB
+    reserva.comprobante_pdf = pdf_bytes
+    db.commit()
+
+    # 🔹 Enviar correo automáticamente con manejo de errores
     try:
-        # Crear pago con Mercado Pago
-        pago = crear_pago(
-            token_tarjeta=nuevo_reserva.token_tarjeta,
-            monto=nuevo_reserva.costo_final,
-            descripcion=f"Reserva ID temporal",
-            email_cliente=nuevo_reserva.email_cliente
-        )
-
-        # Validar respuesta de pago
-        if not pago.get("status"):
-            raise HTTPException(status_code=400, detail=f"Error en respuesta de Mercado Pago: {pago.get('raw')}")
-
-        if pago["status"] != "approved":
-            raise HTTPException(
-                status_code=400,
-                detail=f"Pago fallido: {pago.get('status_detail')} - {pago.get('status')}"
-            )
-
-        # Guardar reserva en DB solo si pago fue aprobado
-        db.add(reserva)
-        db.commit()
-        db.refresh(reserva)
-
-    except HTTPException:
-        db.rollback() # Revertit si hubo un HTTPExceptuion
-        raise
+        enviar_comprobante(reserva, pdf_bytes)
     except Exception as e:
-        db.rollback() # Revertir cambios si hubo un error inesperado
-        raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
+        print("Error enviando correo:", e)
 
     return {
-        "reserva": {
-            "id": reserva.id,
-            "fecha_reserva": reserva.fecha_reserva,
-            "costo_final": reserva.costo_final,
-            "disponibilidad": reserva.disponibilidad,
-            "numero_personas": reserva.numero_personas,
-            "id_informe": reserva.id_informe,
-            "id_plan": reserva.id_plan,
-            "id_turista": reserva.id_turista
-        },
-        "pago": pago
+        "message": "Reserva creada, comprobante generado y enviado por correo",
+        "reserva_id": reserva.id
     }
 
-#Endpoint para actualizar reservas
-@router.put('/{id}')
-def actualizar_reserva(id: int, datos: reservaUpdateDTO,db: session = Depends(get_session)):
-    #Buscar resserva por id
-    ar = db.query(Reserva).filter(Reserva.id == id).first()
-    # Actualizar solo los campos proporcionados
-    if not ar:
-        raise HTTPException(status_code=404, detail="Reserva no encontrado")
-    for key, value in datos.dict(exclude_unset=True).items():
-         setattr(ar, key, value)
-    db.commit() #Guardar cambios
-    db.refresh(ar)
-    return "Se modifico exitosamente la Reserva con el Id:" + str(id)
 
-#Endpoint para eliminar reservas
-@router.delete('/{id}')
-def eliminar_reserva(id: int,db: session = Depends(get_session)):
-    # Busca la reserva por ID
+# Endpoint para actualizar reservas
+@router.put("/{id}")
+def actualizar_reserva(id: int, datos: reservaUpdateDTO, db: Session = Depends(get_session)):
+    ar = db.query(Reserva).filter(Reserva.id == id).first()
+    if not ar:
+        raise HTTPException(status_code=404, detail="Reserva no encontrada")
+
+    for key, value in datos.dict(exclude_unset=True).items():
+        setattr(ar, key, value)
+
+    db.commit()
+    db.refresh(ar)
+    return {"message": f"Se modificó exitosamente la Reserva con el Id: {id}"}
+
+
+# Endpoint para eliminar reservas
+@router.delete("/{id}")
+def eliminar_reserva(id: int, db: Session = Depends(get_session)):
     er = db.query(Reserva).filter(Reserva.id == id).first()
     if not er:
-         raise HTTPException(status_code=404, detail="Reserva no encontrado")
-    db.delete(er)# Elimina la reserva
-    db.commit() # Guarda cambios
-    return "Se elimino con exito la Reserva con el Id:" + str(id)
+        raise HTTPException(status_code=404, detail="Reserva no encontrada")
+    db.delete(er)
+    db.commit()
+    return {"message": f"Se eliminó con éxito la Reserva con el Id: {id}"}
+
+
+# Endpoint para generar comprobante PDF y guardarlo en DB
+@router.post("/generar_comprobante/{reserva_id}")
+def generar_comprobante(reserva_id: int, db: Session = Depends(get_session)):
+    reserva = db.query(Reserva).options(
+        joinedload(Reserva.turista),
+        joinedload(Reserva.plan)
+    ).filter(Reserva.id == reserva_id).first()
+
+    if not reserva:
+        raise HTTPException(status_code=404, detail="Reserva no encontrada")
+
+    # Crear PDF en memoria
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+    pdf.setTitle("Comprobante de Pago")
+
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawCentredString(300, 750, "COMPROBANTE DE PAGO")
+    pdf.setFont("Helvetica", 10)
+    pdf.drawRightString(550, 730, f"Nº {reserva.id:05d}")
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawCentredString(300, 710, "Reservación Exitosa ✅")
+
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(50, 680, f"Fecha: Bogotá, {datetime.now().strftime('%d/%m/%Y')}")
+    pdf.drawString(50, 660, f"Turista: {reserva.turista.nombre}")
+    pdf.drawString(50, 640, f"CC: {reserva.turista.identificacion}")
+    pdf.drawString(50, 620, f"Teléfono: {reserva.turista.celular}")
+    pdf.drawString(50, 600, f"Plan: {reserva.plan.nombre}")
+
+    pdf.drawString(50, 570, f"Fecha reserva: {reserva.fecha_reserva}")
+    pdf.drawString(50, 550, f"Personas: {reserva.numero_personas}")
+    pdf.drawString(50, 530, f"Precio plan: ${reserva.plan.precio:,}")
+    pdf.drawString(50, 510, f"Precio x persona: $100,000")
+    pdf.drawString(50, 490, f"Método de pago: Tarjeta de crédito")
+
+    total = reserva.plan.precio + (reserva.numero_personas * 100000)
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(50, 460, f"TOTAL: ${total:,}")
+
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(50, 420, "Firma del responsable: Escapade Parfaite")
+    pdf.drawString(50, 400, f"Firma del Turista: {reserva.turista.nombre}")
+
+    pdf.save()
+    buffer.seek(0)
+
+    # Guardar en DB
+    reserva.comprobante_pdf = buffer.getvalue()
+    db.commit()
+
+    # 👇 Enviar correo automáticamente
+    try:
+        enviar_comprobante(reserva, reserva.comprobante_pdf)
+    except Exception as e:
+        print("Error enviando correo:", e)
+
+    return {"message": "Comprobante generado y guardado exitosamente"}
