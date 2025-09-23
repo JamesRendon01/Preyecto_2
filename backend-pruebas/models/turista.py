@@ -22,3 +22,5 @@ class Turista(Base):
     token_recuperacion = Column(String(255), nullable=True)
     expira_token = Column(DateTime, nullable=True)
     ciudad_id=Column(Integer, ForeignKey("ciudad.id"))
+
+    reservas = relationship("Reserva", back_populates="turista")
