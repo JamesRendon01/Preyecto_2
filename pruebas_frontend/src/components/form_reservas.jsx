@@ -22,6 +22,7 @@ export default function FormReservas() {
     ccv: "",
   });
 
+    const [showModal, setShowModal] = useState(false);
 
   // Autorelleno de ejemplo
   useEffect(() => {
