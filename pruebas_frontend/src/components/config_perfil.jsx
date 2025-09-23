@@ -125,18 +125,18 @@ export default function ActualizarTurista() {
 
   return (
     <div className="p-6 justify-center items-center min-h-screen">
-      <div className="w-96 h-60 bg-white border-black border-2 font-title rounded-2xl">
+      <div className="w-96 h-80 bg-white border-black border-2 font-title rounded-2xl">
         <img
           src="/img/imagen.png"
           alt="perfil"
-          className="w-30 rounded-full border-2 ml-35 border-black object-cover bg-fondo sm:mt-0 sm:h-25 sm:w-25 md:mt-5 xl:w-40 xl:h-40"
+          className="w-30 rounded-full border-2 ml-30 border-black object-cover bg-fondo sm:mt-0 sm:h-25 sm:w-25 md:mt-5 xl:w-40 xl:h-40"
         />
-        <div className="flex mt-10 gap-10 justify-center">
+        <div className="flex mt-5 gap-10 justify-center">
           <ButtonDeleteTurista />
         </div>
       </div>
 
-      <form className="bg-white shadow-lg rounded-xl p-6 w-96" onSubmit={handleSubmit}>
+      <form className="bg-white shadow-lg rounded-xl p-6 w-96 font-general" onSubmit={handleSubmit}>
         {/* Nombre */}
         <label className="block mb-2 font-medium">Nombre</label>
         <input
@@ -225,7 +225,7 @@ export default function ActualizarTurista() {
         />
 
         {/* Botón */}
-        <button className="bg-fondo text-black px-4 py-2 rounded hover:bg-green-600 w-full">
+        <button className="bg-fondo absolute top-102 left-165 w-40 text-black px-4 py-2 rounded hover:bg-green-600 border-2 border-black">
           Guardar cambios
         </button>
       </form>
