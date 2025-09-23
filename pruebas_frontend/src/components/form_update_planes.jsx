@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import {message } from "antd";
+
 
 export default function FormUpdatePlans() {
     const { id } = useParams();
@@ -64,14 +66,14 @@ export default function FormUpdatePlans() {
             });
 
             if (res.ok) {
-                alert("Plan actualizado correctamente");
+                message.success("Plan actualizado correctamente");
                 navigate("/listar_planes_admin");
             } else {
                 alert("Error al actualizar el plan");
             }
         } catch (error) {
             console.error("Error en la actualizacion:", error);
-            alert("Error de conexion al servidor");
+            message.error("Error de conexion al servidor");
         }
     };
 

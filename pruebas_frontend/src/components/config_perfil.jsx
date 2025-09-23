@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ButtonDeleteTurista from "./button_delet_turista.jsx";
+import {message } from "antd";
 
 export default function ActualizarTurista() {
   const [formData, setFormData] = useState({
@@ -36,14 +37,14 @@ export default function ActualizarTurista() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("No estás logueado");
+      message.error("No estás logueado");
       setLoading(false);
       return;
     }
 
     const decoded = parseJwt(token);
     if (!decoded || !decoded.sub) {
-      alert("Token inválido");
+      message.error("Token inválido");
       setLoading(false);
       return;
     }
@@ -87,13 +88,13 @@ export default function ActualizarTurista() {
     e.preventDefault();
 
     if (!turistaId) {
-      alert("No se pudo obtener el ID del turista");
+      message.error("No se pudo obtener el ID del turista");
       return;
     }
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("No estás logueado");
+      message.error("No estás logueado");
       return;
     }
 
@@ -109,7 +110,7 @@ export default function ActualizarTurista() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        alert("Error: " + JSON.stringify(errorData));
+        message.error("Error: " + JSON.stringify(errorData));
         return;
       }
 
@@ -117,7 +118,7 @@ export default function ActualizarTurista() {
       alert(result.mensaje);
     } catch (error) {
       console.error(error);
-      alert("Error al actualizar los datos");
+      message.error("Error al actualizar los datos");
     }
   };
 

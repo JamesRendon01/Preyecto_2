@@ -2,35 +2,32 @@
 import { useState, useEffect } from "react";
 import CardCarousel from "../../components/CardCarousel.jsx";
 import CardComponent from "../../components/card.jsx";
-import { Button, Pagination } from "antd";
 import Nav from "../../components/nav.jsx";
-import { useNavigate } from "react-router-dom";
 import { useFavoritosStore } from "../../storage/favoritos_storage.js";
 import Footer from "../../components/footer.jsx";
 import Paginacion from "../../components/paginacion.jsx";
 
-// Simula un usuario logueado (reemplaza con tu lógica real de login)
 const USER_ID = 1;
 
 export default function HomePage() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [plans, setPlans] = useState([]); // 👉 todos los planes
-  const [filteredPlans, setFilteredPlans] = useState([]); // 👉 filtrados por búsqueda
+  const [plans, setPlans] = useState([]);
+  const [filteredPlans, setFilteredPlans] = useState([]);
+
+  // 👉 Estados de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8; // 👈 ahora 8 cards por página
 
   const { cargarFavoritos } = useFavoritosStore();
 
-    // Simula carga inicial de planes desde API
+  // Cargar planes desde API
   useEffect(() => {
     const fetchPlans = async () => {
       try {
         const res = await fetch("http://localhost:8000/plan/card_planes");
         const data = await res.json();
-        console.log("Planes recibidos:", data); // 👈 DEBUG
         setPlans(data);
-        setFilteredPlans(data); // al inicio no hay filtro
+        setFilteredPlans(data);
       } catch (error) {
         console.error("Error cargando planes:", error);
       }
@@ -52,50 +49,50 @@ export default function HomePage() {
       );
       setFilteredPlans(filtered);
     }
+    setCurrentPage(1); // 👈 reinicia a la primera página al filtrar
   }, [query, plans]);
 
-  // Cargar favoritos desde backend para este usuario al iniciar
-  useEffect(() => {
-    cargarFavoritos(USER_ID);
-  }, []);
-
-  //limpia resultados y estado cuando query esta vacio
-  useEffect(() => {
-    if (query.trim() === "") {
-      setHasSearched(false);
-      setResults([]);
-    }
-  }, [query]);
+  // Calcular datos paginados
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedPlans = filteredPlans.slice(startIndex, startIndex + pageSize);
 
   return (
     <div>
-      <Nav
-        query={query}
-        setQuery={setQuery}
-        // results={results}
-        // hasSearched={hasSearched}
-        // handleSearch={handleSearch}
-        showFilter={true}
-        showNavbar = {true}     // 👈 nuevo
-      />
+      {/* Navbar */}
+      <Nav query={query} setQuery={setQuery} showFilter={true} showNavbar={true} />
 
       <div className="h-24" />
 
+      {/* Carrusel */}
       <CardCarousel interval={4000} />
 
-      {/* Pasamos userId para que CardComponent gestione favoritos correctamente */}
-      <CardComponent showButton userId={USER_ID} />
+      {/* Cards paginadas en grid */}
+      <div className="px-6 mt-10">
+        {paginatedPlans.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            {paginatedPlans.map((plan) => (
+              <CardComponent
+                key={plan.id}
+                showButton
+                userId={USER_ID}
+                plans={[plan]} // 👈 le pasamos un solo plan
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-700">No se encontraron resultados</p>
+        )}
+      </div>
 
-      {filteredPlans.length > 0 ? (
-        <CardComponent showButton userId={USER_ID} plans={filteredPlans} />
-      ) : (
-        <p className="text-center text-gray-700">
-          No se encontraron resultados
-        </p>
-      )}
+      {/* Paginación */}
+      <Paginacion
+        current={currentPage}
+        total={filteredPlans.length}
+        pageSize={pageSize}
+        onChange={setCurrentPage}
+      />
 
-      <Paginacion />
-
+      {/* Footer */}
       <footer>
         <Footer />
       </footer>
