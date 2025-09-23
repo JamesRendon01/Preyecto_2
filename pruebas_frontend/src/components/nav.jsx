@@ -69,8 +69,8 @@ export default function Nav({
 
     return (
         <div className={` fixed top-0 left-0 w-full h-24 bg-nav z-50 transition-shadow ${scrolled ? "shadow-2" : "shadow-none"}`}>
-            <div className="flex gap-x-20 ml-30">
-                <div className="flex mt-0 ml-30">
+            <div className="flex gap-x-20">
+                <div className="flex mt-0 absolute xl:left-0 sm:left-0 left-0 top-0 sm:top-5 lg:top-2 ">
                     <Header rol="inicio" />
                 </div>
 
@@ -82,7 +82,7 @@ export default function Nav({
                     {showFilter && <div className=" absolute  sm:left-30 md:left-25 md:top-5 lg:left-40 xl:left-100"><FiltroTabs /></div>}
 
                     {showTitle && <div className=" absolute sm:top-3 sm:left-40 md:left-25 md:top-6 xl:left-60"><Header titulo="FAVORITOS" /></div>}
-                    {showTitleReservas && <div className="mr-30"><Header rol="inicio" titulo="RESERVAS" /></div>}
+                    {showTitleReservas && <div className=""><Header rol="inicio" titulo="RESERVAS" /></div>}
                     {showTitleAdmin && <div className=" absolute sm:top-7 sm:left-60 md:left-45 md:top-6 xl:left-70"><Header titulo="ADMINISTRADOR" /></div>}
                     {showTitlePlanesAdmin && <div className=" absolute sm:top-7 sm:left-60 md:left-70 md:top-6 lg:left-80 xl:left-110"><Header titulo="PLANES" /></div>}
                     {showTitleCrearPlanesAdmin && <div className=" absolute sm:top-7 sm:left-40 md:left-60 md:top-6 lg:left-65 xl:left-90"><Header titulo="CREAR PLAN" /></div>}
@@ -110,7 +110,7 @@ export default function Nav({
 
                 {showNavbarAdmin && (
                     <div className="absolute sm:top-3 sm:left-100 md:left-170 md:top-3 lg:left-230 xl:left-345">
-                        <Hamburguer rol="admin" links={linksParaAdmin} />
+                        <Hamburguer rol="admin" cxlinks={linksParaAdmin} />
                     </div>
                 )}
 

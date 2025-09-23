@@ -11,7 +11,7 @@ export default function Header({ titulo, rol }) {
       {(rol === "turista" || rol === "admin") && (
         <>
           {/* Logo de la empresa */}
-          <img className="w-38 h-18 sm:w-15 sm:h-10 sm:mt-0 md:w-28 md:h-18 xl:w-40 xl:h-20" src="/img/logo.png" alt="logo" />
+          <img className="w-38 h-18 sm:w-15 sm:h-10 sm:mt-0 md:w-28 md:h-38 xl:w-40 xl:h-20" src="/img/logo.png" alt="logo" />
           {/* Imagen animada del avion */}
           <img className="w-39 h-18 sm:w-15 sm:h-10 sm:mt-0 sm:mr-0 md:w-28 md:h-18 xl:w-40 xl:h-20" src="/img/avion.gif" alt="logo" />
         </>
@@ -23,7 +23,7 @@ export default function Header({ titulo, rol }) {
 
           {/* Logo */}
           <img
-            className="w-48 h-24 absolute left-0 top-0 sm:top-3 sm:w-25 sm:h-15 lg:w-35 lg:h-20"
+            className="w-48 h-24 sm:w-25 sm:h-15 lg:w-35 lg:h-20"
             src="/img/logo.png"
             alt="logo"
           />
