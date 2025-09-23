@@ -22,9 +22,8 @@ export default function FormReservas() {
     ccv: "",
   });
 
-  const [showModal, setShowModal] = useState(false);
 
-  // 🔹 Autorelleno de datos del turista desde el backend
+  // Autorelleno de ejemplo
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -336,3 +335,4 @@ export default function FormReservas() {
     </>
   );
 }
+
