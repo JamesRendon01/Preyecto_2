@@ -142,7 +142,7 @@ def iniciar_sesion(datos: iniciarSesionDTO, db: Session = Depends(get_session)):
     }
 
 @router.get("/reservas/mis-datos")
-def obtener_mis_datos(
+def obtener_mis_datos_reserva(
     authorization: Optional[str] = Header(None, alias="Authorization"),
     db: Session = Depends(get_session)
 ):
@@ -169,6 +169,41 @@ def obtener_mis_datos(
         "tipo_identificacion": turista.tipo_identificacion,
         "identificacion": turista.identificacion,
         "celular": turista.celular,
+    }
+
+@router.get("/perfil/mis-datos")
+def obtener_mis_datos_perfil(
+    authorization: Optional[str] = Header(None, alias="Authorization"),
+    db: Session = Depends(get_session)
+):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Token no proporcionado")
+
+    token = authorization.split(" ")[1]
+    payload = verify_access_token(token)
+
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+
+    turista_id = payload.get("sub")
+    turista = db.query(Turista).filter(Turista.id == int(turista_id)).first()
+    if not turista:
+        raise HTTPException(status_code=404, detail="Turista no encontrado")
+
+    # Obtener nombre de la ciudad
+    ciudad = db.query(Ciudad).filter(Ciudad.id == turista.ciudad_id).first()
+    nombre_ciudad = ciudad.nombre if ciudad else None
+
+    return {
+        "id": turista.id,
+        "correo": turista.correo,
+        "nombre": turista.nombre,
+        "tipo_identificacion": turista.tipo_identificacion,
+        "identificacion": turista.identificacion,
+        "celular": turista.celular,
+        "fecha_nacimiento": turista.fecha_nacimiento,
+        "direccion": turista.direccion,
+        "ciudad": nombre_ciudad  # 🔹 Ahora devuelve el nombre de la ciudad
     }
 
 # Solicitar recuperación

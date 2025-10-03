@@ -84,7 +84,6 @@ def crear_plan(
         descripcion=descripcion,
         costo_persona=costo_persona,
         id_ciudad=id_ciudad,
-        id_informe=id_informe,
         imagen=filename
     )
     db.add(nuevo_plan)

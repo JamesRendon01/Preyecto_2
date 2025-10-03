@@ -10,7 +10,6 @@ class planCreateDTO(BaseModel):
     costo_persona: int
     imagen: Optional[str] = None
     id_ciudad: Optional [int] = None
-    id_informe: Optional[int] = None
 
 class planUpdateDTO(BaseModel):
     nombre: Optional[str] = None
