@@ -167,16 +167,6 @@ export default function FormCrearPlan() {
                     className="w-full border px-3 py-2 rounded mb-4"
                 />
 
-                {/* Informe */}
-                <label className="block mb-2 font-medium">ID Informe</label>
-                <input
-                    type="text"
-                    name="id_informe"
-                    value={plan.id_informe}
-                    onChange={handleChange}
-                    className="w-full border px-3 py-2 rounded mb-4"
-                />
-
                 {/* Botón */}
                 <button
                     type="submit"

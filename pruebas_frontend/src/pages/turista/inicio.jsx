@@ -1,6 +1,6 @@
 // pages/HomePage.jsx
 import { useState, useEffect } from "react";
-import CardCarousel from "../../components/CardCarousel.jsx";
+import PlanesCarousel from "../../components/Carousel.jsx";
 import CardComponent from "../../components/card.jsx";
 import Nav from "../../components/nav.jsx";
 import { useFavoritosStore } from "../../storage/favoritos_storage.js";
@@ -63,11 +63,13 @@ export default function HomePage() {
 
       <div className="h-24" />
 
-      {/* Carrusel */}
-      <CardCarousel interval={4000} />
+      <div>
+        {/* Carrusel */}
+        <PlanesCarousel />
+      </div>
 
       {/* Cards paginadas en grid */}
-      <div className="px-6 mt-10">
+      <div className="px-6 mt-30">
         {paginatedPlans.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {paginatedPlans.map((plan) => (

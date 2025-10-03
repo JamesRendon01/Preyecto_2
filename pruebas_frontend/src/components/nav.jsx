@@ -21,6 +21,7 @@ export default function Nav({
     showButtonsLogin = false,
     showConfig = false,
     showTitleReservas = false,
+    showTitleMisReservas = false,
     showTitleAdmin = false,
     showNavbarAdmin = false,
     showTitlePlanesAdmin = false,
@@ -46,10 +47,9 @@ export default function Nav({
     const linksParaPagina2 = [
         { href: "/inicio", icon: House, label: "Inicio" },
         { href: "/turista/editar/:id", icon: CircleUserRound, label: "Perfil" },
-        { href: "/", icon: CalendarCheck, label: "Reservas" },
+        { href: "/mis_reservas", icon: CalendarCheck, label: "Reservas" },
         { href: "/favoritos", icon: Heart, label: "Favoritos" },
         { href: "/", icon: BellRing, label: "Novedades" },
-        { href: "/", icon: PhoneCall, label: "Contáctanos" },
         { href: "/", icon: LogOut, label: "Cerrar Sesión", onClick: handleLogoutTurista }
     ];
 
@@ -82,7 +82,8 @@ export default function Nav({
                     {showFilter && <div className=" absolute  sm:left-30 md:left-25 md:top-5 lg:left-40 xl:left-100"><FiltroTabs /></div>}
 
                     {showTitle && <div className=" absolute sm:top-3 sm:left-40 md:left-25 md:top-6 xl:left-60"><Header titulo="FAVORITOS" /></div>}
-                    {showTitleReservas && <div className=""><Header rol="inicio" titulo="RESERVAS" /></div>}
+                    {showTitleReservas && <div className="ml-100 mt-5   "><Header titulo="RESERVAS" /></div>}
+                    {showTitleMisReservas && <div className=" absolute sm:top-3 sm:left-40 md:left-25 md:top-6 xl:left-60"><Header titulo="MIS RESERVAS" /></div>}
                     {showTitleAdmin && <div className=" absolute sm:top-7 sm:left-60 md:left-45 md:top-6 xl:left-70"><Header titulo="ADMINISTRADOR" /></div>}
                     {showTitlePlanesAdmin && <div className=" absolute sm:top-7 sm:left-60 md:left-70 md:top-6 lg:left-80 xl:left-110"><Header titulo="PLANES" /></div>}
                     {showTitleCrearPlanesAdmin && <div className=" absolute sm:top-7 sm:left-40 md:left-60 md:top-6 lg:left-65 xl:left-90"><Header titulo="CREAR PLAN" /></div>}
@@ -104,13 +105,13 @@ export default function Nav({
 
                 {showNavbar && (
                     <div className="absolute sm:left-100 md:left-170 md:top-3 lg:left-230 xl:left-345">
-                        <Hamburguer rol="turista" links={linksParaPagina2} />
+                        <Hamburguer rol="turista" links={linksParaPagina2} rolt="turista" />
                     </div>
                 )}
 
                 {showNavbarAdmin && (
                     <div className="absolute sm:top-3 sm:left-100 md:left-170 md:top-3 lg:left-230 xl:left-345">
-                        <Hamburguer rol="admin" cxlinks={linksParaAdmin} />
+                        <Hamburguer rol="admin" links={linksParaAdmin} rolt="admin" />
                     </div>
                 )}
 

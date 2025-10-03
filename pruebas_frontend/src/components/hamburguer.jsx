@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
+import React, { useState, useEffect } 
+from "react"; import { jwtDecode } from "jwt-decode";
 
 // 🔹 Subcomponente del menú hamburguesa
-const HamburgerMenu = ({ links, nombre }) => {
+const HamburgerMenu = ({ links, nombre, rol }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -24,7 +24,8 @@ const HamburgerMenu = ({ links, nombre }) => {
         {/* Nombre arriba */}
         {nombre && (
           <div className="px-4 py-3 border-b border-gray-500 text-white font-bold text-lg text-center">
-            {nombre}
+            <div>{nombre}</div>
+            <div className="text-sm font-normal mt-1">{rol === "admin" ? "Admin" : "Turista"}</div>
           </div>
         )}
 
@@ -78,7 +79,7 @@ const Hamburguer = ({ links = [], rol }) => {
 
   return (
     <nav className="flex justify-end items-center py-6 px-4 text-black relative z-50 bg-nav">
-      <HamburgerMenu links={links} nombre={nombre} />
+      <HamburgerMenu links={links} nombre={nombre} rol={rol} />
     </nav>
   );
 };

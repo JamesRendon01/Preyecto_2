@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Nav from "../../components/nav.jsx";
-import CardCarousel from "../../components/CardCarousel.jsx";
+import PlanesCarousel from "../../components/Carousel.jsx";
 import CardComponent from "../../components/card.jsx";
 import Footer from "../../components/footer.jsx";
 export default function DashbordSinLogin() {
@@ -33,7 +33,7 @@ export default function DashbordSinLogin() {
             />
 
             <div className="mt-25">
-                <CardCarousel />
+                <PlanesCarousel />
             </div>
 
             <div>

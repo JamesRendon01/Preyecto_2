@@ -16,6 +16,7 @@ import PrivateRouteAdmin from "./components/private_router_admin.jsx";
 import ListarPlanesAdmin from "./pages/administrador/planes.jsx";
 import UpdatePlanes from "./pages/administrador/update_planes.jsx";
 import CreatePlan from "./pages/administrador/crear_plan.jsx";
+import MisReservas from "./components/card_reservas.jsx";
 
 export default function App() {
   return (
@@ -35,6 +36,8 @@ export default function App() {
         <Route path="/turista/editar/:id" element={<PrivateRouteTurista><MenuConfig /></PrivateRouteTurista>} />
         <Route path="/favoritos" element={<PrivateRouteTurista><Favoritos /></PrivateRouteTurista>} />
         <Route path="/reservas" element={<PrivateRouteTurista><Reservas /></PrivateRouteTurista>} />
+        <Route path="/mis_reservas" element={<PrivateRouteTurista><MisReservas/></PrivateRouteTurista>} />
+
 
         {/* Rutas del administrador */}
         <Route path="/admin" element={<InicioAdministrador />} />

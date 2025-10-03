@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Nav from "../../components/nav.jsx";
+import Footer from "../../components/footer.jsx";   
 import ActualizarTurista from "../../components/config_perfil.jsx";
 
 export default function MenuConfig() {
@@ -32,13 +33,16 @@ export default function MenuConfig() {
                 showConfig={true}
             />
             <div className="flex mt-30 gap-10 items-center justify-center">
-            
+
                 <div>
                     <ActualizarTurista />
                 </div>
-                
+
             </div>
 
+            <footer>
+                <Footer />
+            </footer>
         </div>
     );
 }

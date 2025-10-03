@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import ButtonDeleteTurista from "./button_delet_turista.jsx";
-import {message } from "antd";
+import { message } from "antd";
 
 export default function ActualizarTurista() {
   const [formData, setFormData] = useState({
@@ -52,7 +52,7 @@ export default function ActualizarTurista() {
     setTuristaId(Number(decoded.sub));
 
     // Traer datos actuales del usuario
-    fetch("http://localhost:8000/turista/mis-datos", {
+    fetch("http://localhost:8000/turista/perfil/mis-datos", {
       method: "GET",
       headers: { "Authorization": `Bearer ${token}` },
     })
