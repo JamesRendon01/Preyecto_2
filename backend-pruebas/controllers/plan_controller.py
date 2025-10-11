@@ -182,13 +182,7 @@ def obtener_planes_card(db: Session = Depends(get_session)):
     Devuelve todos los planes con los campos necesarios para el carrusel:
     imagen, nombre, descripcion.
     """
-    resultados = db.query(
-        Plan.id,
-        Plan.nombre,
-        Plan.descripcion_corta,
-        Plan.descripcion,
-        Plan.imagen
-    ).all()
+    resultados = db.query(Plan).all()
     
     # Si no hay ningun plan maneja el error y muestra el siguiente mensaje "No hay planes disponibles"
     if not resultados:
@@ -201,7 +195,9 @@ def obtener_planes_card(db: Session = Depends(get_session)):
             "nombre": r.nombre,
             "descripcion_corta": r.descripcion_corta,
             "descripcion": r.descripcion,
-            "imagen": r.imagen
+            "imagen": r.imagen,
+            "costo_persona": r.costo_persona,
+            "ciudad": r.ciudad.nombre if r.ciudad else None
         })
 
     return card_planes;
