@@ -28,6 +28,7 @@ export default function Favoritos() {
   const planesAMostrar = hasSearched ? results : favoritos;
 
   return (
+    <>
     <div className="bg-gradient-to-t from-white to-grispri">
       <Nav
         query={query}
@@ -51,9 +52,11 @@ export default function Favoritos() {
           <CardComponent showButton plans={planesAMostrar} />
         )}
       </main>
-      <footer>
+      
+    </div>
+    <footer >
         <Footer />
       </footer>
-    </div>
+    </>
   );
 }
