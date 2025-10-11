@@ -52,7 +52,6 @@ export default function InicioTurista() {
 
         // 🔹 Decodificar el token para obtener el nombre del turista
         const decoded = jwtDecode(result.access_token);
-        console.log("Nombre del turista:", decoded.nombre);
 
         // 🔹 Guardar el nombre en localStorage para usarlo en la Navbar
         localStorage.setItem("nombre", decoded.nombre);

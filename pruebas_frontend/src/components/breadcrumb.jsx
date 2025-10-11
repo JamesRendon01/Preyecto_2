@@ -1,18 +1,40 @@
+// components/breadcrumb.jsx
 import React from "react";
 import { Breadcrumb } from "antd";
+import { useBreadcrumb } from "../context/breadcrumb_context.jsx";
 import { Link } from "react-router-dom";
-import { useBreadcrumb } from "../context/breadcrumb_context";
 
-const BreadcrumbNav = () => {
-  const { breadcrumbItems } = useBreadcrumb();
+export default function BreadcrumbNav() {
+  const breadcrumbContext = useBreadcrumb();
 
-  const items = breadcrumbItems.map((item, index) => ({
-    key: item.path,
-    title: <Link to={item.path}>{item.title}</Link>,
-  }));
+  // ⚠️ Previene errores si el contexto aún no está disponible
+  if (!breadcrumbContext) {
+    console.warn("⚠️ BreadcrumbNav se está renderizando sin BreadcrumbProvider");
+    return null;
+  }
 
-  return <Breadcrumb items={items} />;
-};
+  const { breadcrumbItems } = breadcrumbContext;
 
-export default BreadcrumbNav;
+  // ⚠️ Verificación adicional
+  if (!breadcrumbItems || breadcrumbItems.length === 0) {
+    return null;
+  }
 
+  return (
+    <div className="px-6">
+      <Breadcrumb
+        separator=">"
+        items={breadcrumbItems.map((item, index) => ({
+          title:
+            index === breadcrumbItems.length - 1 ? (
+              <span className="text-black font-bold">{item.title}</span>
+            ) : (
+              <Link to={item.path} className="text-white hover:underline">
+                {item.title}
+              </Link>
+            ),
+        }))}
+      />
+    </div>
+  );
+}

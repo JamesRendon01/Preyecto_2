@@ -1,41 +1,38 @@
 import { useEffect } from "react";
 import Nav from "../../components/nav.jsx";
-import FormCrearPlan from "../../components/form_create_plan.jsx";
 import BreadcrumbNav from "../../components/breadcrumb.jsx";
 import { useBreadcrumb } from "../../context/breadcrumb_context.jsx";
+import ListarReservas from "../../components/listar_reservas_admin.jsx";
 
-export default function CreatePlan() {
+export default function Reservas() {
   const { addBreadcrumb, resetBreadcrumb } = useBreadcrumb();
 
   useEffect(() => {
-    // Reiniciamos y configuramos el breadcrumb al cargar la página
+    // Al entrar en esta página, limpiamos y establecemos el breadcrumb base
     resetBreadcrumb();
-    addBreadcrumb({ title: "Listar Planes", path: "/listar_planes_admin" });
-    addBreadcrumb({ title: "Crear Plan", path: "/create-plan" });
+    addBreadcrumb({ title: "Reservas", path: "/listar_reservas_admin" });
   }, []);
 
   return (
     <div>
-      {/* Navbar del admin */}
+      {/* Navbar del administrador */}
       <div className="mb-24">
         <Nav
           showFilter={false}
           showTitleAdmin={false}
           showNavbarAdmin={true}
           showSearch={false}
-          showTitleCrearPlanesAdmin={true}
         />
       </div>
-
       {/* Contenido principal con Breadcrumb */}
       <div className="border-1 border-black h-8 flex items-center bg-nav/30">
         <BreadcrumbNav />
       </div>
 
-      <div className="mt-8 mb-20 flex items-center justify-center gap-16">
-        <FormCrearPlan />
+      {/* Contenido principal*/}
+      <div className="mt-8 px-8">
+        <ListarReservas />
       </div>
-
     </div>
   );
 }
