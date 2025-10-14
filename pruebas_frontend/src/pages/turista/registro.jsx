@@ -3,6 +3,7 @@ import { message } from "antd";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createRoot } from "react-dom/client";
+import { Eye, EyeOff } from 'lucide-react'; // 👁️ Importa los íconos
 import TermsModal from '../../components/terminos_condiciones';
 
 unstableSetRender((node, container) => {
@@ -35,6 +36,10 @@ export default function Registro() {
   const [showTerms, setShowTerms] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
+  // 👇 Estados para mostrar/ocultar contraseña
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   useEffect(() => {
     fetch("http://localhost:8000/ciudad/")
       .then(res => res.json())
@@ -61,7 +66,7 @@ export default function Registro() {
 
     delete formData.confirmar_contrasena;
 
-    const dataToSend = { ...formData, acepto_terminos: acceptedTerms}
+    const dataToSend = { ...formData, acepto_terminos: acceptedTerms }
 
     try {
       const res = await fetch("http://localhost:8000/turista/registrar", {
@@ -110,7 +115,6 @@ export default function Registro() {
       <main className="flex flex-col md:flex-row">
         <div className="w-125 h-auto bg-nav border-4 border-black p-6 rounded-lg text-black sm:w-100 sm:ml-10 md:ml-50 lg:ml-80 xl:ml-130 xl:w-120">
           <form className="flex flex-col font-general" onSubmit={handleSubmit}>
-            {/* Inputs */}
             <label className="mt-4">*Correo:</label>
             <input type="email" name="correo" value={formData.correo} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
@@ -130,14 +134,48 @@ export default function Registro() {
               <option value="PPT">Permiso por proteccion Temporal</option>
             </select>
 
-            <label className="mt-4">*Identificacion:</label>
+            <label className="mt-4">*Identificación:</label>
             <input type="number" name="identificacion" value={formData.identificacion} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
+            {/* Contraseña */}
             <label className="mt-4">*Contraseña:</label>
-            <input type="password" name="contrasena" value={formData.contrasena} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="contrasena"
+                value={formData.contrasena}
+                onChange={handleChange}
+                required
+                className="w-full p-1 pr-10 rounded-md text-black mt-2 bg-gray-200"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
 
+            {/* Confirmar Contraseña */}
             <label className="mt-4">*Confirmar contraseña:</label>
-            <input type="password" name="confirmar_contrasena" value={formData.confirmar_contrasena} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmar_contrasena"
+                value={formData.confirmar_contrasena}
+                onChange={handleChange}
+                required
+                className="w-full p-1 pr-10 rounded-md text-black mt-2 bg-gray-200"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
 
             <label className="mt-4">*Ciudad de residencia:</label>
             <select name="ciudad_residencia_id" value={formData.ciudad_residencia_id} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200">
@@ -145,16 +183,16 @@ export default function Registro() {
               {ciudades.map(ciudad => <option key={ciudad.id} value={ciudad.id}>{ciudad.nombre}</option>)}
             </select>
 
-            <label className="mt-4">*Numero de celular:</label>
+            <label className="mt-4">*Número de celular:</label>
             <input type="number" name="celular" value={formData.celular} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
-            <label className="mt-4">*Direccion:</label>
+            <label className="mt-4">*Dirección:</label>
             <input type="text" name="direccion" value={formData.direccion} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
 
             {/* Link login */}
             <p className="text-center mt-2 text-sm">
               <Link to="/turista" className="underline text-black">
-                ¿Ya tienes Cuenta? Inicia Sesion
+                ¿Ya tienes Cuenta? Inicia Sesión
               </Link>
             </p>
 
