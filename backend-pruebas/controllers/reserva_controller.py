@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session, joinedload
 from models.reserva import Reserva
-from dtos.reserva_dto import reservaCreateDTO, reservaUpdateDTO
+from dtos.reserva_dto import reservaCreateDTO, reservaUpdateDTO, ReservaOut
 from db.session import SessionLocal
 from datetime import date, datetime
 import io
@@ -25,13 +25,33 @@ def get_session():
 router = APIRouter(prefix="/reserva")
 
 
-# Endpoint para listar todas las reservas
-@router.get("/")
+@router.get("/listar_reservas", response_model=list[ReservaOut])
 def listar_reserva(db: Session = Depends(get_session)):
-    lr = db.query(Reserva).all()
-    if not lr:
+    reservas = (
+        db.query(Reserva)
+        .options(joinedload(Reserva.turista), joinedload(Reserva.plan))
+        .all()
+    )
+
+    if not reservas:
         raise HTTPException(status_code=404, detail="No hay Reservas registradas")
-    return lr
+
+    # 🔹 Convertimos los datos a formato serializable (sin comprobante_pdf)
+    resultado = []
+    for r in reservas:
+        resultado.append({
+            "id": r.id,
+            "fecha_reserva": str(r.fecha_reserva),
+            "costo_final": r.costo_final,
+            "disponibilidad": r.disponibilidad,
+            "numero_personas": r.numero_personas,
+            "id_plan": r.id_plan,
+            "plan_nombre": r.plan.nombre if r.plan else None,
+            "id_turista": r.id_turista,
+            "turista_nombre": r.turista.nombre if r.turista else None,
+        })
+
+    return resultado
 
 
 # Endpoint para listar reservas por id
@@ -50,7 +70,7 @@ def crear_reserva(
     authorization: Optional[str] = Header(None, alias="Authorization"),
     db: Session = Depends(get_session),
 ):
-    # Validación de token
+    # 🔹 Validación de token
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Token no proporcionado")
 
@@ -63,15 +83,27 @@ def crear_reserva(
     if not turista_id:
         raise HTTPException(status_code=401, detail="No se pudo obtener el id del turista")
 
-    # Validación de fecha
+    # 🔹 Validación de fecha
     if not nuevo_reserva.fecha_reserva or not isinstance(nuevo_reserva.fecha_reserva, date):
         raise HTTPException(status_code=400, detail="Fecha de reserva inválida")
 
-    # Validación de token de pago
+    # 🔹 Validación de token de pago
     if not nuevo_reserva.token_tarjeta:
         raise HTTPException(status_code=400, detail="Token de pago requerido")
 
-    # Crear objeto reserva
+    # 🚫 Validación para evitar reservas duplicadas (mismo turista + mismo plan)
+    reserva_existente = db.query(Reserva).filter(
+        Reserva.id_turista == int(turista_id),
+        Reserva.id_plan == nuevo_reserva.id_plan
+    ).first()
+
+    if reserva_existente:
+        raise HTTPException(
+            status_code=400,
+            detail="Ya tienes una reserva activa para este plan. Solo se permite una por turista."
+        )
+
+    # ✅ Crear nueva reserva
     reserva = Reserva(
         fecha_reserva=nuevo_reserva.fecha_reserva,
         costo_final=nuevo_reserva.costo_final,
@@ -82,7 +114,6 @@ def crear_reserva(
         id_turista=int(turista_id),
     )
 
-    # Guardar en DB
     db.add(reserva)
     db.commit()
     db.refresh(reserva)
