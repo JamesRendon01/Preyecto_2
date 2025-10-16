@@ -63,7 +63,6 @@ def crear_plan(
     descripcion: str = Form(...),
     costo_persona: float = Form(...),
     id_ciudad: Optional[int] = Form(None),
-    id_informe: Optional[int] = Form(None),
     imagen: Optional[UploadFile] = File(None),
     db: Session = Depends(get_session)
 ):
