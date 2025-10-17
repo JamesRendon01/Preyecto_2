@@ -7,8 +7,8 @@ export default function TermsModal({ isOpen, onClose, onAccept }) {
 
     return (
         <div className="fixed inset-0 bg-black/80 bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-fondo font-general rounded-2xl shadow-lg p-6 max-w-lg w-full relative">
-                <h2 className="text-xl font-title mb-4">TÉRMINOS Y CONDICIONES</h2>
+            <div className="bg-fondo rounded-2xl shadow-lg p-6 max-w-lg w-full relative">
+                <h2 className="text-xl mb-4">TÉRMINOS Y CONDICIONES</h2>
                 <div className="h-64 overflow-y-auto mb-4 border p-4 rounded">
                     <p>
                         Términos y Condiciones ESCAPADE PARFAITE.

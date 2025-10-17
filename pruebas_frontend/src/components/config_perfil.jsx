@@ -126,7 +126,7 @@ export default function ActualizarTurista() {
 
   return (
     <div className="p-6 justify-center items-center min-h-screen">
-      <div className="w-96 h-80 bg-white border-black border-2 font-title rounded-2xl">
+      <div className="w-96 h-80 bg-white border-black border-2 rounded-2xl">
         <img
           src="/img/imagen.png"
           alt="perfil"
@@ -137,7 +137,7 @@ export default function ActualizarTurista() {
         </div>
       </div>
 
-      <form className="bg-white shadow-lg rounded-xl p-6 w-96 font-general" onSubmit={handleSubmit}>
+      <form className="bg-white shadow-lg rounded-xl p-6 w-96" onSubmit={handleSubmit}>
         {/* Nombre */}
         <label className="block mb-2 font-medium">Nombre</label>
         <input

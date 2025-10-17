@@ -54,7 +54,7 @@ export default function LoginForm({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-10 top-34 transform -translate-y-1/2"
+            className="absolute right-15 top-34 transform -translate-y-1/2"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
@@ -94,7 +94,7 @@ export default function LoginForm({
         {/* Boton para enviar el formulario */}
         <button
           type="submit"
-          className="bg-fondo border-2 border-black px-4 py-2 rounded-md font-playfair hover:bg-gray-300 transition-colors ml-25 mt-8 md:mt-5 absolute sm:left-32 md:left-30 xl:left-38"
+          className="bg-fondo border-2 border-black px-4 py-2 rounded-md hover:bg-gray-300 transition-colors ml-25 mt-8 md:mt-5 absolute sm:left-32 md:left-30 xl:left-38"
         >
           Continuar
         </button>

@@ -112,7 +112,7 @@ export default function IngresarPin() {
             {/* Botón para enviar el formulario */}
             <button
               type="submit"
-              className="w-30 bg-fondo text-black font-serif font-bold py-2 rounded-full mt-4 hover:bg-white font-playfair border-2 border-black absolute left-50 top-60"
+              className="w-30 bg-fondo text-black font-serif font-bold py-2 rounded-full mt-4 hover:bg-white border-2 border-black absolute left-50 top-60"
             >
               Continuar
             </button>

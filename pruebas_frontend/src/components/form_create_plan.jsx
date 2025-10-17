@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { message } from "antd";
 
 export default function FormCrearPlan() {
     const navigate = useNavigate();
 
+    // Estado principal del plan
     const [plan, setPlan] = useState({
         nombre: "",
         descripcion_corta: "",
@@ -11,18 +13,34 @@ export default function FormCrearPlan() {
         costo_persona: "",
         id_ciudad: "",
         id_informe: "",
-        imagen: null
+        imagen: null,
     });
 
-    const [preview, setPreview] = useState(null); // Vista previa de la imagen
+    // Estados auxiliares
+    const [preview, setPreview] = useState(null); // Vista previa de imagen
+    const [ciudades, setCiudades] = useState([]); // Lista de ciudades
 
-    // Manejo de inputs de texto
+    // 🔹 Cargar las ciudades desde el backend al montar el componente
+    useEffect(() => {
+        fetch("http://localhost:8000/ciudad/listar_ciudades") // <-- Ajusta si tu ruta difiere
+            .then((res) => {
+                if (!res.ok) throw new Error("Error al obtener ciudades");
+                return res.json();
+            })
+            .then((data) => setCiudades(data))
+            .catch((err) => {
+                console.error("Error cargando ciudades:", err);
+                message.error("No se pudieron cargar las ciudades");
+            });
+    }, []);
+
+    // Manejo de campos de texto
     const handleChange = (e) => {
         const { name, value } = e.target;
         setPlan({ ...plan, [name]: value });
     };
 
-    // Manejo de imagen
+    // Manejo de archivo de imagen
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         setPlan({ ...plan, imagen: file });
@@ -36,52 +54,29 @@ export default function FormCrearPlan() {
         }
     };
 
-    // Enviar formulario
+    // Envío del formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Validaciones básicas
-        if (!plan.nombre.trim()) {
-            alert("El nombre es obligatorio");
-            return;
-        }
-        if (!plan.descripcion_corta.trim()) {
-            alert("La descripción corta es obligatoria");
-            return;
-        }
-        if (!plan.descripcion.trim()) {
-            alert("La descripción es obligatoria");
-            return;
-        }
-        if (!plan.costo_persona) {
-            alert("El precio por persona es obligatorio");
-            return;
-        }
+        if (!plan.nombre.trim()) return alert("El nombre es obligatorio");
+        if (!plan.descripcion_corta.trim()) return alert("La descripción corta es obligatoria");
+        if (!plan.descripcion.trim()) return alert("La descripción es obligatoria");
+        if (!plan.costo_persona) return alert("El precio por persona es obligatorio");
+        if (!plan.id_ciudad) return alert("Debe seleccionar una ciudad");
 
+        // Construimos el FormData
         const formData = new FormData();
         formData.append("nombre", plan.nombre);
         formData.append("descripcion_corta", plan.descripcion_corta);
         formData.append("descripcion", plan.descripcion);
-
-        // Convertimos costo_persona a float
         formData.append("costo_persona", parseFloat(plan.costo_persona));
-
-        // Solo enviamos id_ciudad o id_informe si tienen valor numérico válido
-        if (plan.id_ciudad && !isNaN(plan.id_ciudad)) {
-            formData.append("id_ciudad", Number(plan.id_ciudad));
-        }
+        formData.append("id_ciudad", Number(plan.id_ciudad));
         if (plan.id_informe && !isNaN(plan.id_informe)) {
             formData.append("id_informe", Number(plan.id_informe));
         }
-
-        // Imagen
         if (plan.imagen instanceof File) {
             formData.append("imagen", plan.imagen);
-        }
-
-        // DEBUG: ver qué estamos enviando
-        for (let pair of formData.entries()) {
-            console.log(pair[0], pair[1]);
         }
 
         try {
@@ -91,15 +86,15 @@ export default function FormCrearPlan() {
             });
 
             if (res.ok) {
-                alert("Plan creado correctamente");
+                message.success("✅ Plan creado correctamente");
                 navigate("/listar_planes_admin");
             } else {
                 const errorData = await res.json();
-                alert(errorData.detail || "Error al crear el plan");
+                message.error(errorData.detail || "❌ Error al crear el plan");
             }
         } catch (error) {
             console.error("Error en la creación:", error);
-            alert("Error de conexión al servidor");
+            message.error("❌ Error de conexión con el servidor");
         }
     };
 
@@ -110,14 +105,14 @@ export default function FormCrearPlan() {
                 <h2 className="text-xl font-bold mb-4 text-center">Crear Nuevo Plan</h2>
 
                 {/* Imagen */}
-                <label className="block mb-2 font-medium">Imagen</label>
+                <label className="block mt-2 font-medium">Imagen</label>
                 <input type="file" accept="image/*" onChange={handleFileChange} className="mb-4" />
                 {preview && (
                     <img src={preview} alt="Vista previa" className="mb-4 w-full h-48 object-cover rounded" />
                 )}
 
                 {/* Nombre */}
-                <label className="block mb-2 font-medium">Nombre</label>
+                <label className="block mt-2 font-medium">Nombre</label>
                 <input
                     type="text"
                     name="nombre"
@@ -128,7 +123,7 @@ export default function FormCrearPlan() {
                 />
 
                 {/* Descripción */}
-                <label className="block mb-2 font-medium">Descripción Corta</label>
+                <label className="block mt-2 font-medium">Descripción Corta</label>
                 <textarea
                     name="descripcion_corta"
                     value={plan.descripcion_corta}
@@ -137,7 +132,7 @@ export default function FormCrearPlan() {
                     required
                 />
 
-                <label className="block mb-2 font-medium">Descripción</label>
+                <label className="block mt-2 font-medium">Descripción</label>
                 <textarea
                     name="descripcion"
                     value={plan.descripcion}
@@ -147,7 +142,7 @@ export default function FormCrearPlan() {
                 />
 
                 {/* Precio */}
-                <label className="block mb-2 font-medium">Precio por Persona</label>
+                <label className="block mt-2 font-medium">Precio por Persona</label>
                 <input
                     type="number"
                     name="costo_persona"
@@ -158,22 +153,31 @@ export default function FormCrearPlan() {
                 />
 
                 {/* Ciudad */}
-                <label className="block mb-2 font-medium">ID Ciudad</label>
-                <input
-                    type="text"
+                <label className="block mt-2 font-medium">ID Ciudad</label>
+                <select
                     name="id_ciudad"
                     value={plan.id_ciudad}
                     onChange={handleChange}
-                    className="w-full border px-3 py-2 rounded mb-4"
-                />
-
-                {/* Botón */}
-                <button
-                    type="submit"
-                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-full"
+                    className="w-full border border-gray-300 px-3 py-2 rounded mb-20"
+                    required
                 >
-                    Crear Plan
-                </button>
+                    <option value="">Seleccione una ciudad</option>
+                    {ciudades.map((ciudad) => (
+                        <option key={ciudad.id} value={ciudad.id}>
+                            {ciudad.nombre}
+                        </option>
+                    ))}
+                </select>
+                <div className="mt-5">
+                    <button
+                        type="submit"
+                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-full"
+                    >
+                        Crear Plan
+                    </button>
+                </div>
+                {/* Botón */}
+
             </form>
         </div>
     );

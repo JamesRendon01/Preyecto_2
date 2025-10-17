@@ -35,9 +35,9 @@ export default function ListarReservas() {
 
   return (
     <div className="overflow-x-auto p-4 w-screen bg-fondo flex justify-center">
-      <table className="w-300 bg-white border-2 border-black rounded-lg text-center font-general">
+      <table className="w-300 bg-white border-2 border-black rounded-lg text-center">
         {/* Header */}
-        <thead className="bg-gray-100 font-title">
+        <thead className="bg-gray-100">
           <tr>
             {headers.map((head) => (
               <th

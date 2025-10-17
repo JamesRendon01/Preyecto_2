@@ -41,7 +41,7 @@ const HamburgerMenu = ({ links, nombre, rol }) => {
               }
               setIsOpen(false);
             }}
-            className="px-4 py-2 hover:bg-white hover:text-black hover:border-black hover:border-2 hover:rounded-xl text-white text-lg font-medium text-center flex gap-10 font-general"
+            className="px-4 py-2 hover:bg-white hover:text-black hover:border-black hover:border-2 hover:rounded-xl text-white text-lg font-medium text-center flex gap-10"
           >
             {Icon && <Icon size={30} className="color-white hover:color-black" />}
             {label}
