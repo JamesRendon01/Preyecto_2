@@ -207,6 +207,7 @@ def crear_reserva(
         joinedload(Reserva.plan)
     ).filter(Reserva.id == reserva.id).first()
 
+
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=letter)
     pdf.setTitle("Comprobante de Pago")
