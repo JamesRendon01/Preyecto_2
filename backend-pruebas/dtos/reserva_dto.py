@@ -2,31 +2,44 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import date
 
+
+# =====================================================
+# 🔹 DTO para creación de reserva
+# =====================================================
 class reservaCreateDTO(BaseModel):
     fecha_reserva: date
-    costo_final: float
     disponibilidad: bool
     numero_personas: int
     id_informe: Optional[int] = None
     id_plan: int
     token_tarjeta: str
-    email_cliente: str
-    
+    email_cliente: str  # si lo usas para enviar correo
 
+    class Config:
+        orm_mode = True
+
+
+# =====================================================
+# 🔹 DTO para actualización de reserva
+# =====================================================
 class reservaUpdateDTO(BaseModel):
     fecha_reserva: Optional[date] = None
-    costo_final: Optional[int] = None
     numero_personas: Optional[int] = None
     id_informe: Optional[int] = None
     id_plan: Optional[int] = None
+    disponibilidad: Optional[bool] = None
 
-from pydantic import BaseModel
-from typing import Optional
+    class Config:
+        orm_mode = True
 
+
+# =====================================================
+# 🔹 DTO para salida de reserva
+# =====================================================
 class ReservaOut(BaseModel):
     id: int
     fecha_reserva: str
-    costo_final: int
+    costo_final: float
     disponibilidad: bool
     numero_personas: int
     id_plan: int
@@ -36,4 +49,3 @@ class ReservaOut(BaseModel):
 
     class Config:
         orm_mode = True
-
