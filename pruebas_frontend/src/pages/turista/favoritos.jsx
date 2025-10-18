@@ -8,6 +8,7 @@ export default function Favoritos() {
   const { favoritos, cargarFavoritos } = useFavoritosStore();
 
   const [query, setQuery] = useState("");
+  const [filteredFavoritos, setFilteredFavoritos] = useState([]);
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
 
@@ -15,6 +16,21 @@ export default function Favoritos() {
   useEffect(() => {
     cargarFavoritos();
   }, [cargarFavoritos]);
+
+    // 👉 Filtrado en tiempo real
+  useEffect(() => {
+    if (query.trim() === "") {
+      setFilteredFavoritos(favoritos);
+    } else {
+      const lowerQuery = query.toLowerCase();
+      const filtered = favoritos.filter(
+        (item) =>
+          item.nombre.toLowerCase().includes(lowerQuery) ||
+          (item.descripcion && item.descripcion.toLowerCase().includes(lowerQuery))
+      );
+      setFilteredFavoritos(filtered);
+    }
+  }, [query, favoritos]);
 
   const handleSearch = () => {
     const filtered = favoritos.filter((item) =>
@@ -49,7 +65,7 @@ export default function Favoritos() {
               : "No tienes favoritos todavía"}
           </p>
         ) : (
-          <CardComponent showButton plans={planesAMostrar} />
+          <CardComponent showButton plans={filteredFavoritos} />
         )}
       </main>
       

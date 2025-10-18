@@ -14,9 +14,9 @@ const HamburgerMenu = ({ links, nombre, rol }) => {
         aria-expanded={isOpen}
         className="flex flex-col justify-between w-8 h-6 focus:outline-none"
       >
-        <span className={`block h-0.5 bg-black transition-transform duration-300 ${isOpen ? "rotate-45 translate-y-2" : ""}`} />
+        <span className={`block h-0.5 bg-black transition-transform duration-300 ${isOpen ? "rotate-40 translate-y-3" : ""}`} />
         <span className={`block h-0.5 bg-black transition-opacity duration-300 ${isOpen ? "opacity-0" : ""}`} />
-        <span className={`block h-0.5 bg-black transition-transform duration-300 ${isOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+        <span className={`block h-0.5 bg-black transition-transform duration-300 ${isOpen ? "-rotate-40 -translate-y-2.5" : ""}`} />
       </button>
 
       {/* Menú desplegable */}
@@ -30,23 +30,24 @@ const HamburgerMenu = ({ links, nombre, rol }) => {
         )}
 
         {/* Links dinámicos */}
-        {links.map(({ href, label, onClick, icon: Icon }) => (
-          <a
-            key={href}
-            href={href}
-            onClick={(e) => {
-              if (onClick) {
-                e.preventDefault();
-                onClick();
-              }
-              setIsOpen(false);
-            }}
-            className="px-4 py-2 hover:bg-white hover:text-black hover:border-black hover:border-2 hover:rounded-xl text-white text-lg font-medium text-center flex gap-10"
-          >
-            {Icon && <Icon size={30} className="color-white hover:color-black" />}
-            {label}
-          </a>
-        ))}
+        {links.map(({ href, label, onClick, icon: Icon }, index) => (
+  <a
+    key={`${href}-${index}`}
+    href={href}
+    onClick={(e) => {
+      if (onClick) {
+        e.preventDefault();
+        onClick();
+      }
+      setIsOpen(false);
+    }}
+    className="px-4 py-2 hover:bg-white hover:text-black hover:border-black hover:border-2 hover:rounded-xl text-white text-lg font-medium text-center flex gap-10"
+  >
+    {Icon && <Icon size={30} className="color-white hover:color-black" />}
+    {label}
+  </a>
+))}
+
       </div>
     </div>
   );
