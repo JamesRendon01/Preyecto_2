@@ -92,7 +92,6 @@ export default function FormReservas() {
         "http://localhost:8000/reserva/crear_reserva",
         {
           fecha_reserva: formData.fecha,
-          costo_final: plan?.precio || 200000,
           disponibilidad: true,
           numero_personas: parseInt(formData.numeroPersonas, 10),
           id_informe: null,
@@ -315,63 +314,68 @@ export default function FormReservas() {
 
       {/* Modal con comprobante */}
       <Modal
-        title="📄 Comprobante de Pago"
-        open={showModal}
-        onCancel={() => setShowModal(false)}
-        footer={[
-          <button
-            key="close"
-            onClick={() => setShowModal(false)}
-            className="bg-nav px-4 py-2 border-2 border-black rounded-xl font-bold"
-          >
-            Cerrar
-          </button>,
-        ]}
-      >
-        <div className="p-4 text-sm leading-relaxed">
-          <h2 className="text-center font-bold text-xl mb-2">
-            COMPROBANTE DE PAGO
-          </h2>
-          <p className="text-center font-semibold mb-4">
-            ✅ Reservación Exitosa
-          </p>
-          <p>Bogotá, {new Date().toLocaleDateString("es-CO")}</p>
-          <p>
-            Sr. <strong>{formData.nombre}</strong>, identificado con CC{" "}
-            <strong>{formData.identificacion}</strong> y teléfono{" "}
-            <strong>{formData.celular}</strong>.
-          </p>
-          <p className="mt-2">
-            Su reserva para el plan <strong>{plan?.nombre}</strong> ha sido
-            procesada exitosamente.
-          </p>
+  title="📄 Comprobante de Pago"
+  open={showModal}
+  onCancel={() => setShowModal(false)}
+  footer={[
+    <button
+      key="close"
+      onClick={() => setShowModal(false)}
+      className="bg-nav px-4 py-2 border-2 border-black rounded-xl font-bold"
+    >
+      Cerrar
+    </button>,
+  ]}
+>
+  <div className="p-4 text-sm leading-relaxed">
+    <h2 className="text-center font-bold text-xl mb-2">
+      COMPROBANTE DE PAGO
+    </h2>
+    <p className="text-center font-semibold mb-4">✅ Reservación Exitosa</p>
+    <p>Bogotá, {new Date().toLocaleDateString("es-CO")}</p>
+    <p>
+      Sr. <strong>{formData.nombre}</strong>, identificado con CC{" "}
+      <strong>{formData.identificacion}</strong> y teléfono{" "}
+      <strong>{formData.celular}</strong>.
+    </p>
+    <p className="mt-2">
+      Su reserva para el plan <strong>{plan?.nombre}</strong> ha sido
+      procesada exitosamente.
+    </p>
 
-          <div className="mt-3">
-            <p>
-              <strong>Fecha de reserva:</strong> {formData.fecha}
-            </p>
-            <p>
-              <strong>Número de personas:</strong> {formData.numeroPersonas}
-            </p>
-          </div>
+    <div className="mt-3">
+      <p>
+        <strong>Fecha de reserva:</strong> {formData.fecha}
+      </p>
+      <p>
+        <strong>Número de personas:</strong> {formData.numeroPersonas}
+      </p>
+    </div>
 
-          <div className="mt-3">
-            <p>
-              <strong>Total:</strong>{" "}
-              {(((plan?.precio || 0) +
-                100000 * parseInt(formData.numeroPersonas || 0))).toLocaleString(
-                "es-CO",
-                {
-                  style: "currency",
-                  currency: "COP",
-                  maximumFractionDigits: 0,
-                }
-              )}
-            </p>
-            <p>Método de pago: Tarjeta de crédito</p>
-          </div>
-        </div>
-      </Modal>
+    <div className="mt-3">
+      <p>
+        <strong>Precio por persona:</strong>{" "}
+        {plan?.costo_persona?.toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          maximumFractionDigits: 0,
+        })}
+      </p>
+      <p>
+        <strong>Total:</strong>{" "}
+        {(
+          (plan?.costo_persona || 0) *
+          parseInt(formData.numeroPersonas || 0)
+        ).toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          maximumFractionDigits: 0,
+        })}
+      </p>
+      <p>Método de pago: Tarjeta de crédito</p>
+    </div>
+  </div>
+</Modal>
     </>
   );
 }
