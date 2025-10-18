@@ -22,8 +22,60 @@ def get_session():
 
 
 # Creación del Router con el prefijo /reserva
-router = APIRouter(prefix="/reserva")
+router = APIRouter(prefix="/reserva", tags=["Reserva"])
 
+
+@router.get("/mis_reservas")
+def listar_reservas_usuario(
+    authorization: Optional[str] = Header(None, alias="Authorization"),
+    db: Session = Depends(get_session)
+):
+    # 🔹 Verificar token
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Token no proporcionado")
+
+    token = authorization.split(" ")[1]
+    payload = verify_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+
+    user_id = payload.get("sub")
+    rol = payload.get("rol")
+
+    # 🔹 Si es admin -> mostrar todas las reservas
+    if rol == "admin":
+        reservas = db.query(Reserva).options(joinedload(Reserva.plan)).all()
+    else:
+        # 🔹 Si es turista -> mostrar solo sus reservas
+        reservas = (
+            db.query(Reserva)
+            .options(joinedload(Reserva.plan))
+            .filter(Reserva.id_turista == user_id)
+            .all()
+        )
+
+    if not reservas:
+        raise HTTPException(status_code=404, detail="No tienes reservas registradas")
+
+    resultado = []
+    for r in reservas:
+        resultado.append({
+            "id": r.id,
+            "fecha_reserva": str(r.fecha_reserva),
+            "costo_final": r.costo_final,
+            "disponibilidad": r.disponibilidad,
+            "numero_personas": r.numero_personas,
+            "id_plan": r.id_plan,
+            "plan_nombre": r.plan.nombre if r.plan else None,
+            "plan_imagen": r.plan.imagen if r.plan else None,
+            "id_turista": r.id_turista,
+            "turista_nombre": r.turista.nombre if r.turista else None,
+            "turista_celular": r.turista.celular if r.turista else None,
+            "turista_identificacion": r.turista.identificacion if r.turista else None,
+            "comprobante_pdf": f"http://localhost:8000/reserva/comprobante/{r.id}" if r.comprobante_pdf else None,
+        })
+
+    return resultado
 
 @router.get("/listar_reservas", response_model=list[ReservaOut])
 def listar_reserva(db: Session = Depends(get_session)):
@@ -36,7 +88,7 @@ def listar_reserva(db: Session = Depends(get_session)):
     if not reservas:
         raise HTTPException(status_code=404, detail="No hay Reservas registradas")
 
-    # 🔹 Convertimos los datos a formato serializable (sin comprobante_pdf)
+
     resultado = []
     for r in reservas:
         resultado.append({
@@ -52,6 +104,16 @@ def listar_reserva(db: Session = Depends(get_session)):
         })
 
     return resultado
+
+
+@router.get("/comprobante/{reserva_id}")
+def obtener_comprobante(reserva_id: int, db: Session = Depends(get_session)):
+    reserva = db.query(Reserva).filter(Reserva.id == reserva_id).first()
+    if not reserva or not reserva.comprobante_pdf:
+        raise HTTPException(status_code=404, detail="Comprobante no encontrado")
+
+    from fastapi.responses import Response
+    return Response(content=reserva.comprobante_pdf, media_type="application/pdf")
 
 
 # Endpoint para listar reservas por id
