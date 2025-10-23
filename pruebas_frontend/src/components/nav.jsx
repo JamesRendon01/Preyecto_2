@@ -38,10 +38,6 @@ export default function Nav({
         navigate("/"); 
     };
 
-    const handleLogoutAdmin = () => {
-        localStorage.removeItem("token_admin"); 
-        navigate("/admin"); 
-    };
 
     // 🔹 Links para turista
     const linksParaPagina2 = [
@@ -51,13 +47,6 @@ export default function Nav({
         { href: "/favoritos", icon: Heart, label: "Favoritos" },
         { href: "/", icon: BellRing, label: "Novedades" },
         { href: "/", icon: LogOut, label: "Cerrar Sesión", onClick: handleLogoutTurista }
-    ];
-
-    // 🔹 Links para administrador
-    const linksParaAdmin = [
-        { href: "/dashboard-administrador", icon: House, label: "Inicio" },
-        { href: "/", icon: CircleUserRound, label: "Perfil" },
-        { href: "/", icon: LogOut, label: "Cerrar Sesión", onClick: handleLogoutAdmin }
     ];
 
     // 🔹 Scroll

@@ -2,7 +2,7 @@ import React, { useState, useEffect }
 from "react"; import { jwtDecode } from "jwt-decode";
 
 // 🔹 Subcomponente del menú hamburguesa
-const HamburgerMenu = ({ links, nombre, rol }) => {
+const HamburgerMenu = ({ links, nombre }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -25,7 +25,7 @@ const HamburgerMenu = ({ links, nombre, rol }) => {
         {nombre && (
           <div className="px-4 py-3 border-b border-gray-500 text-white font-bold text-lg text-center">
             <div>{nombre}</div>
-            <div className="text-sm font-normal mt-1">{rol === "admin" ? "Admin" : "Turista"}</div>
+            <div className="text-sm font-normal mt-1">{"Turista"}</div>
           </div>
         )}
 
@@ -59,13 +59,7 @@ const Hamburguer = ({ links = [], rol }) => {
 
   useEffect(() => {
     try {
-      if (rol === "admin") {
-        const tokenAdmin = localStorage.getItem("token_admin");
-        if (tokenAdmin) {
-          const decoded = jwtDecode(tokenAdmin);
-          setNombre(decoded.nombre || "Administrador");
-        }
-      } else if (rol === "turista") {
+       if (rol === "turista") {
         const tokenTurista = localStorage.getItem("token");
         if (tokenTurista) {
           const decoded = jwtDecode(tokenTurista);
