@@ -1,5 +1,6 @@
 from db import Base
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, VARCHAR, Text, Date
+from datetime import datetime
 from sqlalchemy.orm import relationship
 from models.ciudad import Ciudad
 
@@ -14,6 +15,8 @@ class Turista(Base):
     tipo_identificacion=Column(String(5))
     identificacion=Column(String(30), unique=True)
     contrasena=Column(VARCHAR(100))
+    estado=Column(Boolean, default=True)
+    fecha_registro = Column(DateTime, default=datetime.utcnow)
     acepto_terminos = Column(Boolean, default=False)
     intentos_fallidos = Column(Integer, default = 0)
     bloqueado_hasta = Column(DateTime, nullable = True)

@@ -13,3 +13,5 @@ class Administrador(Base):
     contrasena=Column(VARCHAR(100))
     intentos_fallidos = Column(Integer, default = 0)
     bloqueado_hasta = Column(DateTime, nullable=True)
+    informes = relationship("Informe", back_populates="administrador")
+

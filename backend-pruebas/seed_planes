@@ -1,0 +1,55 @@
+from sqlalchemy.orm import Session
+from db import engine
+from models.plan import Plan
+from faker import Faker
+import random
+import os
+
+# 🧠 Inicializa Faker para generar datos realistas en español
+fake = Faker("es_ES")
+
+# 📁 Ruta absoluta a la carpeta de imágenes
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CARPETA_IMAGENES = os.path.join(BASE_DIR, "uploads", "planes_img")
+os.makedirs(CARPETA_IMAGENES, exist_ok=True)
+
+# 🖼️ Carga las imágenes que ya existen en la carpeta
+IMAGENES = [
+    nombre for nombre in os.listdir(CARPETA_IMAGENES)
+    if nombre.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
+]
+
+# ⚠️ Verificación: si no hay imágenes, se lanza un error
+if not IMAGENES:
+    raise Exception(f"⚠️ No se encontraron imágenes en la carpeta: {CARPETA_IMAGENES}\n"
+                    f"Por favor agrega algunas antes de ejecutar este script.")
+
+def generar_planes(cantidad=50):
+    """
+    Genera 'cantidad' de registros aleatorios de planes turísticos
+    y los inserta en la base de datos usando imágenes existentes.
+    """
+    with Session(engine) as session:
+        planes = []
+        for _ in range(cantidad):
+            nombre_imagen = random.choice(IMAGENES)
+
+            plan = Plan(
+                nombre=fake.unique.catch_phrase()[:30],
+                descripcion=fake.text(max_nb_chars=180),
+                descripcion_corta=fake.sentence(nb_words=5),
+                costo_persona=random.randint(100000, 500000),
+                imagen=nombre_imagen,  # ✅ Se guarda solo el nombre del archivo
+                id_ciudad=random.randint(1, 8),  # ajusta según tus ciudades
+                id_informe=None,
+                id_Admin=1,
+            )
+            planes.append(plan)
+
+        session.add_all(planes)
+        session.commit()
+        print(f"✅ {cantidad} planes creados exitosamente usando imágenes existentes.")
+
+
+if __name__ == "__main__":
+    generar_planes(15)  # Cambia la cantidad según necesites
