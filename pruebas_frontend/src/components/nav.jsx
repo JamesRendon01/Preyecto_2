@@ -98,12 +98,6 @@ export default function Nav({
                     </div>
                 )}
 
-                {showNavbarAdmin && (
-                    <div className="absolute sm:top-3 sm:left-100 md:left-170 md:top-3 lg:left-230 xl:left-345">
-                        <Hamburguer rol="admin" links={linksParaAdmin} rolt="admin" />
-                    </div>
-                )}
-
             </div>
         </div>
     );

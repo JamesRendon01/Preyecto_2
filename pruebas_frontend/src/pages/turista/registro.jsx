@@ -36,10 +36,11 @@ export default function Registro() {
   const [showTerms, setShowTerms] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
-  // 👇 Estados para mostrar/ocultar contraseña
+  // Estados para mostrar/ocultar contraseñas
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Cargar ciudades al montar
   useEffect(() => {
     fetch("http://localhost:8000/ciudad/listar_ciudades")
       .then(res => res.json())
@@ -47,13 +48,16 @@ export default function Registro() {
       .catch(err => console.error("Error cargando ciudades:", err));
   }, []);
 
+  // Manejar cambios en los inputs
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validaciones previas
     if (!acceptedTerms) {
       messageApi.warning("Debes aceptar los términos y condiciones ⚠️");
       return;
@@ -64,9 +68,19 @@ export default function Registro() {
       return;
     }
 
-    delete formData.confirmar_contrasena;
+    if (!formData.ciudad_residencia_id) {
+      messageApi.warning("Debes seleccionar una ciudad 🏙️");
+      return;
+    }
 
-    const dataToSend = { ...formData, acepto_terminos: acceptedTerms }
+    // Eliminar campo de confirmación y construir objeto para enviar
+    const { confirmar_contrasena, ...rest } = formData;
+
+    const dataToSend = {
+      ...rest,
+      ciudad_residencia_id: parseInt(formData.ciudad_residencia_id, 10),
+      acepto_terminos: acceptedTerms
+    };
 
     try {
       const res = await fetch("http://localhost:8000/turista/registrar", {
@@ -91,7 +105,7 @@ export default function Registro() {
         }
       }
     } catch (error) {
-      console.error("Error de conexion:", error);
+      console.error("Error de conexión:", error);
       messageApi.error("No se pudo conectar al servidor ❌");
     }
   };
@@ -116,26 +130,60 @@ export default function Registro() {
         <div className="w-125 h-auto bg-nav border-4 border-black p-6 rounded-lg text-black sm:w-100 sm:ml-10 md:ml-50 lg:ml-80 xl:ml-130 xl:w-120">
           <form className="flex flex-col font-general" onSubmit={handleSubmit}>
             <label className="mt-4">*Correo:</label>
-            <input type="email" name="correo" value={formData.correo} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
+            <input
+              type="email"
+              name="correo"
+              value={formData.correo}
+              onChange={handleChange}
+              required
+              className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
+            />
 
             <label className="mt-4">*Nombre Completo:</label>
-            <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
+            <input
+              type="text"
+              name="nombre"
+              value={formData.nombre}
+              onChange={handleChange}
+              required
+              className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
+            />
 
-            <label className="mt-4">*Fecha de nacimiento</label>
-            <input type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
+            <label className="mt-4">*Fecha de nacimiento:</label>
+            <input
+              type="date"
+              name="fecha_nacimiento"
+              value={formData.fecha_nacimiento}
+              onChange={handleChange}
+              required
+              className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
+            />
 
-            <label className="mt-4">*Tipo de identificacion</label>
-            <select name="tipo_identificacion" value={formData.tipo_identificacion} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200">
+            <label className="mt-4">*Tipo de identificación:</label>
+            <select
+              name="tipo_identificacion"
+              value={formData.tipo_identificacion}
+              onChange={handleChange}
+              required
+              className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
+            >
               <option value="">Seleccione un tipo de documento</option>
               <option value="CC">Cédula de Ciudadanía</option>
               <option value="CE">Cédula de Extranjería</option>
               <option value="TI">Tarjeta de Identidad</option>
               <option value="PP">Pasaporte</option>
-              <option value="PPT">Permiso por proteccion Temporal</option>
+              <option value="PPT">Permiso por Protección Temporal</option>
             </select>
 
             <label className="mt-4">*Identificación:</label>
-            <input type="number" name="identificacion" value={formData.identificacion} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
+            <input
+              type="number"
+              name="identificacion"
+              value={formData.identificacion}
+              onChange={handleChange}
+              required
+              className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
+            />
 
             {/* Contraseña */}
             <label className="mt-4">*Contraseña:</label>
@@ -177,22 +225,47 @@ export default function Registro() {
               </button>
             </div>
 
+            {/* Ciudad */}
             <label className="mt-4">*Ciudad de residencia:</label>
-            <select name="ciudad_residencia_id" value={formData.ciudad_residencia_id} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200">
+            <select
+              name="ciudad_residencia_id"
+              value={formData.ciudad_residencia_id}
+              onChange={handleChange}
+              required
+              className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
+            >
               <option value="">Seleccione una ciudad</option>
-              {ciudades.map(ciudad => <option key={ciudad.id} value={ciudad.id}>{ciudad.nombre}</option>)}
+              {ciudades.map(ciudad => (
+                <option key={ciudad.id} value={ciudad.id}>
+                  {ciudad.nombre}
+                </option>
+              ))}
             </select>
 
             <label className="mt-4">*Número de celular:</label>
-            <input type="number" name="celular" value={formData.celular} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
+            <input
+              type="number"
+              name="celular"
+              value={formData.celular}
+              onChange={handleChange}
+              required
+              className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
+            />
 
             <label className="mt-4">*Dirección:</label>
-            <input type="text" name="direccion" value={formData.direccion} onChange={handleChange} required className="w-full p-1 rounded-md text-black mt-2 bg-gray-200" />
+            <input
+              type="text"
+              name="direccion"
+              value={formData.direccion}
+              onChange={handleChange}
+              required
+              className="w-full p-1 rounded-md text-black mt-2 bg-gray-200"
+            />
 
             {/* Link login */}
             <p className="text-center mt-2 text-sm">
               <Link to="/turista" className="underline text-black">
-                ¿Ya tienes Cuenta? Inicia Sesión
+                ¿Ya tienes cuenta? Inicia sesión
               </Link>
             </p>
 
@@ -217,14 +290,17 @@ export default function Registro() {
             </div>
 
             {/* Botón */}
-            <button type="submit" className="bg-fondo text-black font-bold px-4 py-2 rounded-md mt-4 hover:bg-white">
+            <button
+              type="submit"
+              className="bg-fondo text-black font-bold px-4 py-2 rounded-md mt-4 hover:bg-white"
+            >
               Registrarme
             </button>
           </form>
         </div>
       </main>
 
-      {/* Modal */}
+      {/* Modal de términos */}
       <TermsModal
         isOpen={showTerms}
         onClose={() => setShowTerms(false)}

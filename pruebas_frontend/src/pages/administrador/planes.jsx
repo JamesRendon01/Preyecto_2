@@ -1,52 +1,142 @@
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { useState, useEffect } from "react";
 import NavDashAdmin from "../../components/navDashAdmin.jsx";
-import CrudPlanes from "../../components/listar_planes_admin.jsx";
+import CrudTable from "../../components/tablaAdmin.jsx";
 import Contador from "../../components/contador.jsx";
-import NavAdmin from "../../components/navAdmin.jsx";
+import ButtonUpdate from "../../components/button_update.jsx";
+import ButtonDelete from "../../components/button_eliminar.jsx";
+import SearchBar from "../../components/search.jsx";
+import { message } from "antd";
+import BarraCarga from "../../components/barraCarga.jsx";
 
 export default function ListarPlanesAdmin() {
   const [totales, setTotales] = useState(null);
+  const [planes, setPlanes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [query, setQuery] = useState("");
+  const pageSize = 5;
 
+  // 🔹 Cargar totales
   useEffect(() => {
     axios
       .get("http://localhost:8000/dashboard/total_planes")
       .then((res) => setTotales(res.data))
-      .catch((err) => console.error("Error al cargar totales:", err))
+      .catch((err) => console.error("Error al cargar totales:", err));
+  }, []);
+
+  // 🔹 Cargar planes
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/plan/listar-planes")
+      .then((res) => setPlanes(res.data))
+      .catch((err) => console.error("Error al obtener los planes:", err))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="text-center">Cargando...</p>;
-  if (!totales) return <p className="text-center text-red-500">Error al cargar los datos</p>;
+  // 🔹 Eliminar plan
+  const handleDeletePlan = async (planId) => {
+    try {
+      const res = await fetch(`http://localhost:8000/plan/delet/${planId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        message.success("✅ Plan eliminado correctamente");
+        setPlanes((prev) => prev.filter((p) => p.id !== planId));
+      } else {
+        const error = await res.json();
+        message.error("❌ Error: " + (error.detail || "desconocido"));
+      }
+    } catch (err) {
+      message.error("❌ Error de conexión");
+    }
+  };
 
+  // 🔍 Filtrar planes según búsqueda
+  const filteredPlanes = planes.filter((plan) => {
+    const search = query.toLowerCase();
+    return (
+      plan.nombre?.toLowerCase().includes(search) ||
+      plan.descripcion?.toLowerCase().includes(search) ||
+      plan.descripcion_corta?.toLowerCase().includes(search) ||
+      plan.id_ciudad?.toString().includes(search) ||
+      plan.ubicaciones?.join(", ").toLowerCase().includes(search)
+    );
+  });
+
+  // 🔹 Mostrar loader mientras carga
+  if (loading)
+    return (
+      <div className="flex flex-col items-center justify-center h-screen gap-4">
+        <BarraCarga /> {/* ✅ Loader visual */}
+        <p className="text-gray-700 text-lg font-semibold">Cargando planes...</p>
+      </div>
+    );
+
+  if (!totales)
+    return <p className="text-center text-red-500">Error al cargar los datos</p>;
+
+  // 🔹 Contadores
   const items = [
     { titulo: "Total Planes", valor: totales.total_planes },
     { titulo: "Planes Hoy", valor: totales.planes_hoy },
   ];
 
+  // 🔹 Encabezados de tabla
+  const headers = [
+    { key: "nombre", label: "Nombre" },
+    { key: "descripcion_corta", label: "Descripción Corta" },
+    { key: "descripcion", label: "Descripción Larga" },
+    { key: "costo_persona", label: "Precio" },
+    { key: "id_ciudad", label: "Ciudad" },
+    {
+      key: "ubicaciones",
+      label: "Ubicación",
+      render: (value) => value?.join(", "),
+    },
+  ];
+
   return (
     <div className="flex min-h-screen">
-      {/* 🔹 Barra lateral */}
+      {/* Sidebar */}
       <aside className="w-64">
         <NavDashAdmin />
       </aside>
 
-      {/* 🔹 Contenedor principal */}
+      {/* Contenido principal */}
       <main className="flex-1 p-6">
-        {/* 🔸 Navbar superior */}
+        {/* Navbar superior */}
         <header className="mb-6">
-          <NavAdmin />
+
+          <div className="ml-160 items-center mb-4">
+            <SearchBar query={query} setQuery={setQuery} />
+          </div>
         </header>
 
-        {/* 🔸 Contenido principal */}
         <section>
           <Contador items={items} />
-
-          {/* Línea divisoria opcional */}
           <hr className="border-t-2 border-black my-6 w-full" />
 
-          <CrudPlanes />
+          {/* ✅ Tabla de planes */}
+          <CrudTable
+            headers={headers}
+            data={filteredPlanes}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalItems={filteredPlanes.length}
+            onPageChange={setCurrentPage}
+            onCreate={true}
+            renderActions={(plan) => (
+              
+              <div className="flex justify-center gap-2">
+                <ButtonUpdate id={plan.id} />
+                <ButtonDelete
+                  label="Eliminar Plan"
+                  onConfirm={() => handleDeletePlan(plan.id)}
+                />
+              </div>
+            )}
+          />
         </section>
       </main>
     </div>

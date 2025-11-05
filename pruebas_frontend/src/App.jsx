@@ -20,6 +20,8 @@ import { BreadcrumbProvider } from "./context/breadcrumb_context.jsx";
 import BreadcrumbBar from "./components/breadcrumb.jsx";
 import ListarReservas from "./pages/administrador/reservas.jsx";
 import MisReservasPage from "./pages/turista/MisReservas.jsx";
+import Turistas from "./pages/administrador/turista.jsx";
+import Estadisticas from "./pages/administrador/graficas.jsx";
 
 export default function App() {
   return (
@@ -122,6 +124,24 @@ export default function App() {
           element={
             <PrivateRouteAdmin>
               <CreatePlan />
+            </PrivateRouteAdmin>
+          }
+        />
+
+        <Route
+          path="/turistas"
+          element={
+            <PrivateRouteAdmin>
+              <Turistas/>
+            </PrivateRouteAdmin>
+          }
+        />
+
+        <Route
+          path="/estadisticas"
+          element={
+            <PrivateRouteAdmin>
+              <Estadisticas />
             </PrivateRouteAdmin>
           }
         />

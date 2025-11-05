@@ -3,9 +3,9 @@ export default function Contador({ items = [] }) {
   if (!items.length) return null; // si no hay datos, no renderiza nada
 
   return (
-    <div className="flex justify-center border-b- pb-10">
+    <div className="flex justify-center pb-10">
       <div
-        className={`grid grid-cols-${items.length} gap-40`}
+        className={`grid grid-cols-3 ${items.length} gap-40`}
       >
         {items.map((item, index) => (
           <Card key={index} titulo={item.titulo} valor={item.valor} />
