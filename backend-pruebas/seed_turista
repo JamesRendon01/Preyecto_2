@@ -68,4 +68,4 @@ def generar_turistas(cantidad: int = 50):
         db.close()
 
 if __name__ == "__main__":
-    generar_turistas(20)  # Cambia el número según necesites
+    generar_turistas(200)  # Cambia el número según necesites
