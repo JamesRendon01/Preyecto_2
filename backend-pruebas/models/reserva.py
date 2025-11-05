@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from models.informe import Informe
 from models.plan import Plan
 from models.turista import Turista
+from models.hotel import Hotel
 
 class Reserva(Base):
     __tablename__ = "reserva"
@@ -16,6 +17,7 @@ class Reserva(Base):
     id_informe=Column(Integer, ForeignKey("informe.id"))
     id_plan=Column(Integer, ForeignKey("plan.id"))
     id_turista=Column(Integer, ForeignKey("turista.id"))
-
     turista = relationship("Turista", back_populates="reservas")
     plan = relationship("Plan")
+    id_hotel = Column(Integer, ForeignKey("hotel.id"))
+    hotel = relationship("Hotel", back_populates="reservas")

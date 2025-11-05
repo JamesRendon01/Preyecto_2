@@ -38,12 +38,32 @@ router = APIRouter(prefix='/turista')
 # ==============================
 
 # Listar todos los turistas
-@router.get('/')
+@router.get('/TotalTuristas')
 def listar_turistas(db: Session = Depends(get_session)):
-    lt = db.query(Turista).all()
-    if not lt:
-        raise HTTPException(status_code=404, detail="Turista no encontrado")
-    return lt
+    # Obtenemos todos los turistas con sus ciudades
+    turistas = (
+        db.query(Turista, Ciudad.nombre.label("ciudad"))
+        .join(Ciudad, Turista.ciudad_id == Ciudad.id, isouter=True)
+        .order_by(Ciudad.nombre.asc())  # 🔹 Ordenar alfabéticamente por ciudad
+        .all()
+    )
+
+    if not turistas:
+        raise HTTPException(status_code=404, detail="No hay turistas registrados")
+
+    # Transformar el resultado en una lista limpia de diccionarios
+    resultado = []
+    for t, ciudad_nombre in turistas:
+        resultado.append({
+            "nombre": t.nombre,
+            "correo": t.correo,
+            "tipo_identificacion": t.tipo_identificacion,
+            "identificacion": t.identificacion,
+            "celular": t.celular,
+            "direccion": t.direccion,
+            "ciudad": ciudad_nombre or "Sin ciudad"
+        })
+    return resultado
 
 # Listar por ID
 @router.get('/{id}')

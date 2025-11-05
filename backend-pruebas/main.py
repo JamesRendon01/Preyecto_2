@@ -13,6 +13,8 @@ from controllers.ubicacion_controller import router as ubicacion_router
 from controllers.reserva_controller import router as reserva_router
 from controllers.ciudad_controller import router as ciudad_router
 from controllers.filtro_controller import router as filtro_router
+from controllers.dashboard_controller import router as dashboard_router
+from controllers.graficas_controller import router as graficas_router
 
 app = FastAPI(title="API de Reservas Turísticas", version="1.0")
 
@@ -46,3 +48,5 @@ app.include_router(ubicacion_router)
 app.include_router(reserva_router)
 app.include_router(ciudad_router)
 app.include_router(filtro_router)
+app.include_router(dashboard_router)
+app.include_router(graficas_router)

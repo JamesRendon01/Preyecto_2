@@ -313,3 +313,5 @@ def obtener_fechas_ocupadas(id_plan: int, db: Session = Depends(get_session)):
     reservas = db.query(Reserva).filter(Reserva.id_plan == id_plan).all()
     fechas_ocupadas = [r.fecha_reserva.strftime("%Y-%m-%d") for r in reservas]
     return {"fechas_ocupadas": fechas_ocupadas}
+
+

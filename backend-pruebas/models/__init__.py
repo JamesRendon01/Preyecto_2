@@ -7,3 +7,6 @@ from .informe import Informe
 from .ubicacion import Ubicacion
 from .ciudad import Ciudad
 from .auditoria_plan import AuditoriaPlan
+from .estadia import Estadia
+from .hotel import Hotel
+from .tarjetas import Tarjeta
