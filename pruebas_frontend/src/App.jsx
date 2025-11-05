@@ -16,7 +16,6 @@ import PrivateRouteAdmin from "./components/private_router_admin.jsx";
 import ListarPlanesAdmin from "./pages/administrador/planes.jsx";
 import UpdatePlanes from "./pages/administrador/update_planes.jsx";
 import CreatePlan from "./pages/administrador/crear_plan.jsx";
-
 import { BreadcrumbProvider } from "./context/breadcrumb_context.jsx";
 import BreadcrumbBar from "./components/breadcrumb.jsx";
 import ListarReservas from "./pages/administrador/reservas.jsx";
@@ -25,7 +24,6 @@ import MisReservasPage from "./pages/turista/MisReservas.jsx";
 export default function App() {
   return (
     <>
-
       <Routes>
         {/* Rutas públicas */}
         <Route path="/" element={<DashbordSinLogin />} />
@@ -36,50 +34,94 @@ export default function App() {
         <Route path="/nueva_contrasena" element={<NuevaContrasena />} />
 
         {/* Rutas privadas del turista */}
-        <Route path="/inicio" element={<PrivateRouteTurista><HomePage /></PrivateRouteTurista>} />
-        <Route path="/turista/editar/:id" element={<PrivateRouteTurista><MenuConfig /></PrivateRouteTurista>} />
-        <Route path="/favoritos" element={<PrivateRouteTurista><Favoritos /></PrivateRouteTurista>} />
-        <Route path="/reservas" element={<PrivateRouteTurista><Reservas /></PrivateRouteTurista>} />
-        <Route path="/mis_reservas" element={<PrivateRouteTurista><MisReservasPage /></PrivateRouteTurista>} />
+        <Route
+          path="/inicio"
+          element={
+            <PrivateRouteTurista>
+              <HomePage />
+            </PrivateRouteTurista>
+          }
+        />
 
+        {/* 👇 Breadcrumb solo en esta página */}
+        <Route
+          path="/turista/editar/:id"
+          element={
+            <PrivateRouteTurista>
+              <BreadcrumbProvider>
+                <div className="p-4">
+                  <BreadcrumbBar />
+                  <MenuConfig />
+                </div>
+              </BreadcrumbProvider>
+            </PrivateRouteTurista>
+          }
+        />
+
+        <Route
+          path="/favoritos"
+          element={
+            <PrivateRouteTurista>
+              <Favoritos />
+            </PrivateRouteTurista>
+          }
+        />
+        <Route
+          path="/reservas"
+          element={
+            <PrivateRouteTurista>
+              <Reservas />
+            </PrivateRouteTurista>
+          }
+        />
+        <Route
+          path="/mis_reservas"
+          element={
+            <PrivateRouteTurista>
+              <MisReservasPage />
+            </PrivateRouteTurista>
+          }
+        />
 
         {/* Rutas del administrador */}
         <Route path="/admin" element={<InicioAdministrador />} />
-        <Route path="/listar_planes_admin"
+        <Route
+          path="/listar_planes_admin"
           element={
             <PrivateRouteAdmin>
-              <BreadcrumbProvider>
-                <ListarPlanesAdmin />
-              </BreadcrumbProvider>
+              <ListarPlanesAdmin />
             </PrivateRouteAdmin>
           }
         />
-<Route path="/listar_reservas_admin"
+        <Route
+          path="/listar_reservas_admin"
           element={
             <PrivateRouteAdmin>
-              <BreadcrumbProvider>
-                <ListarReservas />
-              </BreadcrumbProvider>
+              <ListarReservas />
             </PrivateRouteAdmin>
           }
         />
-
-        <Route path="/dashboard-administrador" element={<PrivateRouteAdmin><DashbordAdmin /></PrivateRouteAdmin>} />
-        <Route path="/update-planes/:id"
+        <Route
+          path="/dashboard-administrador"
           element={
             <PrivateRouteAdmin>
-              <BreadcrumbProvider>
-                <UpdatePlanes />
-              </BreadcrumbProvider>
+              <DashbordAdmin />
             </PrivateRouteAdmin>
           }
         />
-        <Route path="/create-plan"
+        <Route
+          path="/update-planes/:id"
           element={
             <PrivateRouteAdmin>
-              <BreadcrumbProvider>
-                <CreatePlan />
-              </BreadcrumbProvider>
+              <UpdatePlanes />
+            </PrivateRouteAdmin>
+          }
+        />
+        <Route
+          path="/create-plan"
+          element={
+            <PrivateRouteAdmin>
+              <CreatePlan />
             </PrivateRouteAdmin>
           }
         />
