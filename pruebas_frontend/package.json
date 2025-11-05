@@ -15,7 +15,7 @@
     "@heroicons/react": "^2.2.0",
     "ant": "^0.0.0",
     "antd": "^5.27.5",
-    "axios": "^1.12.2",
+    "axios": "^1.13.1",
     "dayjs": "^1.11.18",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.542.0",

@@ -24,9 +24,9 @@ export default function MisReservasPage() {
 
         {/* 👇 Pasamos el query al componente que renderiza las tarjetas */}
         <CardReservas query={query} />
-      </div>
+      </div >
 
-      <Footer />
+      <Footer/>
     </div>
   );
 }

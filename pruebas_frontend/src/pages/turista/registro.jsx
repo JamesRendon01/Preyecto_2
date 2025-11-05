@@ -41,7 +41,7 @@ export default function Registro() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:8000/ciudad/")
+    fetch("http://localhost:8000/ciudad/listar_ciudades")
       .then(res => res.json())
       .then(data => setCiudades(data))
       .catch(err => console.error("Error cargando ciudades:", err));
