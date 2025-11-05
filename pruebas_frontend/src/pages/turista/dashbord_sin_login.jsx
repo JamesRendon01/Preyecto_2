@@ -35,10 +35,7 @@ export default function DashbordSinLogin() {
             <div className="mt-25">
                 <PlanesCarousel />
             </div>
-
-            <div>
-                <CardComponent showButton/>
-            </div>
+            
             <footer>
                 <Footer />
             </footer>

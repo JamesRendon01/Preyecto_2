@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { MoveLeft, MoveRight } from 'lucide-react';
 import axios from "axios";
 import CardComponent from "./card";
 import { message, Modal, DatePicker } from "antd";
@@ -11,6 +12,8 @@ export default function FormReservas() {
   const location = useLocation();
   const navigate = useNavigate();
   const { plan } = location.state || {};
+
+  const [currentStep, setCurrentStep] = useState(1);
 
   const [formData, setFormData] = useState({
     id: "",
@@ -26,14 +29,25 @@ export default function FormReservas() {
     ccv: "",
   });
 
+  const [personas, setPersonas] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fechasOcupadas, setFechasOcupadas] = useState([]);
 
+const [confirmarAcompanantes, setConfirmarAcompanantes] = useState(false);
+const [currentPersonaIndex, setCurrentPersonaIndex] = useState(0);
+const [nombreAcompanante, setNombreAcompanante] = useState("");
+const [TipoIdentificacionAcompanante, setTipoIdentificacionAcompanante] = useState("");
+const [identificacionAcompanante, setIdentificacionAcompanante] = useState("");
+const [edadAcompanante, setEdadAcompanante] = useState("");
+
+  
+
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    // Obtener datos del turista
+
     if (token) {
       axios
         .get("http://localhost:8000/turista/reservas/mis-datos", {
@@ -45,7 +59,7 @@ export default function FormReservas() {
         );
     }
 
-    // Obtener fechas ocupadas del plan
+
     if (plan?.id) {
       axios
         .get(`http://localhost:8000/reserva/disponibilidad/${plan.id}`)
@@ -56,14 +70,36 @@ export default function FormReservas() {
     }
   }, [plan]);
 
-  // Función para deshabilitar fechas ocupadas o pasadas
+
   const deshabilitarFechas = (current) => {
     const hoy = dayjs().startOf("day");
-    if (current.isBefore(hoy)) return true; // no permitir fechas pasadas
+    if (current.isBefore(hoy)) return true;
     return fechasOcupadas.some((fecha) => dayjs(fecha).isSame(current, "day"));
   };
 
-  // Formatear errores del backend
+  const handleNumeroPersonas = (e) => {
+    const value = parseInt(e.target.value, 10);
+    setFormData({ ...formData, numeroPersonas: value });
+
+    if (value > 1) {
+      const nuevasPersonas = Array.from({ length: value - 1 }, () => ({
+        nombre: "",
+        tipo_identificacion: "",
+        identificacion: "",
+        edad: "",
+      }));
+      setPersonas(nuevasPersonas);
+    } else {
+      setPersonas([]);
+    }
+  };
+
+  const handlePersonaChange = (index, field, value) => {
+    const updated = [...personas];
+    updated[index][field] = value;
+    setPersonas(updated);
+  };
+
   const formatValidationDetail = (detail) => {
     if (Array.isArray(detail)) {
       return detail
@@ -79,7 +115,7 @@ export default function FormReservas() {
     return String(detail);
   };
 
-  // Crear reserva
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
@@ -87,119 +123,84 @@ export default function FormReservas() {
 
     const token = localStorage.getItem("token");
 
-    try {
-      await axios.post(
-        "http://localhost:8000/reserva/crear_reserva",
-        {
-          fecha_reserva: formData.fecha,
-          disponibilidad: true,
-          numero_personas: parseInt(formData.numeroPersonas, 10),
-          id_informe: null,
-          id_plan: plan?.id,
-          id_turista: formData.id,
-          token_tarjeta: "tok_test_123456",
-          email_cliente: formData.correo,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      message.success("✅ Reserva realizada con éxito");
-      setShowModal(true);
-    } catch (error) {
-      console.error("❌ Error al crear reserva:", error);
-
-      if (error.response) {
-        const status = error.response.status;
-        const data = error.response.data || {};
-        const detail = data.detail ?? data.message ?? data.error ?? data;
-
-        if (status === 400) {
-          const text = formatValidationDetail(detail);
-          Modal.warning({
-            title: "Reserva duplicada o inválida",
-            content: text,
-          });
-        } else if (status === 401) {
-          message.error("Tu sesión ha expirado. Inicia sesión nuevamente.");
-          navigate("/login");
-        } else if (status === 422) {
-          const text = formatValidationDetail(detail);
-          Modal.error({
-            title: "Error de validación",
-            content: (
-              <div style={{ whiteSpace: "pre-line" }}>
-                {text || "Revisa los datos enviados (formato/valores)."}
-              </div>
-            ),
-          });
-        } else {
-          const text = formatValidationDetail(detail);
-          message.error(text || "Error del servidor. Inténtalo más tarde.");
-        }
-      } else if (error.request) {
-        message.error("No hubo respuesta del servidor.");
-      } else {
-        message.error(error.message || "Error inesperado al crear la reserva.");
+    for (const [i, p] of personas.entries()) {
+      if (!p.nombre || !p.tipo_identificacion || !p.identificacion || !p.edad) {
+        Modal.warning({
+          title: `Campos incompletos en acompañante #${i + 1}`,
+          content: "Por favor completa todos los campos requeridos.",
+        });
+        setIsSubmitting(false);
+        return;
       }
-    } finally {
-      setIsSubmitting(false);
     }
+
+    try {
+ const payload = {
+  fecha_reserva: formData.fecha,
+  disponibilidad: true,
+  numero_personas: parseInt(formData.numeroPersonas, 10),
+  id_informe: null, // si no estás usando informes aún
+  id_plan: plan?.id,
+  token_tarjeta: formData.numeroTarjeta?.replace(/\s/g, "") || "tok_default",
+  email_cliente: formData.correo, // del usuario logueado
+  acompanantes: personas.map((p) => ({
+    nombre: p.nombre,
+    tipo_identificacion: p.tipo_identificacion,
+    identificacion: p.identificacion,
+    edad: parseInt(p.edad || 0, 10),
+  })),
+};
+
+
+  const res = await axios.post(
+    "http://localhost:8000/reserva/crear_reserva",
+    payload,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
+  message.success("✅ Reserva realizada con éxito");
+  setShowModal(true);
+} catch (error) {
+  console.error("❌ Error al crear reserva:", error);
+  const data = error.response?.data || {};
+  const detail =
+    data.detail ?? data.message ?? data.error ?? data ?? "Error desconocido";
+  const text = formatValidationDetail(detail);
+  Modal.error({ title: "Error al crear reserva", content: text });
+} finally {
+  setIsSubmitting(false);
+}
+
   };
 
-  return (
-    <>
-      <div className="mt-10 flex flex-col lg:flex-row justify-center items-start gap-50 px-4">
-        <div className="mt-50">
-          {plan && <CardComponent showButton={false} plans={[plan]} />}
-        </div>
-
-        <div className="w-full lg:w-1/2">
-          <form
-            onSubmit={handleSubmit}
-            className="w-full bg-white border-2 border-black rounded-xl p-6 sm:p-10 font-general shadow-lg"
-          >
-            <h2 className="text-2xl font-bold font-title mb-6 text-center">
-              Reserva tu plan
-            </h2>
-
-            {/* Datos del usuario */}
+  // 🔹 Render de secciones
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <>
+            <h3 className="text-lg font-bold mb-4 text-center">
+              🗓️ Datos de la reserva
+            </h3>
             <label className="block pb-2">Correo</label>
-            <input
-              readOnly
-              type="email"
-              value={formData.correo}
-              className="bg-black/20 border-2 border-black rounded-xl h-10 w-full px-3 mb-4"
-              required
-            />
+            <input readOnly type="email" value={formData.correo}
+              className="bg-black/20 border-2 border-black rounded-xl h-10 w-full px-3 mb-4" />
 
             <label className="block pb-2">Nombre</label>
-            <input
-              readOnly
-              type="text"
-              value={formData.nombre}
-              className="bg-black/20 border-2 border-black rounded-xl h-10 w-full px-3 mb-4"
-              required
-            />
+            <input readOnly type="text" value={formData.nombre}
+              className="bg-black/20 border-2 border-black rounded-xl h-10 w-full px-3 mb-4" />
 
             <label className="block pb-2">Identificación</label>
-            <input
-              readOnly
-              type="number"
-              value={formData.identificacion}
-              className="bg-black/20 border-2 border-black rounded-xl h-10 w-full px-3 mb-4"
-              required
-            />
+            <input readOnly type="number" value={formData.identificacion}
+              className="bg-black/20 border-2 border-black rounded-xl h-10 w-full px-3 mb-4" />
 
             <label className="block pb-2">Celular</label>
-            <input
-              readOnly
-              type="number"
-              value={formData.celular}
-              className="bg-black/20 border-2 border-black rounded-xl h-10 w-full px-3 mb-4"
-              required
-            />
+            <input readOnly type="number" value={formData.celular}
+              className="bg-black/20 border-2 border-black rounded-xl h-10 w-full px-3 mb-4" />
 
-            {/* CALENDARIO DE FECHAS */}
+
             <label className="block pb-2">Fecha de reserva</label>
             <DatePicker
               format="YYYY-MM-DD"
@@ -219,15 +220,136 @@ export default function FormReservas() {
             <input
               type="number"
               value={formData.numeroPersonas}
-              onChange={(e) =>
-                setFormData({ ...formData, numeroPersonas: e.target.value })
-              }
+              onChange={handleNumeroPersonas}
               className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-4"
               required
+              min="1"
             />
+          </>
+        );
 
-            {/* Datos de la tarjeta */}
-            <label className="block pb-2">Nombre en la tarjeta</label>
+      case 2:
+  return (
+    <>
+      <h3 className="text-lg font-bold mb-4 text-center">
+        👥 Datos de acompañantes
+      </h3>
+
+      {personas.length > 0 ? (
+        <div className="mb-4 border border-gray-300 rounded-lg p-3 bg-gray-50">
+          <p className="font-semibold mb-2 text-center">
+            Acompañante {currentPersonaIndex + 1} de {personas.length}
+          </p>
+
+          <label className="block text-sm pb-1">Nombre Completo</label>
+          <input
+            type="text"
+            value={personas[currentPersonaIndex].nombre}
+            onChange={(e) =>
+              handlePersonaChange(currentPersonaIndex, "nombre", e.target.value)
+            }
+            className="w-full border-2 border-black rounded-xl h-8 px-2 mb-2"
+            required
+          />
+
+          <label className="block text-sm pb-1 mt-2">Tipo de identificación</label>
+<select
+  name="tipo_identificacion"
+  value={personas[currentPersonaIndex].tipo_identificacion}
+  onChange={(e) =>
+    handlePersonaChange(currentPersonaIndex, "tipo_identificacion", e.target.value)
+  }
+  required
+  className="w-full border-2 border-black rounded-xl h-8 px-2 mb-2 bg-white"
+>
+  <option value="">Seleccione un tipo de documento</option>
+  <option value="CC">Cédula de Ciudadanía</option>
+  <option value="CE">Cédula de Extranjería</option>
+  <option value="TI">Tarjeta de Identidad</option>
+  <option value="PP">Pasaporte</option>
+  <option value="PPT">Permiso por Protección Temporal</option>
+</select>
+
+
+
+          <label className="block text-sm pb-1">Identificación</label>
+          <input
+            type="text"
+            value={personas[currentPersonaIndex].identificacion}
+            onChange={(e) =>
+              handlePersonaChange(currentPersonaIndex, "identificacion", e.target.value)
+            }
+            className="w-full border-2 border-black rounded-xl h-8 px-2 mb-2"
+            required
+          />
+
+          <label className="block text-sm pb-1">Edad</label>
+          <input
+            type="number"
+            value={personas[currentPersonaIndex].edad}
+            onChange={(e) =>
+              handlePersonaChange(currentPersonaIndex, "edad", e.target.value)
+            }
+            className="w-full border-2 border-black rounded-xl h-8 px-2"
+          />
+
+          <div className="flex justify-between mt-4">
+            <button
+              type="button"
+              disabled={currentPersonaIndex === 0}
+              onClick={() =>
+                setCurrentPersonaIndex(currentPersonaIndex - 1)
+              }
+              className={`px-6 py-2 border-2 border-black rounded-3xl font-bold ${
+                currentPersonaIndex === 0
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+            >
+              <MoveLeft />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const p = personas[currentPersonaIndex];
+                if (!p.nombre || !p.tipo_identificacion || !p.identificacion) {
+                  message.warning("Completa todos los campos antes de continuar.");
+                  return;
+                }
+
+                if (currentPersonaIndex < personas.length - 1) {
+  setCurrentPersonaIndex(currentPersonaIndex + 1);
+} else {
+  // ✅ Todos los acompañantes completados — mostrar modal de confirmación
+  setConfirmarAcompanantes(true);
+}
+
+              }}
+              className="bg-nav px-6 py-2 border-2 border-black rounded-3xl font-bold"
+            >
+              {currentPersonaIndex < personas.length - 1
+                ? <MoveRight />
+                : "Confirmar"}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-center text-gray-600">
+          No hay acompañantes registrados.
+        </p>
+      )}
+    </>
+  );
+
+      case 3:
+        return (
+          <>
+            <h3 className="text-lg font-bold mb-4 text-center">
+              💳 Datos de pago
+            </h3>
+
+            <label className="block pb-2 mt-4">Nombre en la tarjeta</label>
             <input
               type="text"
               value={formData.tarjeta}
@@ -240,6 +362,21 @@ export default function FormReservas() {
               className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-4"
               required
             />
+
+            <label className="block text-sm pb-1 mt-2">Tipo de tarjeta</label>
+            <select
+              name="tipo_tarjeta"
+              value={personas[currentPersonaIndex].tipo_tarjeta}
+              onChange={(e) =>
+                handlePersonaChange(currentPersonaIndex, "tipo_tarjeta", e.target.value)
+              }
+              required
+              className="w-full border-2 border-black rounded-xl h-8 px-2 mb-2 bg-white"
+            >
+              <option value="">Seleccione un tipo de tarjeta</option>
+              <option value="TC">Crédito</option>
+              <option value="TD">Débito</option>
+            </select>
 
             <label className="block pb-2">Número de tarjeta</label>
             <input
@@ -274,108 +411,237 @@ export default function FormReservas() {
               required
             />
 
-            <label className="block pb-2">CCV</label>
+            <label className="block pb-2">CVV</label>
             <input
               type="text"
-              value={formData.ccv}
+              value={formData.cvv}
               onChange={(e) => {
                 const value = e.target.value.replace(/\D/g, "");
                 if (value.length <= 4)
-                  setFormData({ ...formData, ccv: value });
+                  setFormData({ ...formData, cvv: value });
               }}
               placeholder="3 o 4 dígitos"
               pattern="\d{3,4}"
-              title="El CCV debe contener 3 o 4 dígitos"
+              title="El CVV debe contener 3 o 4 dígitos"
               className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-6"
               required
             />
+          </>
+        );
+      default:
+        return null;
+    }
+  };
 
-            <div className="flex flex-col sm:flex-row justify-center gap-5 font-bold font-title mt-5">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="bg-gray-300 w-full sm:w-40 h-10 border-2 border-black rounded-3xl"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full sm:w-40 h-10 border-2 border-black rounded-3xl ${
-                  isSubmitting ? "bg-gray-300" : "bg-nav"
-                }`}
-              >
-                {isSubmitting ? "Reservando..." : "Reservar"}
-              </button>
+  return (
+    <>
+      <div className="mt-10 flex flex-col lg:flex-row justify-center items-start gap-10 px-4">
+        {plan && <CardComponent showButton={false} plans={[plan]} />}
+
+        <div className="w-full lg:w-1/2">
+          <form
+            onSubmit={handleSubmit}
+            className="w-full bg-white border-2 border-black rounded-xl p-6 sm:p-10 shadow-lg"
+          >
+            {renderStep()}
+
+            <div className="flex justify-between mt-6">
+             {currentStep > 1 && (
+  <button
+    type="button"
+    onClick={() => {
+      if (currentStep === 3) {
+        const num = parseInt(formData.numeroPersonas || 0, 10);
+        // Si solo hay una persona → volver directo al paso 1
+        if (num <= 1) {
+          setCurrentStep(1);
+          return;
+        }
+      }
+      setCurrentStep(currentStep - 1);
+    }}
+    className="bg-gray-300 px-6 py-2 border-2 border-black rounded-3xl font-bold"
+  >
+    Atrás
+  </button>
+)}
+
+{currentStep < 3 && (
+  <button
+    type="button"
+    onClick={() => {
+      // 🔍 Validación antes de avanzar
+      if (currentStep === 1) {
+        if (!formData.fecha || !formData.numeroPersonas) {
+          message.warning("Por favor completa todos los campos de la reserva.");
+          return;
+        }
+
+        const num = parseInt(formData.numeroPersonas || 0, 10);
+
+        // 🧩 Si solo hay una persona, salta al paso de pago (no acompañantes)
+        if (num <= 1) {
+          setCurrentStep(3);
+          return;
+        }
+
+        // Si hay más de una persona → ir al paso 2
+        setCurrentStep(2);
+        return;
+      }
+
+      // 🔍 Validación antes de pasar del paso 2 (acompañantes)
+      if (currentStep === 2) {
+        for (const [i, p] of personas.entries()) {
+          if (!p.nombre || !p.apellido || !p.identificacion) {
+            message.warning(`Por favor completa todos los datos del acompañante #${i + 1}`);
+            return;
+          }
+        }
+        setCurrentStep(3);
+        return;
+      }
+    }}
+    className="bg-nav px-6 py-2 border-2 border-black rounded-3xl font-bold"
+  >
+    Siguiente
+  </button>
+)}
+
+              {currentStep === 3 && (
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`px-6 py-2 border-2 border-black rounded-3xl font-bold ${
+                    isSubmitting ? "bg-gray-300" : "bg-nav"
+                  }`}
+                >
+                  {isSubmitting ? "Reservando..." : "Reservar"}
+                </button>
+              )}
             </div>
           </form>
         </div>
       </div>
 
-      {/* Modal con comprobante */}
-      <Modal
-  title="📄 Comprobante de Pago"
-  open={showModal}
-  onCancel={() => setShowModal(false)}
-  footer={[
-    <button
-      key="close"
-      onClick={() => setShowModal(false)}
-      className="bg-nav px-4 py-2 border-2 border-black rounded-xl font-bold"
-    >
-      Cerrar
-    </button>,
-  ]}
+{/* 🔹 Modal de confirmación de acompañantes */}
+<Modal
+  title="✅ Confirmación de acompañantes"
+  open={confirmarAcompanantes}
+  onCancel={() => setConfirmarAcompanantes(false)}
+  footer={null}
 >
-  <div className="p-4 text-sm leading-relaxed">
-    <h2 className="text-center font-bold text-xl mb-2">
-      COMPROBANTE DE PAGO
-    </h2>
-    <p className="text-center font-semibold mb-4">✅ Reservación Exitosa</p>
-    <p>Bogotá, {new Date().toLocaleDateString("es-CO")}</p>
-    <p>
-      Sr. <strong>{formData.nombre}</strong>, identificado con CC{" "}
-      <strong>{formData.identificacion}</strong> y teléfono{" "}
-      <strong>{formData.celular}</strong>.
-    </p>
-    <p className="mt-2">
-      Su reserva para el plan <strong>{plan?.nombre}</strong> ha sido
-      procesada exitosamente.
-    </p>
+  <div className="p-4 max-h-64 overflow-y-auto">
+    {personas.map((p, i) => (
+      <div key={i} className="border-b pb-2 mb-2">
+        <p>
+          <strong>{i + 1}. {p.nombre} {p.tipo_identificacion}</strong><br />
+          <span>Identificación: {p.identificacion}</span><br />
+          <span>Edad: {p.edad || "N/A"}</span>
+        </p>
+      </div>
+    ))}
+  </div>
 
-    <div className="mt-3">
-      <p>
-        <strong>Fecha de reserva:</strong> {formData.fecha}
-      </p>
-      <p>
-        <strong>Número de personas:</strong> {formData.numeroPersonas}
-      </p>
-    </div>
+  <div className="flex justify-between mt-6">
+    <button
+      onClick={() => {
+        setConfirmarAcompanantes(false);
+        setCurrentPersonaIndex(personas.length - 1);
+      }}
+      className="bg-gray-300 px-4 py-2 border-2 border-black rounded-3xl font-bold"
+    >
+      Atrás
+    </button>
 
-    <div className="mt-3">
-      <p>
-        <strong>Precio por persona:</strong>{" "}
-        {plan?.costo_persona?.toLocaleString("es-CO", {
-          style: "currency",
-          currency: "COP",
-          maximumFractionDigits: 0,
-        })}
-      </p>
-      <p>
-        <strong>Total:</strong>{" "}
-        {(
-          (plan?.costo_persona || 0) *
-          parseInt(formData.numeroPersonas || 0)
-        ).toLocaleString("es-CO", {
-          style: "currency",
-          currency: "COP",
-          maximumFractionDigits: 0,
-        })}
-      </p>
-      <p>Método de pago: Tarjeta de crédito</p>
-    </div>
+    <button
+      onClick={() => {
+        setConfirmarAcompanantes(false);
+        setCurrentStep(2);
+      }}
+      className="bg-gray-300 px-4 py-2 border-2 border-black rounded-3xl font-bold"
+    >
+      Editar
+    </button>
+
+    <button
+      onClick={() => {
+        setConfirmarAcompanantes(false);
+        setCurrentStep(3);
+      }}
+      className="bg-nav px-4 py-2 border-2 border-black rounded-3xl font-bold"
+    >
+      Continuar
+    </button>
   </div>
 </Modal>
+      {/* 🔹 Modal de comprobante de pago */}
+
+      <Modal
+        title="📄 Comprobante de Pago"
+        open={showModal}
+        onCancel={() => setShowModal(false)}
+        footer={[
+          <button
+            key="close"
+            onClick={() => setShowModal(false)}
+            className="bg-nav px-4 py-2 border-2 border-black rounded-xl font-bold"
+          >
+            Cerrar
+          </button>,
+        ]}
+      >
+        <div className="p-4 text-sm leading-relaxed">
+          <h2 className="text-center font-bold text-xl mb-2">
+            COMPROBANTE DE PAGO
+          </h2>
+          <p className="text-center font-semibold mb-4">
+            ✅ Reservación Exitosa
+          </p>
+          <p>Bogotá, {new Date().toLocaleDateString("es-CO")}</p>
+          <p>
+            Sr. <strong>{formData.nombre}</strong>, identificado con CC{" "}
+            <strong>{formData.identificacion}</strong> y teléfono{" "}
+            <strong>{formData.celular}</strong>.
+          </p>
+          <p className="mt-2">
+            Su reserva para el plan <strong>{plan?.nombre}</strong> ha sido
+            procesada exitosamente.
+          </p>
+
+          <div className="mt-3">
+            <p>
+              <strong>Fecha de reserva:</strong> {formData.fecha}
+            </p>
+            <p>
+              <strong>Número de personas:</strong> {formData.numeroPersonas}
+            </p>
+          </div>
+
+          <div className="mt-3">
+            <p>
+              <strong>Precio por persona:</strong>{" "}
+              {plan?.costo_persona?.toLocaleString("es-CO", {
+                style: "currency",
+                currency: "COP",
+                maximumFractionDigits: 0,
+              })}
+            </p>
+            <p>
+              <strong>Total:</strong>{" "}
+              {(
+                (plan?.costo_persona || 0) *
+                parseInt(formData.numeroPersonas || 0)
+              ).toLocaleString("es-CO", {
+                style: "currency",
+                currency: "COP",
+                maximumFractionDigits: 0,
+              })}
+            </p>
+            <p>Método de pago: Tarjeta de crédito</p>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
