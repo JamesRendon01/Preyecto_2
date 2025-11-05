@@ -1,7 +1,15 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import date
 
+# =====================================================
+# 🔹 DTO para acompañante de reserva
+# =====================================================
+class PersonaReservaDTO(BaseModel):
+    nombre: str
+    tipo_identificacion: str
+    identificacion: str
+    edad: int
 
 # =====================================================
 # 🔹 DTO para creación de reserva
@@ -14,6 +22,7 @@ class reservaCreateDTO(BaseModel):
     id_plan: int
     token_tarjeta: str
     email_cliente: str  # si lo usas para enviar correo
+    acompanantes: List[PersonaReservaDTO]
 
     class Config:
         orm_mode = True

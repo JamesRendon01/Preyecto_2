@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from models.informe import Informe
 from models.plan import Plan
 from models.turista import Turista
+from models.hotel import Hotel
 
 class Reserva(Base):
     __tablename__ = "reserva"
@@ -19,3 +20,10 @@ class Reserva(Base):
 
     turista = relationship("Turista", back_populates="reservas")
     plan = relationship("Plan")
+
+    # 🔹 Relación hacia PersonaReserva
+    acompanantes = relationship(
+        "PersonaReserva",
+        back_populates="reserva",  
+        cascade="all, delete-orphan"
+    )

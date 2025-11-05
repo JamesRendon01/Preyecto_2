@@ -1,3 +1,4 @@
+from .hotel import Hotel
 from .turista import Turista
 from .reserva import Reserva
 from .plan import Plan
@@ -7,3 +8,4 @@ from .informe import Informe
 from .ubicacion import Ubicacion
 from .ciudad import Ciudad
 from .auditoria_plan import AuditoriaPlan
+from .persona_reserva import PersonaReserva

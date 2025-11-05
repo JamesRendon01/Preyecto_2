@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session, joinedload
 from models.reserva import Reserva
 from models.plan import Plan
+from models.persona_reserva import PersonaReserva
 from dtos.reserva_dto import reservaCreateDTO, reservaUpdateDTO, ReservaOut
 from db.session import SessionLocal
 from datetime import date, datetime
@@ -139,7 +140,7 @@ def crear_reserva(
     authorization: Optional[str] = Header(None, alias="Authorization"),
     db: Session = Depends(get_session),
 ):
-    # 🔸 Validación del token JWT
+    # 🔒 Validar token JWT
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Token no proporcionado")
 
@@ -152,15 +153,19 @@ def crear_reserva(
     if not turista_id:
         raise HTTPException(status_code=401, detail="No se pudo obtener el id del turista")
 
-    # 🔸 Validación de la fecha
+    # 🔹 Validaciones básicas
     if not nuevo_reserva.fecha_reserva or not isinstance(nuevo_reserva.fecha_reserva, date):
         raise HTTPException(status_code=400, detail="Fecha de reserva inválida")
 
-    # 🔸 Validación del token de pago
+
     if not nuevo_reserva.token_tarjeta:
         raise HTTPException(status_code=400, detail="Token de pago requerido")
 
-    # 🚫 Evitar reservas duplicadas
+    plan = db.query(Plan).get(nuevo_reserva.id_plan)
+    if not plan:
+        raise HTTPException(status_code=404, detail="El plan no existe")
+
+    # Evitar duplicados
     reserva_existente = db.query(Reserva).filter(
         Reserva.id_turista == int(turista_id),
         Reserva.id_plan == nuevo_reserva.id_plan
@@ -169,21 +174,14 @@ def crear_reserva(
     if reserva_existente:
         raise HTTPException(
             status_code=400,
-            detail="Ya tienes una reserva activa para este plan. Solo se permite una por turista."
+            detail="Ya tienes una reserva activa para este plan."
         )
 
-    # =====================================================
-    # ✅ Cálculo del costo final (sin adicionales)
-    # =====================================================
-    plan = db.query(Plan).get(nuevo_reserva.id_plan)
-    if not plan:
-        raise HTTPException(status_code=404, detail="El plan no existe")
-
-    # Costo final = número de personas * costo por persona del plan
+    # 🔹 Costo final
     costo_final = nuevo_reserva.numero_personas * plan.costo_persona
 
     # =====================================================
-    # ✅ Crear y guardar la reserva
+    # ✅ Crear reserva
     # =====================================================
     reserva = Reserva(
         fecha_reserva=nuevo_reserva.fecha_reserva,
@@ -200,13 +198,29 @@ def crear_reserva(
     db.refresh(reserva)
 
     # =====================================================
-    # ✅ Generar comprobante PDF
+    # ✅ Insertar acompañantes
+    # =====================================================
+    if nuevo_reserva.acompanantes and len(nuevo_reserva.acompanantes) > 0:
+        for acomp in nuevo_reserva.acompanantes:
+            persona = PersonaReserva(
+                nombre=acomp.nombre,
+                tipo_identificacion=acomp.tipo_identificacion,
+                identificacion=acomp.identificacion,
+                edad=acomp.edad,
+                id_reserva=reserva.id
+            )
+            db.add(persona)
+    db.commit()
+
+
+    # =====================================================
+    # ✅ Generar PDF de comprobante
     # =====================================================
     reserva = db.query(Reserva).options(
         joinedload(Reserva.turista),
         joinedload(Reserva.plan)
     ).filter(Reserva.id == reserva.id).first()
-
+    
 
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=letter)
@@ -222,32 +236,20 @@ def crear_reserva(
     pdf.setFont("Helvetica", 11)
     pdf.drawString(50, 680, f"Fecha: Bogotá, {datetime.now().strftime('%d/%m/%Y')}")
     pdf.drawString(50, 660, f"Turista: {reserva.turista.nombre}")
-    pdf.drawString(50, 640, f"CC: {reserva.turista.identificacion}")
-    pdf.drawString(50, 620, f"Teléfono: {reserva.turista.celular}")
-    pdf.drawString(50, 600, f"Plan: {reserva.plan.nombre}")
-
-    pdf.drawString(50, 570, f"Fecha reserva: {reserva.fecha_reserva}")
-    pdf.drawString(50, 550, f"Personas: {reserva.numero_personas}")
-    pdf.drawString(50, 530, f"Precio por persona: ${plan.costo_persona:,}")
-    pdf.drawString(50, 490, f"Método de pago: Tarjeta de crédito")
-
-    pdf.setFont("Helvetica-Bold", 12)
-    pdf.drawString(50, 460, f"TOTAL: ${costo_final:,}")
-
-    pdf.setFont("Helvetica", 11)
-    pdf.drawString(50, 420, "Firma del responsable: Escapade Parfaite")
-    pdf.drawString(50, 400, f"Firma del Turista: {reserva.turista.nombre}")
+    pdf.drawString(50, 640, f"Plan: {reserva.plan.nombre}")
+    pdf.drawString(50, 620, f"Personas: {reserva.numero_personas}")
+    pdf.drawString(50, 600, f"TOTAL: ${costo_final:,}")
 
     pdf.save()
     buffer.seek(0)
     pdf_bytes = buffer.getvalue()
 
-    # Guarda el PDF (opcional si tu modelo tiene campo LargeBinary)
+
     reserva.comprobante_pdf = pdf_bytes
     db.commit()
 
     # =====================================================
-    # ✅ Enviar comprobante por correo
+    # ✅ Enviar correo
     # =====================================================
     try:
         enviar_comprobante(reserva, pdf_bytes)
@@ -268,6 +270,7 @@ def crear_reserva(
         id_turista=reserva.id_turista,
         turista_nombre=reserva.turista.nombre
     )
+
 
 
 

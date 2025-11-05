@@ -11,16 +11,19 @@ from controllers.informe_controller import router as informe_router
 from controllers.plan_controller import router as plan_router
 from controllers.ubicacion_controller import router as ubicacion_router
 from controllers.reserva_controller import router as reserva_router
+from controllers.persona_reserva_controller import router as persona_reserva_router
 from controllers.ciudad_controller import router as ciudad_router
 from controllers.filtro_controller import router as filtro_router
 
 app = FastAPI(title="API de Reservas Turísticas", version="1.0")
+
 
 # 🌐 CORS
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:4000",
+    "http://127.0.0.1:4000"
 ]
 app.add_middleware(
     CORSMiddleware,
