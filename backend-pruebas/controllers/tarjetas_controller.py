@@ -6,6 +6,14 @@ from dtos.tarjetas_dto import TarjetaCreate
 
 router = APIRouter(prefix="/tarjeta", tags=["Tarjeta"])
 
+@router.get("/{turista_id}")
+def obtener_tarjeta_por_turista(turista_id: int, db: Session = Depends(get_db)):
+    tarjeta = db.query(Tarjeta).filter(Tarjeta.turista_id == turista_id).first()
+    if not tarjeta:
+        raise HTTPException(status_code=404, detail="Tarjeta no encontrada")
+    return tarjeta
+
+
 @router.post("/crear")
 def crear_tarjeta(tarjeta: TarjetaCreate, db: Session = Depends(get_db)):
     # Verificar si el turista existe (opcional si la FK lo maneja)
