@@ -68,7 +68,7 @@ CREATE TABLE `alembic_version` (
 
 LOCK TABLES `alembic_version` WRITE;
 /*!40000 ALTER TABLE `alembic_version` DISABLE KEYS */;
-INSERT INTO `alembic_version` VALUES ('b83a99b603df');
+INSERT INTO `alembic_version` VALUES ('bf2c79bc7cb5');
 /*!40000 ALTER TABLE `alembic_version` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -129,6 +129,38 @@ INSERT INTO `ciudad` VALUES (4,'Barranquilla'),(1,'Bogotá'),(6,'Bucaramanga'),(
 UNLOCK TABLES;
 
 --
+-- Table structure for table `estadia`
+--
+
+DROP TABLE IF EXISTS `estadia`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estadia` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `habitacion` varchar(100) NOT NULL,
+  `numHabitacion` varchar(200) NOT NULL,
+  `numDias` varchar(200) NOT NULL,
+  `numNoche` varchar(200) NOT NULL,
+  `precioDia` varchar(200) NOT NULL,
+  `precioNoche` varchar(200) NOT NULL,
+  `tipoHabitacion` varchar(200) NOT NULL,
+  `id_hotel` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_hotel` (`id_hotel`),
+  CONSTRAINT `estadia_ibfk_1` FOREIGN KEY (`id_hotel`) REFERENCES `hotel` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `estadia`
+--
+
+LOCK TABLES `estadia` WRITE;
+/*!40000 ALTER TABLE `estadia` DISABLE KEYS */;
+/*!40000 ALTER TABLE `estadia` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `favorito`
 --
 
@@ -157,6 +189,30 @@ LOCK TABLES `favorito` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `hotel`
+--
+
+DROP TABLE IF EXISTS `hotel`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hotel` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `direccion` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hotel`
+--
+
+LOCK TABLES `hotel` WRITE;
+/*!40000 ALTER TABLE `hotel` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hotel` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `informe`
 --
 
@@ -165,12 +221,14 @@ DROP TABLE IF EXISTS `informe`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `informe` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(30) DEFAULT NULL,
-  `fecha_creacion` date DEFAULT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `fecha_creacion` datetime NOT NULL,
   `id_administrador` int(11) DEFAULT NULL,
+  `ruta_pdf` varchar(500) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `nombre` (`nombre`),
   KEY `id_administrador` (`id_administrador`),
+  KEY `ix_informe_id` (`id`),
   CONSTRAINT `informe_ibfk_1` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -182,6 +240,36 @@ CREATE TABLE `informe` (
 LOCK TABLES `informe` WRITE;
 /*!40000 ALTER TABLE `informe` DISABLE KEYS */;
 /*!40000 ALTER TABLE `informe` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `persona_reserva`
+--
+
+DROP TABLE IF EXISTS `persona_reserva`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `persona_reserva` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) NOT NULL,
+  `tipo_identificacion` varchar(5) NOT NULL,
+  `identificacion` varchar(15) NOT NULL,
+  `edad` int(11) NOT NULL,
+  `id_reserva` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_reserva` (`id_reserva`),
+  KEY `ix_persona_reserva_id` (`id`),
+  CONSTRAINT `persona_reserva_ibfk_1` FOREIGN KEY (`id_reserva`) REFERENCES `reserva` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `persona_reserva`
+--
+
+LOCK TABLES `persona_reserva` WRITE;
+/*!40000 ALTER TABLE `persona_reserva` DISABLE KEYS */;
+/*!40000 ALTER TABLE `persona_reserva` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -201,6 +289,8 @@ CREATE TABLE `plan` (
   `id_ciudad` int(11) DEFAULT NULL,
   `id_informe` int(11) DEFAULT NULL,
   `id_Admin` int(11) DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT current_timestamp(),
+  `mostrar_en_carrusel` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `descripcion` (`descripcion`),
   UNIQUE KEY `descripcion_corta` (`descripcion_corta`),
@@ -220,7 +310,7 @@ CREATE TABLE `plan` (
 
 LOCK TABLES `plan` WRITE;
 /*!40000 ALTER TABLE `plan` DISABLE KEYS */;
-INSERT INTO `plan` VALUES (28,'Tour por la Candelaria','Recorrido guiado a pie por el barrio histórico La Candelaria, visitando murales, arquitectura colonial, Plaza de Bolívar y Museo del Oro.','Tour a pie por el centro histórico de Bogotá.',70000,'088056bc84cc46449023b8c394537c5e.png',1,NULL,NULL),(29,'Tour Comuna 13','Visita guiada a la Comuna 13, grafitis, historia de transformación social, escaleras eléctricas y miradores. Duración 3–4 horas.','Grafiti tour en Comuna 13.',59999,'16b8dbf712ae4649a79b6273f6d80fc4.png',2,NULL,NULL),(32,'Tour Manglares La Boquilla ','Paseo en canoa por los manglares de La Boquilla con guía local, avistamiento de aves y taller de pesca artesanal. Duración 2 horas.','Paseo en canoa por manglares.',120000,'a043eb709da54029807e58dab366db91.png',5,NULL,NULL),(33,'Tour Café (Zona Cafetera)','Experiencia cafetera en finca de Quindío o Risaralda: recorrido por cafetales, proceso y cata. Duración 4 horas aprox.','Experiencia cafetera tradicional.',90000,'2f8adce976d34e578f00d7d85adb0cb2.png',2,NULL,NULL),(34,'Caminata al Salto del Tequenda','Caminata guiada por senderos naturales hasta el mirador de la cascada Salto del Tequendama. Duración 3 horas.','Senderismo al Salto del Tequendama.',50000,'cfee742fcb8e4bfaa718d3fd6732a99b.png',3,NULL,NULL),(35,'Monserrate & Museo del Oro ','Tour de medio día que incluye subida al cerro de Monserrate para ver vista panorámica de Bogotá + visita al Museo del Oro para conocer la colección prehispánica.','Vista y cultura en Bogotá.',190000,'28ac0779f5d34bfc82c163d88257a791.png',1,NULL,NULL),(36,'Mina de Sal de Zipaquirá','Excursión de medio día para visitar la Catedral de Sal; recorrido por galerías subterráneas y sala de tormentas.','Catedral de Sal.',265000,'d19f74d395f04f6ab243adc614b88e32.png',8,NULL,NULL),(37,'La Chorrera ','Caminata / senderismo hacia la cascada La Chorrera, con guía, naturaleza, vistas y tiempo para baño si el clima lo permite.','Cascada La Chorrera.',270000,'dcf436b3fb7d45e482b4ac52d9a5a737.png',8,NULL,NULL),(38,'Parque Natural Chicaque','Excursión de medio día en bosque de niebla con senderos, miradores y contacto con naturaleza cerca de Bogotá.','Bosque de niebla en Chicaque.',250000,'457b58b01b32414dbe9871cc38e5c182.png',8,NULL,NULL),(39,'Tour Ciudad Vieja & Castillo S','Recorrido guiado de unas pocas horas por Getsemaní, la Ciudad Amurallada y el Castillo San Felipe de Barajas, apreciando arquitectura colonial.','Historia colonial en Cartagena.',200000,'1f777466607d4efea4fe7bd254420768.png',5,NULL,NULL),(40,'Free Bike Tour Bogotá','Recorrido en bicicleta por zonas representativas de Bogotá, explorando parques, arte callejero y panorámicas, guiado.','Bici por Bogotá gratis.',0,'e4e0b4c8f4e8490fbf9e8e94f8bd6c35.png',1,NULL,NULL),(41,'Graffiti & Identity ','Tour guiado de arte urbano y grafiti en Bogotá, aprendiendo sobre los artistas, los mensajes y la transformación cultural.','Grafiti y arte urbano Bogotá.',60000,'9bfd30a35ffc44ecadd9c8ce82a30b67.png',1,NULL,NULL);
+INSERT INTO `plan` VALUES (28,'Tour por la Candelaria','Recorrido guiado a pie por el barrio histórico La Candelaria, visitando murales, arquitectura colonial, Plaza de Bolívar y Museo del Oro.','Tour a pie por el centro histórico de Bogotá.',70000,'088056bc84cc46449023b8c394537c5e.png',1,NULL,NULL,'2025-11-05 00:31:09',NULL),(29,'Tour Comuna 13','Visita guiada a la Comuna 13, grafitis, historia de transformación social, escaleras eléctricas y miradores. Duración 3–4 horas.','Grafiti tour en Comuna 13.',59999,'16b8dbf712ae4649a79b6273f6d80fc4.png',2,NULL,NULL,'2025-11-05 00:31:09',NULL),(32,'Tour Manglares La Boquilla ','Paseo en canoa por los manglares de La Boquilla con guía local, avistamiento de aves y taller de pesca artesanal. Duración 2 horas.','Paseo en canoa por manglares.',120000,'a043eb709da54029807e58dab366db91.png',5,NULL,NULL,'2025-11-05 00:31:09',NULL),(33,'Tour Café (Zona Cafetera)','Experiencia cafetera en finca de Quindío o Risaralda: recorrido por cafetales, proceso y cata. Duración 4 horas aprox.','Experiencia cafetera tradicional.',90000,'2f8adce976d34e578f00d7d85adb0cb2.png',2,NULL,NULL,'2025-11-05 00:31:09',NULL),(34,'Caminata al Salto del Tequenda','Caminata guiada por senderos naturales hasta el mirador de la cascada Salto del Tequendama. Duración 3 horas.','Senderismo al Salto del Tequendama.',50000,'cfee742fcb8e4bfaa718d3fd6732a99b.png',3,NULL,NULL,'2025-11-05 00:31:09',NULL),(35,'Monserrate & Museo del Oro ','Tour de medio día que incluye subida al cerro de Monserrate para ver vista panorámica de Bogotá + visita al Museo del Oro para conocer la colección prehispánica.','Vista y cultura en Bogotá.',190000,'28ac0779f5d34bfc82c163d88257a791.png',1,NULL,NULL,'2025-11-05 00:31:09',NULL),(36,'Mina de Sal de Zipaquirá','Excursión de medio día para visitar la Catedral de Sal; recorrido por galerías subterráneas y sala de tormentas.','Catedral de Sal.',265000,'d19f74d395f04f6ab243adc614b88e32.png',8,NULL,NULL,'2025-11-05 00:31:09',NULL),(37,'La Chorrera ','Caminata / senderismo hacia la cascada La Chorrera, con guía, naturaleza, vistas y tiempo para baño si el clima lo permite.','Cascada La Chorrera.',270000,'dcf436b3fb7d45e482b4ac52d9a5a737.png',8,NULL,NULL,'2025-11-05 00:31:09',NULL),(38,'Parque Natural Chicaque','Excursión de medio día en bosque de niebla con senderos, miradores y contacto con naturaleza cerca de Bogotá.','Bosque de niebla en Chicaque.',250000,'457b58b01b32414dbe9871cc38e5c182.png',8,NULL,NULL,'2025-11-05 00:31:09',NULL),(39,'Tour Ciudad Vieja & Castillo S','Recorrido guiado de unas pocas horas por Getsemaní, la Ciudad Amurallada y el Castillo San Felipe de Barajas, apreciando arquitectura colonial.','Historia colonial en Cartagena.',200000,'1f777466607d4efea4fe7bd254420768.png',5,NULL,NULL,'2025-11-05 00:31:09',NULL),(40,'Free Bike Tour Bogotá','Recorrido en bicicleta por zonas representativas de Bogotá, explorando parques, arte callejero y panorámicas, guiado.','Bici por Bogotá gratis.',0,'e4e0b4c8f4e8490fbf9e8e94f8bd6c35.png',1,NULL,NULL,'2025-11-05 00:31:09',NULL),(41,'Graffiti & Identity ','Tour guiado de arte urbano y grafiti en Bogotá, aprendiendo sobre los artistas, los mensajes y la transformación cultural.','Grafiti y arte urbano Bogotá.',60000,'9bfd30a35ffc44ecadd9c8ce82a30b67.png',1,NULL,NULL,'2025-11-05 00:31:09',NULL);
 /*!40000 ALTER TABLE `plan` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -365,13 +455,16 @@ CREATE TABLE `reserva` (
   `id_plan` int(11) DEFAULT NULL,
   `id_turista` int(11) DEFAULT NULL,
   `comprobante_pdf` blob DEFAULT NULL,
+  `hotel_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_informe` (`id_informe`),
   KEY `id_plan` (`id_plan`),
   KEY `id_turista` (`id_turista`),
+  KEY `hotel_id` (`hotel_id`),
   CONSTRAINT `reserva_ibfk_1` FOREIGN KEY (`id_informe`) REFERENCES `informe` (`id`),
   CONSTRAINT `reserva_ibfk_2` FOREIGN KEY (`id_plan`) REFERENCES `plan` (`id`),
-  CONSTRAINT `reserva_ibfk_3` FOREIGN KEY (`id_turista`) REFERENCES `turista` (`id`)
+  CONSTRAINT `reserva_ibfk_3` FOREIGN KEY (`id_turista`) REFERENCES `turista` (`id`),
+  CONSTRAINT `reserva_ibfk_4` FOREIGN KEY (`hotel_id`) REFERENCES `hotel` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -381,8 +474,37 @@ CREATE TABLE `reserva` (
 
 LOCK TABLES `reserva` WRITE;
 /*!40000 ALTER TABLE `reserva` DISABLE KEYS */;
-INSERT INTO `reserva` VALUES (38,'2025-10-18',0,1,2,NULL,40,9,_binary '%PDF-1.3\n%���� ReportLab Generated PDF document http://www.reportlab.com\n1 0 obj\n<<\n/F1 2 0 R /F2 3 0 R /F3 4 0 R\n>>\nendobj\n2 0 obj\n<<\n/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font\n>>\nendobj\n3 0 obj\n<<\n/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font\n>>\nendobj\n4 0 obj\n<<\n/BaseFont /ZapfDingbats /Name /F3 /Subtype /Type1 /Type /Font\n>>\nendobj\n5 0 obj\n<<\n/Contents 9 0 R /MediaBox [ 0 0 612 792 ] /Parent 8 0 R /Resources <<\n/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]\n>> /Rotate 0 /Trans <<\n\n>> \n  /Type /Page\n>>\nendobj\n6 0 obj\n<<\n/PageMode /UseNone /Pages 8 0 R /Type /Catalog\n>>\nendobj\n7 0 obj\n<<\n/Author (anonymous) /CreationDate (D:20251017221212-05\'00\') /Creator (ReportLab PDF Library - www.reportlab.com) /Keywords () /ModDate (D:20251017221212-05\'00\') /Producer (ReportLab PDF Library - www.reportlab.com) \n  /Subject (unspecified) /Title (Comprobante de Pago) /Trapped /False\n>>\nendobj\n8 0 obj\n<<\n/Count 1 /Kids [ 5 0 R ] /Type /Pages\n>>\nendobj\n9 0 obj\n<<\n/Filter [ /ASCII85Decode /FlateDecode ] /Length 539\n>>\nstream\nGat%^8Q4A/&;BTNMKd-m:dL[QgW]qZ$Xf68NkS2_0bLZJWf`tLq.M\"\'@q@)hl-MTNlgEA!6+W*es82ku\'G`,$APbHbi<cGe,jK3%1JiRW7im#<dn,-\\J]CoL5SC!tcEGfCfk.p$hQ$e2$*r[;qCC&?eAX)W%O-P`#rtRD:J(b;<4h%nJ:S9K_daF)ZJ@G[`hc0,JUibI)q,YuXRgJUI9n(B.9kP?%&/ZE+).9I;rY=.k:,VVihpVWh!i4dFDC@g3l]<+fQPFAr<=/k-s87@jQE4#_YshA-W`3CLL9B1ZG=IZKrsJd0eM?6mQ>)i,\\SIBr,Xb21&EPhFD!*CK2XCu01.AlclF\"?Cp0lVWA=aZnu%&E:[WYX=^2.QS:MV\\\';IMIP*/HVcBH_BA]?U9dS0tk^R]6jF!`OlC?n]W=H\"nD(),)Oh=[)@[]h.gCAlL^UU5A)XmQ;%ldJ:H7K7RuI=\\lXY1<+:pK%:PZGa,ZZuh);Rsja6D6$-UhjYHSPNuCr9kN,HFP3,Y=imqqhsLqdY657:U&~>endstream\nendobj\nxref\n0 10\n0000000000 65535 f \n0000000073 00000 n \n0000000124 00000 n \n0000000231 00000 n \n0000000343 00000 n \n0000000426 00000 n \n0000000619 00000 n \n0000000687 00000 n \n0000000994 00000 n \n0000001053 00000 n \ntrailer\n<<\n/ID \n[<f32f5beada31f0d945f613b7657f9f69><f32f5beada31f0d945f613b7657f9f69>]\n% ReportLab generated PDF document -- digest (http://www.reportlab.com)\n\n/Info 7 0 R\n/Root 6 0 R\n/Size 10\n>>\nstartxref\n1682\n%%EOF\n'),(39,'2025-10-18',240000,1,2,NULL,32,9,_binary '%PDF-1.3\n%���� ReportLab Generated PDF document http://www.reportlab.com\n1 0 obj\n<<\n/F1 2 0 R /F2 3 0 R /F3 4 0 R\n>>\nendobj\n2 0 obj\n<<\n/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font\n>>\nendobj\n3 0 obj\n<<\n/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font\n>>\nendobj\n4 0 obj\n<<\n/BaseFont /ZapfDingbats /Name /F3 /Subtype /Type1 /Type /Font\n>>\nendobj\n5 0 obj\n<<\n/Contents 9 0 R /MediaBox [ 0 0 612 792 ] /Parent 8 0 R /Resources <<\n/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]\n>> /Rotate 0 /Trans <<\n\n>> \n  /Type /Page\n>>\nendobj\n6 0 obj\n<<\n/PageMode /UseNone /Pages 8 0 R /Type /Catalog\n>>\nendobj\n7 0 obj\n<<\n/Author (anonymous) /CreationDate (D:20251017221244-05\'00\') /Creator (ReportLab PDF Library - www.reportlab.com) /Keywords () /ModDate (D:20251017221244-05\'00\') /Producer (ReportLab PDF Library - www.reportlab.com) \n  /Subject (unspecified) /Title (Comprobante de Pago) /Trapped /False\n>>\nendobj\n8 0 obj\n<<\n/Count 1 /Kids [ 5 0 R ] /Type /Pages\n>>\nendobj\n9 0 obj\n<<\n/Filter [ /ASCII85Decode /FlateDecode ] /Length 560\n>>\nstream\nGat$sbAQ&g&A70Vp<Z01,Vk\\s]l&!;pL;0p_4rZb7(We:;5N?HT3plG1bkdi+@(]fcKsoa+;\"9Us3Jsj.g_+k!`G+M5jiWR)bB$a?`/F\'?]R>G]8e*>7Y/Tn#_=*@cZ&ccgSXl(CAB+gGYB5cIbfDVq$ci;)kd@rSoB9VOO+XB!]I8G*G@]h&Ak/W(-3o=Q%q-ROaofL\"4:F6g:jMe3&$t)OSgY5djXEO(Me35F^\'iblQI@Z^qRdbCiO@fi@oS[ZgTAuPrY9+^c:0O\"q)[a8uVNpe9eDaJE=`c:$^_ulD;R1YH-GXo-cdDi?<@cdkKbu#sSBZN^Io6?ilCd1,1In>kfLRiXb=q!)-$c`?<FE_H\'[7;H_hk7_)fS>`,g,rLIC/_)l_R%bHQ2oAgt74biRL0kdPpNN#n;5kAp7(o:8GKn7r[W!?E5T9,3tQ`O=DNs>*^o;4CUJQtRE:<k)`m\'CS0=3,40c<Zt>0;.-Of,O2>EoR:\"4sB,3K#YheXp]UE1mOW([Ab);Xjf\'N9r;[eUo)9U<RL+-NQF\'*hr4l\"^AqO\'#ab~>endstream\nendobj\nxref\n0 10\n0000000000 65535 f \n0000000073 00000 n \n0000000124 00000 n \n0000000231 00000 n \n0000000343 00000 n \n0000000426 00000 n \n0000000619 00000 n \n0000000687 00000 n \n0000000994 00000 n \n0000001053 00000 n \ntrailer\n<<\n/ID \n[<73235b95e14e7393abca9a2ad1d34884><73235b95e14e7393abca9a2ad1d34884>]\n% ReportLab generated PDF document -- digest (http://www.reportlab.com)\n\n/Info 7 0 R\n/Root 6 0 R\n/Size 10\n>>\nstartxref\n1703\n%%EOF\n');
 /*!40000 ALTER TABLE `reserva` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tarjeta`
+--
+
+DROP TABLE IF EXISTS `tarjeta`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tarjeta` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `tipo_tarjeta` varchar(50) NOT NULL,
+  `numero` varchar(16) NOT NULL,
+  `fecha_vencimiento` varchar(200) NOT NULL,
+  `cvv` int(11) NOT NULL,
+  `turista_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `turista_id` (`turista_id`),
+  CONSTRAINT `tarjeta_ibfk_1` FOREIGN KEY (`turista_id`) REFERENCES `turista` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tarjeta`
+--
+
+LOCK TABLES `tarjeta` WRITE;
+/*!40000 ALTER TABLE `tarjeta` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tarjeta` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -410,6 +532,8 @@ CREATE TABLE `turista` (
   `expira_token` datetime DEFAULT NULL,
   `ciudad_id` int(11) DEFAULT NULL,
   `acepto_terminos` tinyint(1) DEFAULT NULL,
+  `estado` tinyint(1) DEFAULT NULL,
+  `fecha_registro` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `celular` (`celular`),
   UNIQUE KEY `correo` (`correo`),
@@ -425,7 +549,7 @@ CREATE TABLE `turista` (
 
 LOCK TABLES `turista` WRITE;
 /*!40000 ALTER TABLE `turista` DISABLE KEYS */;
-INSERT INTO `turista` VALUES (8,'James Rendon','vanegasjames01@gmail.com','31345658354','2007-08-01','cll 131 b bis # 95 b 34','CC','1028941955','$2b$12$eoNd1.Y0RtkKCnrc5NnuOek16vXMJl4cd6RjY4fV1It0vJnOWlBwS',0,NULL,NULL,NULL,NULL,NULL,3,1),(9,'David Rendon','rendondavid328@gmail.com','31345658355','2007-08-01','cll 131 b bis # 95 b 33','CC','1028941954','$2b$12$mf9fJroS9HtkGlKz6FhwiOio3GhWmrNMU5C/JBm0MhHnDilOnvJby',0,NULL,NULL,NULL,NULL,NULL,1,1);
+INSERT INTO `turista` VALUES (8,'James Rendon','vanegasjames01@gmail.com','31345658354','2007-08-01','cll 131 b bis # 95 b 34','CC','1028941955','$2b$12$eoNd1.Y0RtkKCnrc5NnuOek16vXMJl4cd6RjY4fV1It0vJnOWlBwS',0,NULL,NULL,NULL,NULL,NULL,3,1,NULL,NULL),(9,'David Rendon','rendondavid328@gmail.com','31345658355','2007-08-01','cll 131 b bis # 95 b 33','CC','1028941954','$2b$12$mf9fJroS9HtkGlKz6FhwiOio3GhWmrNMU5C/JBm0MhHnDilOnvJby',0,NULL,NULL,NULL,NULL,NULL,1,1,NULL,NULL);
 /*!40000 ALTER TABLE `turista` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1001,4 +1125,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-17 22:14:52
+-- Dump completed on 2025-11-05  0:34:35

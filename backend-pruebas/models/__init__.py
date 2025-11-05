@@ -8,3 +8,6 @@ from .informe import Informe
 from .ubicacion import Ubicacion
 from .ciudad import Ciudad
 from .auditoria_plan import AuditoriaPlan
+from .persona_reserva import PersonaReserva
+from .tarjetas import Tarjeta
+from .estadia import Estadia
