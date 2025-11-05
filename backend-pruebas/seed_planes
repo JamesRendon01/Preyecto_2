@@ -52,4 +52,4 @@ def generar_planes(cantidad=50):
 
 
 if __name__ == "__main__":
-    generar_planes(15)  # Cambia la cantidad según necesites
+    generar_planes(200)  # Cambia la cantidad según necesites

@@ -17,5 +17,7 @@ class Reserva(Base):
     id_informe=Column(Integer, ForeignKey("informe.id"))
     id_plan=Column(Integer, ForeignKey("plan.id"))
     id_turista=Column(Integer, ForeignKey("turista.id"))
+    hotel_id = Column(Integer, ForeignKey("hotel.id"), nullable=False)
+    hotel = relationship("Hotel", back_populates="reservas")
     turista = relationship("Turista", back_populates="reservas")
     plan = relationship("Plan")
