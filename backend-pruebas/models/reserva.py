@@ -1,3 +1,4 @@
+# models/reserva.py
 from db import Base
 from sqlalchemy import Column, Integer, String, Date, Boolean, LargeBinary, ForeignKey
 from sqlalchemy.orm import relationship
@@ -8,16 +9,25 @@ from models.hotel import Hotel
 
 class Reserva(Base):
     __tablename__ = "reserva"
-    id=Column(Integer, primary_key=True)
-    fecha_reserva=Column(Date)
-    costo_final=Column(Integer)
-    disponibilidad=Column(Boolean)
-    numero_personas=Column(Integer)
+
+    id = Column(Integer, primary_key=True)
+    fecha_reserva = Column(Date)
+    costo_final = Column(Integer)
+    disponibilidad = Column(Boolean)
+    numero_personas = Column(Integer)
     comprobante_pdf = Column(LargeBinary, nullable=True)
-    id_informe=Column(Integer, ForeignKey("informe.id"))
-    id_plan=Column(Integer, ForeignKey("plan.id"))
-    id_turista=Column(Integer, ForeignKey("turista.id"))
+    id_informe = Column(Integer, ForeignKey("informe.id"))
+    id_plan = Column(Integer, ForeignKey("plan.id"))
+    id_turista = Column(Integer, ForeignKey("turista.id"))
     hotel_id = Column(Integer, ForeignKey("hotel.id"))
+
     hotel = relationship("Hotel", back_populates="reservas")
     turista = relationship("Turista", back_populates="reservas")
     plan = relationship("Plan")
+
+    # ✅ Relación con los acompañantes (persona_reserva)
+    acompanantes = relationship(
+        "PersonaReserva",
+        back_populates="reserva",
+        cascade="all, delete-orphan"  # elimina acompañantes si se borra la reserva
+    )
