@@ -40,7 +40,11 @@ export default function NavDashAdmin() {
 
   return (
     <nav className="fixed top-0 left-0 h-screen w-56 bg-nav p-6 flex flex-col justify-start gap-8 font-bold shadow-lg z-50">
-      <h2 className="pb-3 border-b-2 text-center text-lg">ESCAPADE PARFAITE</h2>
+      <img
+        className="w-45 h-30"
+        src="/img/logo.png"
+        alt="logo"
+      />
 
       <div className="border-b-2 pb-3 text-center">
         <h3 className="text-2xl font-bold">{nombre}</h3>
