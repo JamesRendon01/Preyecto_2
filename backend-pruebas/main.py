@@ -17,31 +17,34 @@ from controllers.filtro_controller import router as filtro_router
 from controllers.dashboard_controller import router as dashboard_router
 from controllers.graficas_controller import router as graficas_router
 
+# 🔹 APScheduler para tareas automáticas
+from apscheduler.schedulers.background import BackgroundScheduler
+from utils.actualizar_reservas import actualizar_reservas_finalizadas
+
+# 🧩 Inicialización de FastAPI
 app = FastAPI(title="API de Reservas Turísticas", version="1.0")
 
-
-# 🌐 CORS
+# 🌐 CORS ────────────────────────────────────────────────
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:4000",
-    "http://127.0.0.1:4000"
+    "http://127.0.0.1:4000",
+    "https://cbbtpx6d-4000.use2.devtunnels.ms",
 ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins,        # dominios permitidos
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],          # todos los métodos (GET, POST, PUT, DELETE)
+    allow_headers=["*"],          # todos los encabezados
 )
 
-# 🧱 Archivos estáticos
+# 🧱 Archivos estáticos ──────────────────────────────────
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# 🛡️ Middleware (DEBE IR DESPUÉS)
-app.middleware("http")(security_headers)
-
-# 🔗 Rutas
+# 🔗 Rutas ────────────────────────────────────────────────
 app.include_router(turista_router)
 app.include_router(admin_router)
 app.include_router(favorito_router)
@@ -49,7 +52,25 @@ app.include_router(informe_router)
 app.include_router(plan_router)
 app.include_router(ubicacion_router)
 app.include_router(reserva_router)
+app.include_router(persona_reserva_router)
 app.include_router(ciudad_router)
 app.include_router(filtro_router)
 app.include_router(dashboard_router)
 app.include_router(graficas_router)
+
+# 🛡️ Middleware de seguridad ─────────────────────────────
+# ⚠️ Se registra después del CORS para no eliminar sus encabezados
+app.middleware("http")(security_headers)
+
+# 🕒 ────────────────────────────────────────────────
+#     CONFIGURACIÓN DE TAREA AUTOMÁTICA (APScheduler)
+# ──────────────────────────────────────────────────
+scheduler = BackgroundScheduler()
+scheduler.add_job(actualizar_reservas_finalizadas, "interval", hours=24)
+scheduler.start()
+
+# 🟢 Ejecutar al iniciar el servidor también
+@app.on_event("startup")
+def startup_event():
+    print("🚀 Servidor iniciado. Verificando reservas vencidas...")
+    actualizar_reservas_finalizadas()

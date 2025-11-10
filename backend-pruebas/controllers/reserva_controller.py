@@ -93,7 +93,6 @@ def listar_reserva(db: Session = Depends(get_session)):
     if not reservas:
         raise HTTPException(status_code=404, detail="No hay Reservas registradas")
 
-
     resultado = []
     for r in reservas:
         resultado.append({

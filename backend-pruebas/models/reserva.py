@@ -1,11 +1,17 @@
-# models/reserva.py
 from db import Base
-from sqlalchemy import Column, Integer, String, Date, Boolean, LargeBinary, ForeignKey
+from sqlalchemy import Column, Integer, Date, Enum, LargeBinary, ForeignKey
 from sqlalchemy.orm import relationship
+import enum
 from models.informe import Informe
 from models.plan import Plan
 from models.turista import Turista
 from models.hotel import Hotel
+
+class EstadoReserva(enum.Enum):
+    CONFIRMADA = "Confirmada"
+    CANCELADA = "Cancelada"
+    FINALIZADA = "Finalizada"
+
 
 class Reserva(Base):
     __tablename__ = "reserva"
@@ -13,7 +19,10 @@ class Reserva(Base):
     id = Column(Integer, primary_key=True)
     fecha_reserva = Column(Date)
     costo_final = Column(Integer)
-    disponibilidad = Column(Boolean)
+
+    # 🔹 Campo Enum (antes llamado estado o disponibilidad)
+    disponibilidad = Column(Enum(EstadoReserva), default=EstadoReserva.CONFIRMADA, nullable=False)
+
     numero_personas = Column(Integer)
     comprobante_pdf = Column(LargeBinary, nullable=True)
     id_informe = Column(Integer, ForeignKey("informe.id"))
@@ -25,9 +34,8 @@ class Reserva(Base):
     turista = relationship("Turista", back_populates="reservas")
     plan = relationship("Plan")
 
-    # ✅ Relación con los acompañantes (persona_reserva)
     acompanantes = relationship(
         "PersonaReserva",
         back_populates="reserva",
-        cascade="all, delete-orphan"  # elimina acompañantes si se borra la reserva
+        cascade="all, delete-orphan"
     )
