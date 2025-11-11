@@ -89,11 +89,6 @@ export default function ListarPlanesAdmin() {
     { key: "descripcion", label: "Descripción Larga" },
     { key: "costo_persona", label: "Precio" },
     { key: "id_ciudad", label: "Ciudad" },
-    {
-      key: "ubicaciones",
-      label: "Ubicación",
-      render: (value) => value?.join(", "),
-    },
   ];
 
   return (

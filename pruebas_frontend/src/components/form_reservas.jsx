@@ -35,25 +35,25 @@ export default function FormReservas() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fechasOcupadas, setFechasOcupadas] = useState([]);
 
-const [confirmarAcompanantes, setConfirmarAcompanantes] = useState(false);
-const [currentPersonaIndex, setCurrentPersonaIndex] = useState(0);
-const [nombreAcompanante, setNombreAcompanante] = useState("");
-const [TipoIdentificacionAcompanante, setTipoIdentificacionAcompanante] = useState("");
-const [identificacionAcompanante, setIdentificacionAcompanante] = useState("");
-const [edadAcompanante, setEdadAcompanante] = useState("");
+  const [confirmarAcompanantes, setConfirmarAcompanantes] = useState(false);
+  const [currentPersonaIndex, setCurrentPersonaIndex] = useState(0);
+  const [nombreAcompanante, setNombreAcompanante] = useState("");
+  const [TipoIdentificacionAcompanante, setTipoIdentificacionAcompanante] = useState("");
+  const [identificacionAcompanante, setIdentificacionAcompanante] = useState("");
+  const [edadAcompanante, setEdadAcompanante] = useState("");
 
 
-const [tarjeta, setTarjeta] = useState({
-  nombre: "",
-  tipo_tarjeta: "",
-  numero: "",
-  fecha_vencimiento: "",
-  cvv: "",
-});
+  const [tarjeta, setTarjeta] = useState({
+    nombre: "",
+    tipo_tarjeta: "",
+    numero: "",
+    fecha_vencimiento: "",
+    cvv: "",
+  });
 
-const handleTarjetaChange = (campo, valor) => {
-  setTarjeta((prev) => ({ ...prev, [campo]: valor }));
-};
+  const handleTarjetaChange = (campo, valor) => {
+    setTarjeta((prev) => ({ ...prev, [campo]: valor }));
+  };
 
 
 
@@ -148,50 +148,47 @@ const handleTarjetaChange = (campo, valor) => {
     }
 
     try {
- const payload = {
-  fecha_reserva: formData.fecha,
-  disponibilidad: true,
-  numero_personas: parseInt(formData.numeroPersonas, 10),
-  id_informe: null, 
-  id_plan: plan?.id,
-  email_cliente: formData.correo,
-  acompanantes: personas.map((p) => ({
-    nombre: p.nombre,
-    tipo_identificacion: p.tipo_identificacion,
-    identificacion: p.identificacion,
-    edad: parseInt(p.edad || 0, 10),
-  })),
-  tarjeta: {
-    nombre: tarjeta.nombre,
-    tipo_tarjeta: tarjeta.tipo_tarjeta,
-    numero: tarjeta.numero.replace(/\s/g, ""), // sin espacios
-    fecha_vencimiento: tarjeta.fecha_vencimiento,
-    cvv: tarjeta.cvv,
-  },
-};
+      const payload = {
+        fecha_reserva: formData.fecha,
+        disponibilidad: "Confirmada",
+        numero_personas: parseInt(formData.numeroPersonas, 10),
+        id_informe: null,
+        id_plan: plan?.id,
+        email_cliente: formData.correo,
+        acompanantes: personas.length ? personas.map((p) => ({
+          nombre: p.nombre,
+          tipo_identificacion: p.tipo_identificacion,
+          identificacion: p.identificacion,
+          edad: parseInt(p.edad || 0, 10),
+        })) : [],
+        tarjeta: {
+          nombre: tarjeta.nombre,
+          tipo_tarjeta: tarjeta.tipo_tarjeta,
+          numero: tarjeta.numero.replace(/\s/g, ""),
+          fecha_vencimiento: tarjeta.fecha_vencimiento,
+          cvv: parseInt(tarjeta.cvv, 10), // ✅ corregido
+        },
+      };
+      const res = await axios.post(
+        "http://localhost:8000/reserva/crear_reserva",
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-
-
-  const res = await axios.post(
-    "http://localhost:8000/reserva/crear_reserva",
-    payload,
-    {
-      headers: { Authorization: `Bearer ${token}` },
+      message.success("✅ Reserva realizada con éxito");
+      setShowModal(true);
+    } catch (error) {
+      console.error("❌ Error al crear reserva:", error);
+      const data = error.response?.data || {};
+      const detail =
+        data.detail ?? data.message ?? data.error ?? data ?? "Error desconocido";
+      const text = formatValidationDetail(detail);
+      Modal.error({ title: "Error al crear reserva", content: text });
+    } finally {
+      setIsSubmitting(false);
     }
-  );
-
-  message.success("✅ Reserva realizada con éxito");
-  setShowModal(true);
-} catch (error) {
-  console.error("❌ Error al crear reserva:", error);
-  const data = error.response?.data || {};
-  const detail =
-    data.detail ?? data.message ?? data.error ?? data ?? "Error desconocido";
-  const text = formatValidationDetail(detail);
-  Modal.error({ title: "Error al crear reserva", content: text });
-} finally {
-  setIsSubmitting(false);
-}
 
   };
 
@@ -249,187 +246,186 @@ const handleTarjetaChange = (campo, valor) => {
         );
 
       case 2:
-  return (
-    <>
-      <h3 className="text-lg font-bold mb-4 text-center">
-        👥 Datos de acompañantes
-      </h3>
+        return (
+          <>
+            <h3 className="text-lg font-bold mb-4 text-center">
+              👥 Datos de acompañantes
+            </h3>
 
-      {personas.length > 0 ? (
-        <div className="mb-4 border border-gray-300 rounded-lg p-3 bg-gray-50">
-          <p className="font-semibold mb-2 text-center">
-            Acompañante {currentPersonaIndex + 1} de {personas.length}
-          </p>
+            {personas.length > 0 ? (
+              <div className="mb-4 border border-gray-300 rounded-lg p-3 bg-gray-50">
+                <p className="font-semibold mb-2 text-center">
+                  Acompañante {currentPersonaIndex + 1} de {personas.length}
+                </p>
 
-          <label className="block text-sm pb-1">Nombre Completo</label>
-          <input
-            type="text"
-            value={personas[currentPersonaIndex].nombre}
-            onChange={(e) =>
-              handlePersonaChange(currentPersonaIndex, "nombre", e.target.value)
-            }
-            className="w-full border-2 border-black rounded-xl h-8 px-2 mb-2"
-            required
-          />
+                <label className="block text-sm pb-1">Nombre Completo</label>
+                <input
+                  type="text"
+                  value={personas[currentPersonaIndex].nombre}
+                  onChange={(e) =>
+                    handlePersonaChange(currentPersonaIndex, "nombre", e.target.value)
+                  }
+                  className="w-full border-2 border-black rounded-xl h-8 px-2 mb-2"
+                  required
+                />
 
-          <label className="block text-sm pb-1 mt-2">Tipo de identificación</label>
-<select
-  name="tipo_identificacion"
-  value={personas[currentPersonaIndex].tipo_identificacion}
-  onChange={(e) =>
-    handlePersonaChange(currentPersonaIndex, "tipo_identificacion", e.target.value)
-  }
-  required
-  className="w-full border-2 border-black rounded-xl h-8 px-2 mb-2 bg-white"
->
-  <option value="">Seleccione un tipo de documento</option>
-  <option value="CC">Cédula de Ciudadanía</option>
-  <option value="CE">Cédula de Extranjería</option>
-  <option value="TI">Tarjeta de Identidad</option>
-  <option value="PP">Pasaporte</option>
-  <option value="PPT">Permiso por Protección Temporal</option>
-</select>
+                <label className="block text-sm pb-1 mt-2">Tipo de identificación</label>
+                <select
+                  name="tipo_identificacion"
+                  value={personas[currentPersonaIndex].tipo_identificacion}
+                  onChange={(e) =>
+                    handlePersonaChange(currentPersonaIndex, "tipo_identificacion", e.target.value)
+                  }
+                  required
+                  className="w-full border-2 border-black rounded-xl h-8 px-2 mb-2 bg-white"
+                >
+                  <option value="">Seleccione un tipo de documento</option>
+                  <option value="CC">Cédula de Ciudadanía</option>
+                  <option value="CE">Cédula de Extranjería</option>
+                  <option value="TI">Tarjeta de Identidad</option>
+                  <option value="PP">Pasaporte</option>
+                  <option value="PPT">Permiso por Protección Temporal</option>
+                </select>
 
 
 
-          <label className="block text-sm pb-1">Identificación</label>
-          <input
-            type="text"
-            value={personas[currentPersonaIndex].identificacion}
-            onChange={(e) =>
-              handlePersonaChange(currentPersonaIndex, "identificacion", e.target.value)
-            }
-            className="w-full border-2 border-black rounded-xl h-8 px-2 mb-2"
-            required
-          />
+                <label className="block text-sm pb-1">Identificación</label>
+                <input
+                  type="text"
+                  value={personas[currentPersonaIndex].identificacion}
+                  onChange={(e) =>
+                    handlePersonaChange(currentPersonaIndex, "identificacion", e.target.value)
+                  }
+                  className="w-full border-2 border-black rounded-xl h-8 px-2 mb-2"
+                  required
+                />
 
-          <label className="block text-sm pb-1">Edad</label>
-          <input
-            type="number"
-            value={personas[currentPersonaIndex].edad}
-            onChange={(e) =>
-              handlePersonaChange(currentPersonaIndex, "edad", e.target.value)
-            }
-            className="w-full border-2 border-black rounded-xl h-8 px-2"
-          />
+                <label className="block text-sm pb-1">Edad</label>
+                <input
+                  type="number"
+                  value={personas[currentPersonaIndex].edad}
+                  onChange={(e) =>
+                    handlePersonaChange(currentPersonaIndex, "edad", e.target.value)
+                  }
+                  className="w-full border-2 border-black rounded-xl h-8 px-2"
+                />
 
-          <div className="flex justify-between mt-4">
-            <button
-              type="button"
-              disabled={currentPersonaIndex === 0}
-              onClick={() =>
-                setCurrentPersonaIndex(currentPersonaIndex - 1)
+                <div className="flex justify-between mt-4">
+                  <button
+                    type="button"
+                    disabled={currentPersonaIndex === 0}
+                    onClick={() =>
+                      setCurrentPersonaIndex(currentPersonaIndex - 1)
+                    }
+                    className={`px-6 py-2 border-2 border-black rounded-3xl font-bold ${currentPersonaIndex === 0
+                        ? "bg-gray-300 cursor-not-allowed"
+                        : "bg-gray-200 hover:bg-gray-300"
+                      }`}
+                  >
+                    <MoveLeft />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const p = personas[currentPersonaIndex];
+                      if (!p.nombre || !p.tipo_identificacion || !p.identificacion) {
+                        message.warning("Completa todos los campos antes de continuar.");
+                        return;
+                      }
+
+                      if (currentPersonaIndex < personas.length - 1) {
+                        setCurrentPersonaIndex(currentPersonaIndex + 1);
+                      } else {
+                        // ✅ Todos los acompañantes completados — mostrar modal de confirmación
+                        setConfirmarAcompanantes(true);
+                      }
+
+                    }}
+                    className="bg-nav px-6 py-2 border-2 border-black rounded-3xl font-bold"
+                  >
+                    {currentPersonaIndex < personas.length - 1
+                      ? <MoveRight />
+                      : "Confirmar"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-center text-gray-600">
+                No hay acompañantes registrados.
+              </p>
+            )}
+          </>
+        );
+
+
+      case 3:
+        return (
+          <>
+            <h3 className="text-lg font-bold mb-4 text-center">💳 Datos de pago</h3>
+
+            {/* Nombre en la tarjeta */}
+            <label className="block pb-2 mt-4">Nombre en la tarjeta</label>
+            <input
+              type="text"
+              name="nombre"
+              value={tarjeta.nombre}
+              onChange={(e) => handleTarjetaChange("nombre", e.target.value)}
+              placeholder="Ej: Ana Hernández"
+              className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-2"
+              required
+            />
+
+            {/* Tipo de tarjeta */}
+            <label className="block text-sm pb-1 mt-2">Tipo de tarjeta</label>
+            <select
+              name="tipo_tarjeta"
+              value={tarjeta.tipo_tarjeta}
+              onChange={(e) => handleTarjetaChange("tipo_tarjeta", e.target.value)}
+              className="w-full border-2 border-black rounded-xl h-10 px-2 mb-2 bg-white"
+              required
+            >
+              <option value="">Seleccione un tipo de tarjeta</option>
+              <option value="TC">Crédito</option>
+              <option value="TD">Débito</option>
+            </select>
+
+            {/* Número de tarjeta */}
+            <label className="block pb-2 mt-2">Número de tarjeta</label>
+            <IMaskInput
+              mask="0000 0000 0000 0000"
+              value={tarjeta.numero}
+              onAccept={(value) => handleTarjetaChange("numero", value)}
+              placeholder="XXXX XXXX XXXX XXXX"
+              className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-2"
+              required
+            />
+
+            {/* Fecha de vencimiento */}
+            <label className="block pb-2 mt-2">Fecha de vencimiento</label>
+            <IMaskInput
+              mask="00/00"
+              value={tarjeta.fecha_vencimiento}
+              onAccept={(value) =>
+                handleTarjetaChange("fecha_vencimiento", value)
               }
-              className={`px-6 py-2 border-2 border-black rounded-3xl font-bold ${
-                currentPersonaIndex === 0
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-            >
-              <MoveLeft />
-            </button>
+              placeholder="MM/AA"
+              className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-2"
+              required
+            />
 
-            <button
-              type="button"
-              onClick={() => {
-                const p = personas[currentPersonaIndex];
-                if (!p.nombre || !p.tipo_identificacion || !p.identificacion) {
-                  message.warning("Completa todos los campos antes de continuar.");
-                  return;
-                }
-
-                if (currentPersonaIndex < personas.length - 1) {
-  setCurrentPersonaIndex(currentPersonaIndex + 1);
-} else {
-  // ✅ Todos los acompañantes completados — mostrar modal de confirmación
-  setConfirmarAcompanantes(true);
-}
-
-              }}
-              className="bg-nav px-6 py-2 border-2 border-black rounded-3xl font-bold"
-            >
-              {currentPersonaIndex < personas.length - 1
-                ? <MoveRight />
-                : "Confirmar"}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <p className="text-center text-gray-600">
-          No hay acompañantes registrados.
-        </p>
-      )}
-    </>
-  );
-
-      
-case 3:
-  return (
-    <>
-      <h3 className="text-lg font-bold mb-4 text-center">💳 Datos de pago</h3>
-
-      {/* Nombre en la tarjeta */}
-      <label className="block pb-2 mt-4">Nombre en la tarjeta</label>
-      <input
-        type="text"
-        name="nombre"
-        value={tarjeta.nombre}
-        onChange={(e) => handleTarjetaChange("nombre", e.target.value)}
-        placeholder="Ej: Ana Hernández"
-        className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-2"
-        required
-      />
-
-      {/* Tipo de tarjeta */}
-      <label className="block text-sm pb-1 mt-2">Tipo de tarjeta</label>
-      <select
-        name="tipo_tarjeta"
-        value={tarjeta.tipo_tarjeta}
-        onChange={(e) => handleTarjetaChange("tipo_tarjeta", e.target.value)}
-        className="w-full border-2 border-black rounded-xl h-10 px-2 mb-2 bg-white"
-        required
-      >
-        <option value="">Seleccione un tipo de tarjeta</option>
-        <option value="TC">Crédito</option>
-        <option value="TD">Débito</option>
-      </select>
-
-      {/* Número de tarjeta */}
-      <label className="block pb-2 mt-2">Número de tarjeta</label>
-      <IMaskInput
-        mask="0000 0000 0000 0000"
-        value={tarjeta.numero}
-        onAccept={(value) => handleTarjetaChange("numero", value)}
-        placeholder="XXXX XXXX XXXX XXXX"
-        className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-2"
-        required
-      />
-
-      {/* Fecha de vencimiento */}
-      <label className="block pb-2 mt-2">Fecha de vencimiento</label>
-      <IMaskInput
-        mask="00/00"
-        value={tarjeta.fecha_vencimiento}
-        onAccept={(value) =>
-          handleTarjetaChange("fecha_vencimiento", value)
-        }
-        placeholder="MM/AA"
-        className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-2"
-        required
-      />
-
-      {/* CVV */}
-      <label className="block pb-2 mt-2">CVV</label>
-      <IMaskInput
-        mask="0000"
-        value={tarjeta.cvv}
-        onAccept={(value) => handleTarjetaChange("cvv", value)}
-        placeholder="3 o 4 dígitos"
-        className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-6"
-        required
-      />
-    </>
-  );
+            {/* CVV */}
+            <label className="block pb-2 mt-2">CVV</label>
+            <IMaskInput
+              mask="0000"
+              value={tarjeta.cvv}
+              onAccept={(value) => handleTarjetaChange("cvv", value)}
+              placeholder="3 o 4 dígitos"
+              className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-6"
+              required
+            />
+          </>
+        );
 
 
       default:
@@ -450,75 +446,74 @@ case 3:
             {renderStep()}
 
             <div className="flex justify-between mt-6">
-             {currentStep > 1 && (
-  <button
-    type="button"
-    onClick={() => {
-      if (currentStep === 3) {
-        const num = parseInt(formData.numeroPersonas || 0, 10);
-        // Si solo hay una persona → volver directo al paso 1
-        if (num <= 1) {
-          setCurrentStep(1);
-          return;
-        }
-      }
-      setCurrentStep(currentStep - 1);
-    }}
-    className="bg-gray-300 px-6 py-2 border-2 border-black rounded-3xl font-bold"
-  >
-    Atrás
-  </button>
-)}
+              {currentStep > 1 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (currentStep === 3) {
+                      const num = parseInt(formData.numeroPersonas || 0, 10);
+                      // Si solo hay una persona → volver directo al paso 1
+                      if (num <= 1) {
+                        setCurrentStep(1);
+                        return;
+                      }
+                    }
+                    setCurrentStep(currentStep - 1);
+                  }}
+                  className="bg-gray-300 px-6 py-2 border-2 border-black rounded-3xl font-bold"
+                >
+                  Atrás
+                </button>
+              )}
 
-{currentStep < 3 && (
-  <button
-    type="button"
-    onClick={() => {
-      // 🔍 Validación antes de avanzar
-      if (currentStep === 1) {
-        if (!formData.fecha || !formData.numeroPersonas) {
-          message.warning("Por favor completa todos los campos de la reserva.");
-          return;
-        }
+              {currentStep < 3 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    // 🔍 Validación antes de avanzar
+                    if (currentStep === 1) {
+                      if (!formData.fecha || !formData.numeroPersonas) {
+                        message.warning("Por favor completa todos los campos de la reserva.");
+                        return;
+                      }
 
-        const num = parseInt(formData.numeroPersonas || 0, 10);
+                      const num = parseInt(formData.numeroPersonas || 0, 10);
 
-        // 🧩 Si solo hay una persona, salta al paso de pago (no acompañantes)
-        if (num <= 1) {
-          setCurrentStep(3);
-          return;
-        }
+                      // 🧩 Si solo hay una persona, salta al paso de pago (no acompañantes)
+                      if (num <= 1) {
+                        setCurrentStep(3);
+                        return;
+                      }
 
-        // Si hay más de una persona → ir al paso 2
-        setCurrentStep(2);
-        return;
-      }
+                      // Si hay más de una persona → ir al paso 2
+                      setCurrentStep(2);
+                      return;
+                    }
 
-      // 🔍 Validación antes de pasar del paso 2 (acompañantes)
-      if (currentStep === 2) {
-        for (const [i, p] of personas.entries()) {
-          if (!p.nombre || !p.apellido || !p.identificacion) {
-            message.warning(`Por favor completa todos los datos del acompañante #${i + 1}`);
-            return;
-          }
-        }
-        setCurrentStep(3);
-        return;
-      }
-    }}
-    className="bg-nav px-6 py-2 border-2 border-black rounded-3xl font-bold"
-  >
-    Siguiente
-  </button>
-)}
+                    // 🔍 Validación antes de pasar del paso 2 (acompañantes)
+                    if (currentStep === 2) {
+                      for (const [i, p] of personas.entries()) {
+                        if (!p.nombre || !p.apellido || !p.identificacion) {
+                          message.warning(`Por favor completa todos los datos del acompañante #${i + 1}`);
+                          return;
+                        }
+                      }
+                      setCurrentStep(3);
+                      return;
+                    }
+                  }}
+                  className="bg-nav px-6 py-2 border-2 border-black rounded-3xl font-bold"
+                >
+                  Siguiente
+                </button>
+              )}
 
               {currentStep === 3 && (
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`px-6 py-2 border-2 border-black rounded-3xl font-bold ${
-                    isSubmitting ? "bg-gray-300" : "bg-nav"
-                  }`}
+                  className={`px-6 py-2 border-2 border-black rounded-3xl font-bold ${isSubmitting ? "bg-gray-300" : "bg-nav"
+                    }`}
                 >
                   {isSubmitting ? "Reservando..." : "Reservar"}
                 </button>
@@ -528,57 +523,57 @@ case 3:
         </div>
       </div>
 
-{/* 🔹 Modal de confirmación de acompañantes */}
-<Modal
-  title="✅ Confirmación de acompañantes"
-  open={confirmarAcompanantes}
-  onCancel={() => setConfirmarAcompanantes(false)}
-  footer={null}
->
-  <div className="p-4 max-h-64 overflow-y-auto">
-    {personas.map((p, i) => (
-      <div key={i} className="border-b pb-2 mb-2">
-        <p>
-          <strong>{i + 1}. {p.nombre} {p.tipo_identificacion}</strong><br />
-          <span>Identificación: {p.identificacion}</span><br />
-          <span>Edad: {p.edad || "N/A"}</span>
-        </p>
-      </div>
-    ))}
-  </div>
+      {/* 🔹 Modal de confirmación de acompañantes */}
+      <Modal
+        title="✅ Confirmación de acompañantes"
+        open={confirmarAcompanantes}
+        onCancel={() => setConfirmarAcompanantes(false)}
+        footer={null}
+      >
+        <div className="p-4 max-h-64 overflow-y-auto">
+          {personas.map((p, i) => (
+            <div key={i} className="border-b pb-2 mb-2">
+              <p>
+                <strong>{i + 1}. {p.nombre} {p.tipo_identificacion}</strong><br />
+                <span>Identificación: {p.identificacion}</span><br />
+                <span>Edad: {p.edad || "N/A"}</span>
+              </p>
+            </div>
+          ))}
+        </div>
 
-  <div className="flex justify-between mt-6">
-    <button
-      onClick={() => {
-        setConfirmarAcompanantes(false);
-        setCurrentPersonaIndex(personas.length - 1);
-      }}
-      className="bg-gray-300 px-4 py-2 border-2 border-black rounded-3xl font-bold"
-    >
-      Atrás
-    </button>
+        <div className="flex justify-between mt-6">
+          <button
+            onClick={() => {
+              setConfirmarAcompanantes(false);
+              setCurrentPersonaIndex(personas.length - 1);
+            }}
+            className="bg-gray-300 px-4 py-2 border-2 border-black rounded-3xl font-bold"
+          >
+            Atrás
+          </button>
 
-    <button
-      onClick={() => {
-        setConfirmarAcompanantes(false);
-        setCurrentStep(2);
-      }}
-      className="bg-gray-300 px-4 py-2 border-2 border-black rounded-3xl font-bold"
-    >
-      Editar
-    </button>
+          <button
+            onClick={() => {
+              setConfirmarAcompanantes(false);
+              setCurrentStep(2);
+            }}
+            className="bg-gray-300 px-4 py-2 border-2 border-black rounded-3xl font-bold"
+          >
+            Editar
+          </button>
 
-    <button
-      onClick={() => {
-        setConfirmarAcompanantes(false);
-        setCurrentStep(3);
-      }}
-      className="bg-nav px-4 py-2 border-2 border-black rounded-3xl font-bold"
-    >
-      Continuar
-    </button>
-  </div>
-</Modal>
+          <button
+            onClick={() => {
+              setConfirmarAcompanantes(false);
+              setCurrentStep(3);
+            }}
+            className="bg-nav px-4 py-2 border-2 border-black rounded-3xl font-bold"
+          >
+            Continuar
+          </button>
+        </div>
+      </Modal>
       {/* 🔹 Modal de comprobante de pago */}
 
       <Modal
