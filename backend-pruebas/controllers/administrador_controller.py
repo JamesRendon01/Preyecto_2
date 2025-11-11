@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import session
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy.orm import Session, session
 from models.administrador import Administrador
-from dtos.administrador_dto import iniciarSesionDTO
+from dtos.administrador_dto import iniciarSesionDTO, ActualizarAdministradorDTO
 from db.session import SessionLocal
 from utils.jwt_manager import create_access_token, verify_access_token
 from datetime import datetime, timedelta
 from utils.security import hash_password, verify_password
+from fastapi.security import OAuth2PasswordBearer
 
-#Funcion para obtener la sesión de la base de datos
+# Función para obtener la sesión de la base de datos
 def get_session():
     db = SessionLocal()
     try:
@@ -15,68 +16,55 @@ def get_session():
     finally:
         db.close()
 
-# Creacion del Router con el prefijo /administrador
-router = APIRouter( prefix='/administrador' )
+# Creación del Router con el prefijo /administrador
+router = APIRouter(prefix='/administrador', tags=['Administrador'])
 
+# OAuth2
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="administrador/iniciarsesion")
 
-#Endoint para listar todos los administradores
-@router.get('/')
-def listar_administradores(db: session = Depends(get_session)):
-    # Consulta todos los administradores
-    la = db.query(Administrador).all()
-    # Si no hay administradores maneja el error y muestra el siguiente mensaje "No hay administradores registrados"
-    if not la:
-         raise HTTPException(status_code=404, detail="No hay administradores registrados")
-    return la
+# Dependencia para obtener el administrador actual a partir del token
+def get_current_admin(token: str = Depends(oauth2_scheme), db: Session = Depends(get_session)):
+    payload = verify_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+    admin = db.query(Administrador).filter(Administrador.id == int(payload.get("sub"))).first()
+    if not admin:
+        raise HTTPException(status_code=404, detail="Administrador no encontrado")
+    return admin
 
-# Endpoint para listar administradores por id
-@router.get('/{id}')
-def listar_por_id(id: int,  db: session = Depends(get_session)):
-    # Busca por el ID ingresado
-    lpa = db.query(Administrador).filter(Administrador.id == id).first()
-    # Si no hay ningun administrador con ese ID maneja el error y uestra el siguiente mensaje "Administrador no encontrado"
-    if not lpa:
-         raise HTTPException(status_code=404, detail="Administardor no encontrado")
-    return lpa
+# -------------------
+# Rutas fijas primero
+# -------------------
 
-
-# Endpoint para inicio de sesion del rol Administrador
 @router.post("/iniciarsesion")
 def iniciar_sesion(datos: iniciarSesionDTO, db: session = Depends(get_session)):
-    
-    # Busca Administradorpor el correo
     administrador = db.query(Administrador).filter(Administrador.correo == datos.correo).first()
 
-    # Si no encuentra el correo maneja el error y muestra el siguiente mensaje "Correo no encontrado"
     if not administrador:
         raise HTTPException(status_code=401, detail="Correo no registrado")
-    # Revisa si el correo esta bloqueado
+
     if administrador.bloqueado_hasta and datetime.utcnow() < administrador.bloqueado_hasta:
-        # Si esta bloqueado maneja el error y muestra el siguiente mensaje "Cuenta bloqueada. Intenta de nuevo a las {administrador.bloqueado_hasta}"
-        # Esto pasa si pone 5 veces la contraseña incorrecta
-        raise HTTPException(status_code=403, detail = f"Cuenta bloqueada. Intenta de nuevo a las {administrador.bloqueado_hasta}")
-    #Validar contrsaeña
+        raise HTTPException(
+            status_code=403,
+            detail=f"Cuenta bloqueada. Intenta de nuevo a las {administrador.bloqueado_hasta}"
+        )
+
     if not verify_password(datos.contrasena, administrador.contrasena):
         administrador.intentos_fallidos += 1
-        #Si alcanza los 5 intentos, bloquea la cuenta por 5 minutos
         if administrador.intentos_fallidos >= 5:
             administrador.intentos_fallidos = 0
-            administrador.bloqueado_hasta = datetime.utcnow() + timedelta(minutes = 5)
-        # Guarda los cambios en la base de datos
+            administrador.bloqueado_hasta = datetime.utcnow() + timedelta(minutes=5)
         db.commit()
         raise HTTPException(status_code=401, detail="Contraseña incorrecta")
 
-    #Si la contraseña es correcta, reinicia los intentos y desbloquea la cuenta
     administrador.intentos_fallidos = 0
     administrador.bloqueado_hasta = None
     db.commit()
 
-    # Crea el token con JWT con la informacion del Administrador
     access_token = create_access_token(
-        data = {"sub": str (administrador.id), "correo": administrador.correo, "nombre": administrador.nombre}
+        data={"sub": str(administrador.id), "correo": administrador.correo, "nombre": administrador.nombre}
     )
 
-    #Retorna con la informacion y el token del Administrador
     return {
         "access_token": access_token,
         "token_type": "bearer",
@@ -86,3 +74,85 @@ def iniciar_sesion(datos: iniciarSesionDTO, db: session = Depends(get_session)):
             "correo": administrador.correo
         }
     }
+
+@router.get("/misDatosAdministrador")
+def obtener_mis_datos_administrador(admin: Administrador = Depends(get_current_admin)):
+    return {
+        "id": admin.id,
+        "nombre": admin.nombre,
+        "correo": admin.correo,
+        "celular": admin.celular,
+        "tipo_identificacion": admin.tipo_identificacion,
+        "identificacion": admin.identificacion,
+    }
+
+# ------------------------
+# Rutas dinámicas después
+# ------------------------
+
+@router.get("/")
+def listar_administradores(db: session = Depends(get_session)):
+    la = db.query(Administrador).all()
+    if not la:
+        raise HTTPException(status_code=404, detail="No hay administradores registrados")
+    return la
+
+@router.get("/{id}")
+def listar_por_id(id: int, db: session = Depends(get_session)):
+    lpa = db.query(Administrador).filter(Administrador.id == id).first()
+    if not lpa:
+        raise HTTPException(status_code=404, detail="Administrador no encontrado")
+    return lpa
+
+@router.put("/actualizar/{id}")
+def actualizar_administrador(id: int, datos: ActualizarAdministradorDTO, db: session = Depends(get_session)):
+    admin = db.query(Administrador).filter(Administrador.id == id).first()
+    if not admin:
+        raise HTTPException(status_code=404, detail="Administrador no encontrado")
+
+    if datos.correo and datos.correo != admin.correo:
+        correo_existente = db.query(Administrador).filter(Administrador.correo == datos.correo).first()
+        if correo_existente:
+            raise HTTPException(status_code=400, detail="El correo ya está en uso por otro administrador")
+
+    if datos.identificacion and datos.identificacion != admin.identificacion:
+        id_existente = db.query(Administrador).filter(Administrador.identificacion == datos.identificacion).first()
+        if id_existente:
+            raise HTTPException(status_code=400, detail="La identificación ya está registrada por otro administrador")
+
+    if datos.nombre:
+        admin.nombre = datos.nombre
+    if datos.correo:
+        admin.correo = datos.correo
+    if datos.celular:
+        admin.celular = datos.celular
+    if datos.tipo_identificacion:
+        admin.tipo_identificacion = datos.tipo_identificacion
+    if datos.identificacion:
+        admin.identificacion = datos.identificacion
+
+    db.commit()
+    db.refresh(admin)
+
+    return {
+        "mensaje": "Datos del administrador actualizados exitosamente",
+        "administrador": {
+            "id": admin.id,
+            "nombre": admin.nombre,
+            "correo": admin.correo,
+            "celular": admin.celular,
+            "tipo_identificacion": admin.tipo_identificacion,
+            "identificacion": admin.identificacion
+        }
+    }
+
+@router.delete("/eliminar/{id}")
+def eliminar_administrador(id: int, db: session = Depends(get_session)):
+    admin = db.query(Administrador).filter(Administrador.id == id).first()
+    if not admin:
+        raise HTTPException(status_code=404, detail="Administrador no encontrado")
+
+    db.delete(admin)
+    db.commit()
+
+    return {"mensaje": f"El administrador con ID {id} fue eliminado exitosamente"}

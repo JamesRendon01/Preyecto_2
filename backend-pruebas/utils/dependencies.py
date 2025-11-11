@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
+from sqlalchemy.orm.session import Session 
+from sqlalchemy.orm import session
 from db.session import SessionLocal
 from models.turista import Turista
 from utils.jwt_manager import verify_access_token
