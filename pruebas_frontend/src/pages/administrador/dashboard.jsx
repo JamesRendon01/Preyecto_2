@@ -3,10 +3,29 @@ import axios from "axios";
 import NavDashAdmin from "../../components/navDashAdmin.jsx";
 import Contador from "../../components/contador.jsx";
 import BarraCarga from "../../components/barraCarga.jsx"; // ✅ Importamos la barra de carga
+import { jwtDecode } from "jwt-decode";
 
 export default function DashbordAdmin() {
   const [totales, setTotales] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [nombre, setNombre] = useState("Administrador");
+  const [rol, setRol] = useState("Admin");
+
+  useEffect(() => {
+      try {
+        const token = localStorage.getItem("token_admin");
+        if (token) {
+          const decoded = jwtDecode(token);
+          setNombre(decoded.nombre || "Admin");
+          setRol(decoded.rol || "Admin");
+        } else {
+          setNombre(localStorage.getItem("nombre_admin") || "Admin");
+          setRol(localStorage.getItem("rol_admin") || "Administrador del sistema");
+        }
+      } catch (error) {
+        console.error("Error al decodificar el token:", error);
+      }
+    }, []);
 
   useEffect(() => {
     axios
@@ -50,7 +69,8 @@ export default function DashbordAdmin() {
 
       {/* Contenido principal */}
       <main className="flex-1 p-6">
-        <header className="mb-6">
+        <header className="mb-6 flex justify-center items-center">
+          <h1 className="text-4xl font-semibold">Bienvenido {rol} {nombre}</h1>
         </header>
 
         <section>

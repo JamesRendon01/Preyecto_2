@@ -6,6 +6,7 @@ import CrudTable from "../../components/tablaAdmin.jsx";
 import ButtonDelete from "../../components/button_eliminar.jsx";
 import ButtonUpdate from "../../components/button_update.jsx";
 import ProgressCircle from "../../components/barraCarga.jsx";
+import SearchBar from "../../components/search.jsx";
 import { message } from "antd";
 
 export default function Turistas() {
@@ -14,6 +15,7 @@ export default function Turistas() {
   const [filteredTuristas, setFilteredTuristas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [query, setQuery] = useState(""); // 🔹 Estado del buscador
   const pageSize = 5;
 
   const headers = [
@@ -26,7 +28,7 @@ export default function Turistas() {
     { key: "ciudad", label: "Ciudad" },
   ];
 
-  // Cargar totales
+  // 🔹 Cargar totales
   useEffect(() => {
     axios
       .get("http://localhost:8000/dashboard/dashboardListarTuristas")
@@ -35,7 +37,7 @@ export default function Turistas() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Cargar turistas
+  // 🔹 Cargar turistas
   useEffect(() => {
     axios
       .get("http://localhost:8000/turista/TotalTuristas")
@@ -46,6 +48,19 @@ export default function Turistas() {
       .catch((err) => console.error("Error al cargar turistas:", err));
   }, []);
 
+  // 🔹 Filtrar por búsqueda
+  useEffect(() => {
+    const filtered = turistas.filter((turista) =>
+      Object.values(turista)
+        .join(" ")
+        .toLowerCase()
+        .includes(query.toLowerCase())
+    );
+    setFilteredTuristas(filtered);
+    setCurrentPage(1); // Reiniciar a la primera página al buscar
+  }, [query, turistas]);
+
+  // 🔹 Eliminar turista
   const handleDeleteTurista = async (id) => {
     try {
       await axios.delete(`http://localhost:8000/turista/delet/${id}`);
@@ -57,7 +72,7 @@ export default function Turistas() {
     }
   };
 
-  // 🟡 Mostrar animación de carga mientras se obtienen datos
+  // 🔹 Mostrar animación de carga
   if (loading)
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4">
@@ -80,7 +95,10 @@ export default function Turistas() {
         <NavDashAdmin />
       </aside>
       <main className="flex-1 p-6">
-        <header className="mb-6">
+        <header className="mb-6 flex justify-between items-center">
+          <h1 className="text-4xl font-semibold">Turistas</h1>
+          {/* 🔍 Buscador */}
+          <SearchBar query={query} setQuery={setQuery} />
         </header>
 
         <section>
