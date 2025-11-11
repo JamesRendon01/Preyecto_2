@@ -5,6 +5,7 @@ from db.session import SessionLocal
 from models.plan import Plan
 from models.reserva import Reserva
 from models.turista import Turista
+from models.informe import Informe
 from datetime import date, datetime, timezone, timedelta
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
@@ -103,4 +104,30 @@ def obtener_totales_turistas(db: Session = Depends(get_session)):
     return {
         "total_turistas": total_turistas,
         "registrados_hoy": registrados_hoy
+    }
+
+@router.get("/dashboardListarnformes")
+def obtener_totales_informes(db: Session = Depends(get_session)):
+    """
+    Retorna:
+    - total_informes: cantidad total de informes creados.
+    - informes_hoy: cantidad de informes creados hoy.
+    """
+    # Fecha actual en la zona horaria de Colombia
+    hoy_colombia = datetime.now(COLOMBIA_TZ).date()
+
+    # Total de informes
+    total_informes = db.query(func.count(Informe.id)).scalar() or 0
+
+    # Informes creados hoy (comparando solo la fecha)
+    informes_hoy = (
+        db.query(func.count(Informe.id))
+        .filter(func.date(Informe.fecha_creacion) == hoy_colombia)
+        .scalar()
+        or 0
+    )
+
+    return {
+        "total_informes": total_informes,
+        "informes_hoy": informes_hoy
     }

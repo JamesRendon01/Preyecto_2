@@ -5,6 +5,7 @@ from db.session import SessionLocal
 import os
 from datetime import datetime
 import shutil
+from models.administrador import Administrador
 
 router = APIRouter(prefix="/informe", tags=["Informes"])
 
@@ -58,3 +59,22 @@ async def crear_informe(
         "informe": nuevo_informe
     }
     
+@router.get("/listarInformes")
+def listar_informes(db: Session = Depends(get_session)):
+    informes = (
+        db.query(Informe, Administrador)
+        .join(Administrador, Informe.id_administrador == Administrador.id)
+        .order_by(Informe.fecha_creacion.desc())
+        .all()
+    )
+
+    return [
+        {
+            "id": i.Informe.id,
+            "nombre": i.Informe.nombre,
+            "fecha_creacion": i.Informe.fecha_creacion,
+            "administrador": i.Administrador.nombre,
+            "ruta_pdf": i.Informe.ruta_pdf,
+        }
+        for i in informes
+    ]
