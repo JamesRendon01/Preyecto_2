@@ -4,6 +4,7 @@ import { MoveLeft, MoveRight } from 'lucide-react';
 import axios from "axios";
 import CardComponent from "./card";
 import { message, Modal, DatePicker } from "antd";
+import { IMaskInput } from "react-imask";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 dayjs.locale("es");
@@ -41,7 +42,19 @@ const [TipoIdentificacionAcompanante, setTipoIdentificacionAcompanante] = useSta
 const [identificacionAcompanante, setIdentificacionAcompanante] = useState("");
 const [edadAcompanante, setEdadAcompanante] = useState("");
 
-  
+
+const [tarjeta, setTarjeta] = useState({
+  nombre: "",
+  tipo_tarjeta: "",
+  numero: "",
+  fecha_vencimiento: "",
+  cvv: "",
+});
+
+const handleTarjetaChange = (campo, valor) => {
+  setTarjeta((prev) => ({ ...prev, [campo]: valor }));
+};
+
 
 
   useEffect(() => {
@@ -139,17 +152,24 @@ const [edadAcompanante, setEdadAcompanante] = useState("");
   fecha_reserva: formData.fecha,
   disponibilidad: true,
   numero_personas: parseInt(formData.numeroPersonas, 10),
-  id_informe: null, // si no estás usando informes aún
+  id_informe: null, 
   id_plan: plan?.id,
-  token_tarjeta: formData.numeroTarjeta?.replace(/\s/g, "") || "tok_default",
-  email_cliente: formData.correo, // del usuario logueado
+  email_cliente: formData.correo,
   acompanantes: personas.map((p) => ({
     nombre: p.nombre,
     tipo_identificacion: p.tipo_identificacion,
     identificacion: p.identificacion,
     edad: parseInt(p.edad || 0, 10),
   })),
+  tarjeta: {
+    nombre: tarjeta.nombre,
+    tipo_tarjeta: tarjeta.tipo_tarjeta,
+    numero: tarjeta.numero.replace(/\s/g, ""), // sin espacios
+    fecha_vencimiento: tarjeta.fecha_vencimiento,
+    cvv: tarjeta.cvv,
+  },
 };
+
 
 
   const res = await axios.post(
@@ -342,92 +362,76 @@ const [edadAcompanante, setEdadAcompanante] = useState("");
     </>
   );
 
-      case 3:
-        return (
-          <>
-            <h3 className="text-lg font-bold mb-4 text-center">
-              💳 Datos de pago
-            </h3>
+      
+case 3:
+  return (
+    <>
+      <h3 className="text-lg font-bold mb-4 text-center">💳 Datos de pago</h3>
 
-            <label className="block pb-2 mt-4">Nombre en la tarjeta</label>
-            <input
-              type="text"
-              value={formData.tarjeta}
-              onChange={(e) => {
-                const v = e.target.value;
-                if (/^[a-zA-Z\s]*$/.test(v))
-                  setFormData({ ...formData, tarjeta: v });
-              }}
-              placeholder="Nombre como aparece en la tarjeta"
-              className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-4"
-              required
-            />
+      {/* Nombre en la tarjeta */}
+      <label className="block pb-2 mt-4">Nombre en la tarjeta</label>
+      <input
+        type="text"
+        name="nombre"
+        value={tarjeta.nombre}
+        onChange={(e) => handleTarjetaChange("nombre", e.target.value)}
+        placeholder="Ej: Ana Hernández"
+        className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-2"
+        required
+      />
 
-            <label className="block text-sm pb-1 mt-2">Tipo de tarjeta</label>
-            <select
-              name="tipo_tarjeta"
-              value={personas[currentPersonaIndex].tipo_tarjeta}
-              onChange={(e) =>
-                handlePersonaChange(currentPersonaIndex, "tipo_tarjeta", e.target.value)
-              }
-              required
-              className="w-full border-2 border-black rounded-xl h-8 px-2 mb-2 bg-white"
-            >
-              <option value="">Seleccione un tipo de tarjeta</option>
-              <option value="TC">Crédito</option>
-              <option value="TD">Débito</option>
-            </select>
+      {/* Tipo de tarjeta */}
+      <label className="block text-sm pb-1 mt-2">Tipo de tarjeta</label>
+      <select
+        name="tipo_tarjeta"
+        value={tarjeta.tipo_tarjeta}
+        onChange={(e) => handleTarjetaChange("tipo_tarjeta", e.target.value)}
+        className="w-full border-2 border-black rounded-xl h-10 px-2 mb-2 bg-white"
+        required
+      >
+        <option value="">Seleccione un tipo de tarjeta</option>
+        <option value="TC">Crédito</option>
+        <option value="TD">Débito</option>
+      </select>
 
-            <label className="block pb-2">Número de tarjeta</label>
-            <input
-              type="text"
-              value={formData.numeroTarjeta}
-              onChange={(e) => {
-                let value = e.target.value.replace(/\D/g, "");
-                value = value.replace(/(.{4})/g, "$1 ").trim();
-                setFormData({ ...formData, numeroTarjeta: value });
-              }}
-              maxLength={19}
-              placeholder="XXXX XXXX XXXX XXXX"
-              className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-4 tracking-widest"
-              required
-            />
+      {/* Número de tarjeta */}
+      <label className="block pb-2 mt-2">Número de tarjeta</label>
+      <IMaskInput
+        mask="0000 0000 0000 0000"
+        value={tarjeta.numero}
+        onAccept={(value) => handleTarjetaChange("numero", value)}
+        placeholder="XXXX XXXX XXXX XXXX"
+        className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-2"
+        required
+      />
 
-            <label className="block pb-2">Fecha de vencimiento</label>
-            <input
-              type="text"
-              placeholder="MM/YY"
-              onChange={(e) => {
-                let value = e.target.value.replace(/\D/g, "");
-                if (value.length > 4) value = value.slice(0, 4);
-                if (value.length > 2)
-                  value = value.slice(0, 2) + "/" + value.slice(2);
-                setFormData({ ...formData, fechaVencimiento: value });
-              }}
-              value={formData.fechaVencimiento || ""}
-              pattern="^(0[1-9]|1[0-2])\/\d{2}$"
-              title="Formato válido: MM/YY"
-              className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-4"
-              required
-            />
+      {/* Fecha de vencimiento */}
+      <label className="block pb-2 mt-2">Fecha de vencimiento</label>
+      <IMaskInput
+        mask="00/00"
+        value={tarjeta.fecha_vencimiento}
+        onAccept={(value) =>
+          handleTarjetaChange("fecha_vencimiento", value)
+        }
+        placeholder="MM/AA"
+        className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-2"
+        required
+      />
 
-            <label className="block pb-2">CVV</label>
-            <input
-              type="text"
-              value={formData.cvv}
-              onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, "");
-                if (value.length <= 4)
-                  setFormData({ ...formData, cvv: value });
-              }}
-              placeholder="3 o 4 dígitos"
-              pattern="\d{3,4}"
-              title="El CVV debe contener 3 o 4 dígitos"
-              className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-6"
-              required
-            />
-          </>
-        );
+      {/* CVV */}
+      <label className="block pb-2 mt-2">CVV</label>
+      <IMaskInput
+        mask="0000"
+        value={tarjeta.cvv}
+        onAccept={(value) => handleTarjetaChange("cvv", value)}
+        placeholder="3 o 4 dígitos"
+        className="bg-white border-2 border-black rounded-xl h-10 w-full px-3 mb-6"
+        required
+      />
+    </>
+  );
+
+
       default:
         return null;
     }
