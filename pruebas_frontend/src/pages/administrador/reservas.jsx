@@ -103,10 +103,10 @@ export default function Reservas() {
       <main className="flex-1 p-6">
         {/* Navbar superior */}
         <header className="mb-6">
-          {/* Encabezado + buscador */}
-          <div className="flex items-center mb-4">
+          <header className="mb-6 flex justify-between items-center">
+            <h1 className="text-4xl font-semibold">Reservas</h1>
             <SearchBar query={query} setQuery={setQuery} />
-          </div>
+          </header>
         </header>
 
         <section>

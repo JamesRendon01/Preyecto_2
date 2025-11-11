@@ -80,8 +80,8 @@ export default function NavDashAdmin() {
         </div>
       </Link>
 
-      <Link to="/informes">
-        <div className={getLinkClass("/informes")}>
+      <Link to="/listar_informes_admin">
+        <div className={getLinkClass("/listar_informes_admin")}>
           <BookOpenText />
           <span>Informes</span>
         </div>

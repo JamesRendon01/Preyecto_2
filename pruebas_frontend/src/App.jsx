@@ -22,7 +22,11 @@ import ListarReservas from "./pages/administrador/reservas.jsx";
 import MisReservasPage from "./pages/turista/MisReservas.jsx";
 import Turistas from "./pages/administrador/turista.jsx";
 import Estadisticas from "./pages/administrador/graficas.jsx";
+<<<<<<< HEAD
 import ConfigAdmin from "./pages/administrador/config.jsx";
+=======
+import Informes from "./pages/administrador/informes.jsx";
+>>>>>>> 96ac685519ec884fe6b9ed0eaed58a3d30f63366
 
 export default function App() {
   return (
@@ -104,6 +108,16 @@ export default function App() {
             </PrivateRouteAdmin>
           }
         />
+
+        <Route
+          path="/listar_informes_admin"
+          element={
+            <PrivateRouteAdmin>
+              <Informes />
+            </PrivateRouteAdmin>
+          }
+        />
+
         <Route
           path="/dashboard-administrador"
           element={

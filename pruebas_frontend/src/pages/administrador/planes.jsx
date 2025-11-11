@@ -89,11 +89,6 @@ export default function ListarPlanesAdmin() {
     { key: "descripcion", label: "Descripción Larga" },
     { key: "costo_persona", label: "Precio" },
     { key: "id_ciudad", label: "Ciudad" },
-    {
-      key: "ubicaciones",
-      label: "Ubicación",
-      render: (value) => value?.join(", "),
-    },
   ];
 
   return (
@@ -106,18 +101,15 @@ export default function ListarPlanesAdmin() {
       {/* Contenido principal */}
       <main className="flex-1 p-6">
         {/* Navbar superior */}
-        <header className="mb-6">
-
-          <div className="ml-160 items-center mb-4">
-            <SearchBar query={query} setQuery={setQuery} />
-          </div>
+        <header className="mb-6 flex justify-between items-center">
+          <h1 className="text-4xl font-semibold">Planes</h1>
+          <SearchBar query={query} setQuery={setQuery} />
         </header>
 
         <section>
           <Contador items={items} />
           <hr className="border-t-2 border-black my-6 w-full" />
 
-          {/* ✅ Tabla de planes */}
           <CrudTable
             headers={headers}
             data={filteredPlanes}
@@ -127,7 +119,7 @@ export default function ListarPlanesAdmin() {
             onPageChange={setCurrentPage}
             onCreate={true}
             renderActions={(plan) => (
-              
+
               <div className="flex justify-center gap-2">
                 <ButtonUpdate id={plan.id} />
                 <ButtonDelete

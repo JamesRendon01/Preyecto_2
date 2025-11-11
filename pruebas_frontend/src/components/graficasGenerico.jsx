@@ -11,21 +11,81 @@ import PropTypes from "prop-types";
 import { subirInforme } from "../services/informe.service";
 import PlantillaInforme from "./plantilla_informe";
 import ProgressCircle from "./barraCarga.jsx";
+
+/**
+ * Componente genérico para renderizar gráficas dinámicas y generar informes PDF.
+ * Compatible con vista diaria, semanal, mensual o anual.
+ */
 export default function GraficasGenerico({
   data,
   campoEjeX,
   campoValor,
   titulo,
   tipo = "barras",
+  modoTiempo = null, // dia, semana, mes, año
 }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [nombreInforme, setNombreInforme] = useState("");
   const [descargarLocal, setDescargarLocal] = useState(false);
   const [previewPDF, setPreviewPDF] = useState(null);
-  const [loadingPreview, setLoadingPreview] = useState(false); // 👈 Estado para loader
+  const [loadingPreview, setLoadingPreview] = useState(false);
 
   const colores = ["#2563eb", "#60a5fa", "#93c5fd", "#bfdbfe"];
 
+  // 🔹 Detección automática del modo según campo
+  const modoDetectado =
+    modoTiempo ||
+    (campoEjeX.toLowerCase().includes("dia") ? "dia" :
+     campoEjeX.toLowerCase().includes("semana") ? "semana" :
+     campoEjeX.toLowerCase().includes("anio") ? "anio" : "mes");
+
+  // 🧭 Función para formatear eje X
+  const formatearEjeX = (valor) => {
+    if (!valor) return "";
+
+    try {
+      if (modoDetectado === "dia") {
+        // Asegurar que sea interpretado como fecha
+        const fecha = new Date(valor + "T00:00:00");
+        return fecha.toLocaleDateString("es-ES", { day: "numeric", month: "short" });
+      } 
+      else if (modoDetectado === "semana") {
+        // Valor: "YYYY-Www"
+        const [anioStr, semanaStr] = valor.split("-W");
+        const anio = parseInt(anioStr, 10);
+        const semana = parseInt(semanaStr, 10);
+
+        // Primer día de la semana ISO
+        const primerDia = new Date(anio, 0, 1 + (semana - 1) * 7);
+        const diaSemana = primerDia.getDay();
+        const ajuste = diaSemana <= 4 ? primerDia.getDate() - diaSemana + 1 : primerDia.getDate() + (8 - diaSemana);
+        const inicioSemana = new Date(anio, 0, ajuste);
+        const finSemana = new Date(inicioSemana);
+        finSemana.setDate(inicioSemana.getDate() + 6);
+
+        const opciones = { day: "2-digit", month: "short" };
+        return `${inicioSemana.toLocaleDateString("es-ES", opciones)} - ${finSemana.toLocaleDateString("es-ES", opciones)}`;
+      } 
+      else if (modoDetectado === "anio") {
+        return valor;
+      } 
+      else if (modoDetectado === "mes") {
+        const [anioStr, mesStr] = valor.split("-");
+        const anio = parseInt(anioStr, 10);
+        const mes = parseInt(mesStr, 10);
+        const nombresMeses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun",
+                              "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+        if (!anio || !mes || mes < 1 || mes > 12) return valor;
+        return `${nombresMeses[mes - 1]} ${anio}`;
+      }
+
+      return valor;
+    } catch {
+      return valor;
+    }
+  };
+
+  // 🧾 Abrir y cerrar modal
   const abrirModal = () => setModalVisible(true);
   const cerrarModal = () => {
     setModalVisible(false);
@@ -35,7 +95,7 @@ export default function GraficasGenerico({
     setLoadingPreview(false);
   };
 
-  // 🧾 Generar PDF (vista previa o final)
+  // 📄 Generar PDF (vista previa o final)
   const generarPDF = async (modoVista = false) => {
     if (!nombreInforme.trim()) {
       message.warning("Por favor ingresa un nombre para el informe.");
@@ -43,22 +103,19 @@ export default function GraficasGenerico({
     }
 
     try {
-      if (modoVista) setLoadingPreview(true); // 🔄 Activar loader solo para vista previa
+      if (modoVista) setLoadingPreview(true);
 
       const grafica = document.getElementById(`grafica-${titulo}`);
       if (!grafica) return message.error("No se encontró la gráfica.");
 
-      // 🧩 Capturar la gráfica como imagen
       const canvasGrafica = await html2canvas(grafica, {
         backgroundColor: "#ffffff",
         scale: 2,
       });
       const imgGrafica = canvasGrafica.toDataURL("image/png");
 
-      // 🧩 Crear contenedor temporal y renderizar la plantilla con la imagen
       const tempContainer = document.createElement("div");
       document.body.appendChild(tempContainer);
-
       const fecha = new Date().toLocaleDateString();
 
       const root = ReactDOM.createRoot(tempContainer);
@@ -71,20 +128,16 @@ export default function GraficasGenerico({
         />
       );
 
-      // Esperar para que se apliquen estilos
       await new Promise((res) => setTimeout(res, 500));
 
-      // Capturar el contenido renderizado
       const canvas = await html2canvas(tempContainer, {
         backgroundColor: "#ffffff",
         scale: 2,
       });
 
-      // Limpiar DOM temporal
       root.unmount();
       document.body.removeChild(tempContainer);
 
-      // 🧾 Crear PDF con proporciones correctas
       const pdf = new jsPDF("landscape", "pt", "a4");
       const imgData = canvas.toDataURL("image/png");
       const pageWidth = pdf.internal.pageSize.getWidth();
@@ -96,16 +149,14 @@ export default function GraficasGenerico({
       const y = (pageHeight - imgHeight) / 2;
       pdf.addImage(imgData, "PNG", x, y, imgWidth, imgHeight);
 
-      // 📄 Vista previa
       if (modoVista) {
         const pdfBlob = pdf.output("blob");
         const pdfUrl = URL.createObjectURL(pdfBlob);
         setPreviewPDF(pdfUrl);
-        setLoadingPreview(false); // ✅ Ocultar loader
+        setLoadingPreview(false);
         return;
       }
 
-      // 📤 Guardado final
       const blob = pdf.output("blob");
       const fileName = `${nombreInforme.replace(/\s+/g, "_")}.pdf`;
       const archivo = new File([blob], fileName, { type: "application/pdf" });
@@ -139,7 +190,7 @@ export default function GraficasGenerico({
         {tipo === "barras" ? (
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={campoEjeX} />
+            <XAxis dataKey={campoEjeX} tickFormatter={formatearEjeX} />
             <YAxis />
             <Tooltip />
             <Legend />
@@ -148,7 +199,7 @@ export default function GraficasGenerico({
         ) : tipo === "lineas" ? (
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={campoEjeX} />
+            <XAxis dataKey={campoEjeX} tickFormatter={formatearEjeX} />
             <YAxis />
             <Tooltip />
             <Legend />
@@ -195,7 +246,6 @@ export default function GraficasGenerico({
           </Button>
         </div>
 
-        {/* 🌀 Loader de vista previa */}
         {loadingPreview && (
           <div className="flex flex-col items-center mt-6">
             <ProgressCircle size={80} color="primary" speed={400} step={5} />
@@ -203,7 +253,6 @@ export default function GraficasGenerico({
           </div>
         )}
 
-        {/* 📄 Vista previa PDF */}
         {!loadingPreview && previewPDF && (
           <div className="mt-4 border border-gray-300 rounded-md p-2">
             <h3 className="text-center font-semibold mb-2">Vista previa del informe</h3>
@@ -227,4 +276,5 @@ GraficasGenerico.propTypes = {
   campoValor: PropTypes.string.isRequired,
   titulo: PropTypes.string,
   tipo: PropTypes.oneOf(["barras", "lineas", "pastel"]),
+  modoTiempo: PropTypes.oneOf(["dia", "semana", "mes", "anio"]),
 };
