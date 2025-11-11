@@ -7,7 +7,7 @@ from models.plan import Plan
 from models.turista import Turista
 from models.hotel import Hotel
 
-class EstadoReserva(enum.Enum):
+class EstadoReserva(str, enum.Enum):
     CONFIRMADA = "Confirmada"
     CANCELADA = "Cancelada"
     FINALIZADA = "Finalizada"
