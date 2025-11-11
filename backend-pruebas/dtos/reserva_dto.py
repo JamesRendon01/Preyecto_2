@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import date
+from models.reserva import EstadoReserva  # ✅ importamos el Enum
 
 # =====================================================
 # 🔹 DTO para acompañante de reserva
@@ -10,6 +11,7 @@ class PersonaReservaDTO(BaseModel):
     tipo_identificacion: str
     identificacion: str
     edad: int
+
 
 # =====================================================
 # 🔹 DTO para tarjeta
@@ -26,7 +28,7 @@ class TarjetaDTO(BaseModel):
 # =====================================================
 class reservaCreateDTO(BaseModel):
     fecha_reserva: date
-    disponibilidad: bool
+    disponibilidad: Optional[EstadoReserva] = EstadoReserva.CONFIRMADA
     numero_personas: int
     id_informe: Optional[int] = None
     id_plan: int
@@ -47,7 +49,7 @@ class reservaUpdateDTO(BaseModel):
     numero_personas: Optional[int] = None
     id_informe: Optional[int] = None
     id_plan: Optional[int] = None
-    disponibilidad: Optional[bool] = None
+    disponibilidad: Optional[EstadoReserva] = None
 
     class Config:
         orm_mode = True
@@ -60,7 +62,7 @@ class ReservaOut(BaseModel):
     id: int
     fecha_reserva: str
     costo_final: float
-    disponibilidad: bool
+    disponibilidad: EstadoReserva  # ✅ Enum, no bool
     numero_personas: int
     id_plan: int
     plan_nombre: Optional[str]
