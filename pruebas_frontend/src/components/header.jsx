@@ -23,7 +23,7 @@ export default function Header({ titulo, rol }) {
 
           {/* Logo */}
           <img
-            className="w-48 h-24 sm:w-25 sm:h-15 lg:w-35 lg:h-20"
+            className="w-55 h-30 sm:w-25 sm:h-15 lg:w-35 lg:h-25 rounded-full"
             src="/img/logo.png"
             alt="logo"
           />
