@@ -3,6 +3,7 @@ import axios from "axios";
 import NavDashAdmin from "../../components/navDashAdmin.jsx";
 import Contador from "../../components/contador.jsx";
 import BarraCarga from "../../components/barraCarga.jsx"; // ✅ Importamos la barra de carga
+import GraficoReservasPorPlan from "../../components/graficaPorcentuada.jsx";
 import { jwtDecode } from "jwt-decode";
 
 export default function DashbordAdmin() {
@@ -78,7 +79,8 @@ export default function DashbordAdmin() {
           <Contador items={items} />
 
           <hr className="border-t-2 border-black my-6 w-full" />
-
+          {/* Gráfica de reservas por plan */}
+          <GraficoReservasPorPlan />
         </section>
       </main>
     </div>

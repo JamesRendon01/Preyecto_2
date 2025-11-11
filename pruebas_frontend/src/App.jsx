@@ -48,18 +48,15 @@ export default function App() {
 
         {/* 👇 Breadcrumb solo en esta página */}
         <Route
-          path="/turista/editar/:id"
-          element={
-            <PrivateRouteTurista>
-              <BreadcrumbProvider>
-                <div className="p-4">
-                  <BreadcrumbBar />
-                  <MenuConfig />
-                </div>
-              </BreadcrumbProvider>
-            </PrivateRouteTurista>
-          }
-        />
+  path="/turista/editar/:id"
+  element={
+    <PrivateRouteTurista>
+      <BreadcrumbProvider>
+        <MenuConfig />
+      </BreadcrumbProvider>
+    </PrivateRouteTurista>
+  }
+/>
 
         <Route
           path="/favoritos"

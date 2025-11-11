@@ -1,4 +1,3 @@
-// context/breadcrumb_context.jsx
 import React, {
   createContext,
   useContext,
@@ -13,40 +12,58 @@ const BreadcrumbContext = createContext();
 export const useBreadcrumb = () => useContext(BreadcrumbContext);
 
 export const BreadcrumbProvider = ({ children }) => {
-  const [breadcrumbItems, setBreadcrumbItems] = useState([
-    { title: "Inicio", path: "/inicio" },
-  ]);
+  // 🔹 1. Inicializar desde localStorage si existe, si no usar valor por defecto
+  const [breadcrumbItems, setBreadcrumbItems] = useState(() => {
+    const stored = localStorage.getItem("breadcrumbItems");
+    return stored
+      ? JSON.parse(stored)
+      : [
+          { title: "Inicio", path: "/inicio" },
+          { title: "Perfil", path: "/turista/editar/:id" },
+        ];
+  });
 
   const location = useLocation();
   const navigationType = useNavigationType();
 
-  // 🧭 Actualiza los breadcrumbs al cambiar de ruta
+  // 🔹 2. Guardar siempre que cambien los breadcrumbs
+  useEffect(() => {
+    localStorage.setItem("breadcrumbItems", JSON.stringify(breadcrumbItems));
+  }, [breadcrumbItems]);
+
+  // 🔹 3. Manejar cambio de ruta
   useEffect(() => {
     const path = location.pathname;
 
-    // Si estamos en la página de inicio, solo muestra "Inicio"
+    // Si estamos en la página de inicio, solo mostrar Inicio
     if (path === "/inicio") {
       setBreadcrumbItems([{ title: "Inicio", path }]);
       return;
     }
 
-    // Si el usuario navega hacia atrás (POP), limpia el breadcrumb actual
+    // Si el usuario navega hacia atrás (POP), limpia breadcrumb de la ruta actual
     if (navigationType === "POP") {
       setBreadcrumbItems((prev) => prev.filter((b) => b.path !== path));
     }
   }, [location.pathname, navigationType]);
 
-  // ✅ Memorizar las funciones evita recrearlas en cada render
+  // 🔹 4. Función para agregar breadcrumb evitando duplicados
   const addBreadcrumb = useCallback((item) => {
     setBreadcrumbItems((prev) => {
-      // Evita duplicados
+
       if (prev.some((b) => b.path === item.path)) return prev;
       return [...prev, item];
     });
   }, []);
 
+  // 🔹 5. Resetear breadcrumb
   const resetBreadcrumb = useCallback(() => {
-    setBreadcrumbItems([{ title: "Inicio", path: "/inicio" }]);
+    const initial = [
+      { title: "Inicio", path: "/inicio" },
+      { title: "Perfil", path: "/turista/editar/:id" },
+    ];
+    setBreadcrumbItems(initial);
+    localStorage.setItem("breadcrumbItems", JSON.stringify(initial));
   }, []);
 
   return (
@@ -57,3 +74,4 @@ export const BreadcrumbProvider = ({ children }) => {
     </BreadcrumbContext.Provider>
   );
 };
+export default BreadcrumbContext;
