@@ -140,7 +140,9 @@ def crear_reserva(
     authorization: Optional[str] = Header(None, alias="Authorization"),
     db: Session = Depends(get_session),
 ):
-    # 🔒 Validar token JWT
+    from models.tarjetas import Tarjeta  # ✅ importar aquí para evitar errores de import circular
+
+    # 🔒 Verificar token del usuario
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Token no proporcionado")
 
@@ -153,36 +155,41 @@ def crear_reserva(
     if not turista_id:
         raise HTTPException(status_code=401, detail="No se pudo obtener el id del turista")
 
-    # 🔹 Validaciones básicas
-    if not nuevo_reserva.fecha_reserva or not isinstance(nuevo_reserva.fecha_reserva, date):
-        raise HTTPException(status_code=400, detail="Fecha de reserva inválida")
-
-
-    if not nuevo_reserva.token_tarjeta:
-        raise HTTPException(status_code=400, detail="Token de pago requerido")
-
+    # 🔹 Validar que el plan exista
     plan = db.query(Plan).get(nuevo_reserva.id_plan)
     if not plan:
         raise HTTPException(status_code=404, detail="El plan no existe")
 
-    # Evitar duplicados
+    # 🔹 Evitar duplicados
     reserva_existente = db.query(Reserva).filter(
         Reserva.id_turista == int(turista_id),
         Reserva.id_plan == nuevo_reserva.id_plan
     ).first()
 
     if reserva_existente:
-        raise HTTPException(
-            status_code=400,
-            detail="Ya tienes una reserva activa para este plan."
-        )
+        raise HTTPException(status_code=400, detail="Ya tienes una reserva activa para este plan.")
 
-    # 🔹 Costo final
+    # =====================================================
+    # ✅ Crear registro de tarjeta (si se envía)
+    # =====================================================
+    if nuevo_reserva.tarjeta:
+        nueva_tarjeta = Tarjeta(
+            nombre=nuevo_reserva.tarjeta.nombre,
+            tipo_tarjeta=nuevo_reserva.tarjeta.tipo_tarjeta,
+            numero=nuevo_reserva.tarjeta.numero,
+            fecha_vencimiento=nuevo_reserva.tarjeta.fecha_vencimiento,
+            cvv=nuevo_reserva.tarjeta.cvv,
+            turista_id=int(turista_id)
+        )
+        db.add(nueva_tarjeta)
+        db.commit()
+        db.refresh(nueva_tarjeta)
+
+    # =====================================================
+    # ✅ Crear la reserva
+    # =====================================================
     costo_final = nuevo_reserva.numero_personas * plan.costo_persona
 
-    # =====================================================
-    # ✅ Crear reserva
-    # =====================================================
     reserva = Reserva(
         fecha_reserva=nuevo_reserva.fecha_reserva,
         costo_final=costo_final,
@@ -198,9 +205,9 @@ def crear_reserva(
     db.refresh(reserva)
 
     # =====================================================
-    # ✅ Insertar acompañantes
+    # ✅ Registrar acompañantes (si hay)
     # =====================================================
-    if nuevo_reserva.acompanantes and len(nuevo_reserva.acompanantes) > 0:
+    if nuevo_reserva.acompanantes:
         for acomp in nuevo_reserva.acompanantes:
             persona = PersonaReserva(
                 nombre=acomp.nombre,
@@ -210,7 +217,7 @@ def crear_reserva(
                 id_reserva=reserva.id
             )
             db.add(persona)
-    db.commit()
+        db.commit()
 
 
     # =====================================================

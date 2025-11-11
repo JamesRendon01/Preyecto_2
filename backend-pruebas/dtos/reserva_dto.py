@@ -12,6 +12,16 @@ class PersonaReservaDTO(BaseModel):
     edad: int
 
 # =====================================================
+# 🔹 DTO para tarjeta
+# =====================================================
+class TarjetaDTO(BaseModel):
+    nombre: str
+    tipo_tarjeta: str
+    numero: str
+    fecha_vencimiento: str
+    cvv: int
+
+# =====================================================
 # 🔹 DTO para creación de reserva
 # =====================================================
 class reservaCreateDTO(BaseModel):
@@ -20,9 +30,10 @@ class reservaCreateDTO(BaseModel):
     numero_personas: int
     id_informe: Optional[int] = None
     id_plan: int
-    token_tarjeta: str
+    tarjeta: TarjetaDTO 
     email_cliente: str  # si lo usas para enviar correo
     acompanantes: List[PersonaReservaDTO]
+    
 
     class Config:
         orm_mode = True
