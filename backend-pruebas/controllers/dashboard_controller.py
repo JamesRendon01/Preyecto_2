@@ -53,21 +53,10 @@ def obtener_estadisticas_reservas(db: Session = Depends(get_session)):
         "total_ingresos": total_ingresos
     }
 
-
 @router.get("/total_planes")
 def obtener_totales_planes(db: Session = Depends(get_session)):
-    """
-    Retorna:
-    - total_planes: cantidad total de planes creados.
-    - planes_hoy: cantidad de planes creados hoy.
-    """
-    # 🔹 Fecha actual
     hoy = date.today()
-
-    # 🔹 Total de planes
     total_planes = db.query(func.count(Plan.id)).scalar() or 0
-
-    # 🔹 Planes creados hoy
     planes_hoy = (
         db.query(func.count(Plan.id))
         .filter(func.date(Plan.fecha_creacion) == hoy)
@@ -82,18 +71,8 @@ def obtener_totales_planes(db: Session = Depends(get_session)):
 
 @router.get("/dashboardListarTuristas")
 def obtener_totales_turistas(db: Session = Depends(get_session)):
-    """
-    Retorna:
-    - total_turistas: cantidad total de turistas.
-    - registrados_hoy: cantidad de turistas registrados hoy.
-    """
-    # Fecha actual en zona horaria de Colombia
     hoy_colombia = datetime.now(COLOMBIA_TZ).date()
-
-    # Total de turistas
     total_turistas = db.query(func.count(Turista.id)).scalar() or 0
-
-    # Turistas registrados hoy (comparando solo la fecha)
     registrados_hoy = (
         db.query(func.count(Turista.id))
         .filter(func.date(Turista.fecha_registro) == hoy_colombia)
@@ -108,18 +87,8 @@ def obtener_totales_turistas(db: Session = Depends(get_session)):
 
 @router.get("/dashboardListarnformes")
 def obtener_totales_informes(db: Session = Depends(get_session)):
-    """
-    Retorna:
-    - total_informes: cantidad total de informes creados.
-    - informes_hoy: cantidad de informes creados hoy.
-    """
-    # Fecha actual en la zona horaria de Colombia
     hoy_colombia = datetime.now(COLOMBIA_TZ).date()
-
-    # Total de informes
     total_informes = db.query(func.count(Informe.id)).scalar() or 0
-
-    # Informes creados hoy (comparando solo la fecha)
     informes_hoy = (
         db.query(func.count(Informe.id))
         .filter(func.date(Informe.fecha_creacion) == hoy_colombia)
@@ -131,3 +100,40 @@ def obtener_totales_informes(db: Session = Depends(get_session)):
         "total_informes": total_informes,
         "informes_hoy": informes_hoy
     }
+
+# --- NUEVOS ENDPOINTS PARA GRAFICAS DINAMICAS ---
+
+@router.get("/resumenReservasPlanes")
+def resumen_reservas_por_plan(db: Session = Depends(get_session)):
+    """
+    Devuelve un resumen de reservas y turistas por plan.
+    Listo para gráfica de barras apiladas al 100%
+    """
+    resultados = (
+        db.query(
+            Plan.nombre.label("plan"),
+            func.count(Reserva.id_turista).label("turistas"),
+            func.count(Reserva.id).label("reservas")
+        )
+        .join(Reserva, Reserva.id_plan == Plan.id)
+        .group_by(Plan.nombre)
+        .all()
+    )
+
+    return [{"plan": r.plan, "turistas": r.turistas, "reservas": r.reservas} for r in resultados]
+
+@router.get("/listarPlanes")
+def listar_planes(db: Session = Depends(get_session)):
+    """
+    Lista todos los planes
+    """
+    planes = db.query(Plan).all()
+    return [{"id": p.id, "nombre": p.nombre, "descripcion": p.descripcion} for p in planes]
+
+@router.get("/listarTuristas")
+def listar_turistas(db: Session = Depends(get_session)):
+    """
+    Lista todos los turistas
+    """
+    turistas = db.query(Turista).all()
+    return [{"id": t.id, "nombre": t.nombre, "correo": t.correo} for t in turistas]

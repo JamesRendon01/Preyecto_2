@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException, Header, Query
 from sqlalchemy.orm import Session, joinedload
 from models.reserva import Reserva
 from models.plan import Plan
+from models.turista import Turista
 from models.persona_reserva import PersonaReserva
 from dtos.reserva_dto import reservaCreateDTO, reservaUpdateDTO, ReservaOut
 from db.session import SessionLocal
@@ -82,32 +83,44 @@ def listar_reservas_usuario(
 
     return resultado
 
-@router.get("/listar_reservas", response_model=list[ReservaOut])
-def listar_reserva(db: Session = Depends(get_session)):
-    reservas = (
-        db.query(Reserva)
-        .options(joinedload(Reserva.turista), joinedload(Reserva.plan))
-        .all()
+@router.get("/listar_reservas")
+def listar_reservas(estado: str = Query(None), db: Session = Depends(get_session)):
+    """
+    Lista todas las reservas o filtra por estado (Confirmada, Cancelada, Finalizada).
+    """
+    query = (
+        db.query(
+            Reserva.id,
+            Reserva.fecha_reserva,
+            Reserva.numero_personas,
+            Reserva.costo_final,
+            Reserva.disponibilidad,
+            Plan.nombre.label("plan_nombre"),
+            Turista.nombre.label("turista_nombre")
+        )
+        .join(Plan, Plan.id == Reserva.id_plan)
+        .join(Turista, Turista.id == Reserva.id_turista)
     )
 
-    if not reservas:
-        raise HTTPException(status_code=404, detail="No hay Reservas registradas")
+    if estado:
+        query = query.filter(Reserva.disponibilidad == estado)
 
-    resultado = []
-    for r in reservas:
-        resultado.append({
+    reservas = query.all()
+
+    data = [
+        {
             "id": r.id,
-            "fecha_reserva": str(r.fecha_reserva),
+            "fecha_reserva": r.fecha_reserva,
+            "numero_personas": r.numero_personas,
             "costo_final": r.costo_final,
             "disponibilidad": r.disponibilidad,
-            "numero_personas": r.numero_personas,
-            "id_plan": r.id_plan,
-            "plan_nombre": r.plan.nombre if r.plan else None,
-            "id_turista": r.id_turista,
-            "turista_nombre": r.turista.nombre if r.turista else None,
-        })
+            "plan_nombre": r.plan_nombre,
+            "turista_nombre": r.turista_nombre,
+        }
+        for r in reservas
+    ]
 
-    return resultado
+    return data
 
 
 @router.get("/comprobante/{reserva_id}")
