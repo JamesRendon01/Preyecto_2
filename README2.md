@@ -1,84 +1,109 @@
-<h3><b>ESCAPADE PARFAITE</b>
+🌍 Escapade Parfaite: Sistema de Reservas Turísticas en Línea
+🌟 Visión General del Proyecto
+Este proyecto es el desarrollo de un sistema web para la gestión de reservas de planes turísticos en línea. Se concibió como un proyecto formativo clave, aplicando rigurosamente el Personal Software Process (PSP) en todo el ciclo de vida.
 
-📌 Acerca del proyecto
-Este proyecto formativo, desarrollado por un equipo de cuatro integrantes, consiste en el diseño e implementación de un sistema web para gestionar reservas de planes turísticos en línea. El objetivo principal es ofrecer una plataforma que permita a los usuarios explorar experiencias turísticas, consultar disponibilidad y realizar reservas de manera sencilla y segura.
-El proyecto aplica buenas prácticas de ingeniería de software, planificación, control de calidad y mejora continua.
+El objetivo principal fue desarrollar una solución funcional mientras se mejoraban las habilidades de planificación, estimación, calidad del software y análisis de datos del proceso de desarrollo.
 
-<h4> Metodologías y materiales utilizados
-Para el desarrollo del sistema se emplearon:
-- Técnicas de estimación y planificación de proyectos.
-- Buenas prácticas de diseño y arquitectura de software.
-- Herramientas colaborativas para control de versiones y seguimiento.
-- Documentación técnica y plantillas de apoyo para el proceso de desarrollo.
+🎯 Objetivos del Proyecto
+- Desarrollar un sistema funcional de reservas turísticas robusto y confiable.
 
-<h4> Descripción general del sistema
-El sistema permite:
-- Visualizar planes turísticos disponibles.
-- Consultar detalles como precios, fechas, cupos y descripción del plan.
-- Realizar reservas en línea.
-- Gestionar reservas (consultarlas, modificarlas o cancelarlas).
-- Administrar planes turísticos desde un panel interno.
+- Aplicar y documentar el PSP para mejorar la precisión de las estimaciones y la planificación.
 
-<h4> Objetivos del proyecto
-El equipo busca:
-- Fortalecer habilidades de estimación, planificación y trabajo colaborativo.
-- Cumplir cronogramas y compromisos establecidos.
-- Garantizar la calidad del software mediante revisiones y pruebas.
-- Reducir defectos a través de controles en cada fase del desarrollo.
-- Entregar un producto funcional que responda a una necesidad real del sector turístico.
+- Garantizar la calidad del software mediante revisiones, pruebas y controles de defectos tempranos.
 
-<h4> Proceso de desarrollo
-El proyecto se estructuró en fases:
-✅ 1. Planificación
-- Análisis de requisitos.
-- Estimación del tamaño y esfuerzo del proyecto.
-- Asignación de tareas entre los cuatro integrantes.
-- Elaboración del cronograma.
-✅ 2. Desarrollo
-- Diseño de la arquitectura del sistema.
-- Implementación de módulos principales:
-- Catálogo de planes
-- Motor de reservas
-- Autenticación de usuarios
-- Panel administrativo
-- Integración de componentes.
-- Pruebas unitarias y funcionales.
-✅ 3. Revisión y control de calidad
-- Revisión de diseño.
-- Revisión de código.
-- Registro y análisis de defectos.
-- Propuestas de mejora del proceso.
-✅ 4. Post mortem
-- Evaluación del cumplimiento del cronograma.
-- Análisis de precisión en las estimaciones.
-- Revisión de defectos y su origen.
-- Documentación de aprendizajes para la siguiente iteración.
+- Fortalecer habilidades profesionales clave en el desarrollo de software, como la estimación, la planificación y el trabajo colaborativo.
 
-<h4> Importancia de los datos en el proyecto
-Durante el desarrollo se registraron datos clave:
-- Tiempo invertido por tarea e integrante.
-- Defectos encontrados y corregidos.
-- Tamaño del software (módulos, líneas de código, componentes).
-- Avance real vs. avance planificado.
-Estos datos permitieron calcular métricas como:
-- Precisión de estimaciones.
-- Productividad individual y grupal.
-- Densidad de defectos.
-- Distribución del tiempo por fase.
-- Rendimiento del proceso.
+Desarrollo del Sistema
 
-<h4> Planificación y seguimiento
-Para mejorar la gestión del proyecto se utilizaron:
-- Estimación basada en datos históricos.
-- Método de valor ganado para evaluar progreso.
-- Análisis estadístico para interpretar datos y tomar decisiones informadas.
+El sistema es una plataforma completa para la gestión de viajes y reservas:
+- Módulo: Funcionalidades Principales
+- Motor de Reservas: Realizar, consultar, modificar y cancelar reservas en línea.
+- Catálogo: Visualización de planes turísticos disponibles, detalles, precios y cupos.
+- Gestión de Usuarios: Autenticación de clientes y administración de perfiles.
+- Panel Administrativo: Control de disponibilidad, gestión de planes turísticos e historial de reservas.
 
-<h4> Gestión de la calidad
-La calidad del sistema se garantizó mediante:
-- Revisión temprana de diseño y código.
-- Listas de verificación personalizadas por cada integrante.
-- Registro de defectos y análisis de causas.
-- Propuestas de mejora continua.
-- Pruebas exhaustivas antes de cada entrega.
+Proceso de Desarrollo
+El proyecto se estructuró en cuatro fases principales, con la aplicación de PSP en cada una:
 
+1. Planificación: Análisis de requisitos, estimación de tamaño (LOC) y esfuerzo (PROBE), asignación de tareas y elaboración del cronograma.
 
+2. Desarrollo: Diseño de la arquitectura, implementación de módulos principales (Catálogo, Motor de Reservas, Autenticación) e integración de componentes.
+
+3. Revisión y Control de Calidad: Revisión de diseño, revisión de código, pruebas unitarias y funcionales, registro y análisis de defectos.
+
+4. Post Mortem: Evaluación del cumplimiento del cronograma, análisis de precisión de las estimaciones y documentación de aprendizajes.
+
+Aplicación y Resultados del Personal Software Process (PSP)
+El desarrollo siguió los niveles del PSP, integrando métricas y revisiones en cada etapa para lograr un proceso disciplinado y basado en datos.
+
+1. PSP0 / PSP0.1 – Disciplina y Medición Inicial
+Enfoque: Establecimiento de la línea base del proceso individual.
+
+Actividades: Registro inicial de tiempo por tarea, defectos introducidos y corregidos, y tamaño del código.
+
+Resultado: Obtención de una visión inicial del desempeño y definición de un estándar de codificación y Plan de Mejora Personal (PIP).
+
+2. PSP1 / PSP1.1 – Estimación y Planificación
+Enfoque: Mejora de la precisión en la planificación.
+
+Actividades: Estimación de tamaño y esfuerzo total utilizando el método PROBE. Elaboración de un cronograma basado en datos reales.
+
+Resultado: Mejora progresiva en la precisión de las estimaciones y reducción de la desviación entre tiempo estimado y tiempo real.
+
+3. PSP2 / PSP2.1 – Gestión de Calidad y Diseño
+Enfoque: Detección temprana de defectos y gestión de calidad.
+
+Actividades: Incorporación de revisión de diseño y revisión de código antes de la integración. Uso de listas de verificación personalizadas. Registro detallado de defectos por fase (Diseño, Codificación, Compilación, Pruebas).
+
+Resultado: Reducción significativa de defectos en las fases tardías del proceso, mejorando la confiabilidad del producto final.
+
+📈 Métricas y Seguimiento
+La toma de decisiones y el seguimiento del proyecto se basaron en la recopilación y análisis de datos clave:
+
+Métricas Recolectadas
+- Tiempo por fase y Defectos por fase.
+
+- Tamaño del Código (LOC) 9200. 
+
+- Productividad individual y Densidad de defectos.
+
+- Precisión de estimaciones y Rendimiento del proceso.
+
+Herramientas de Planificación y Seguimiento
+- PROBE: Para estimación del tamaño y el esfuerzo con base estadística.
+
+- Valor Ganado (Earned Value): Para la evaluación objetiva del progreso del proyecto.
+
+- Análisis Estadístico: Uso de gráficos de correlación y regresión para analizar tendencias y ajustar el proceso.
+
+✅ Gestión de la Calidad
+La confiabilidad del sistema se sustentó en un enfoque preventivo de calidad:
+
+- Detección Temprana: Prioridad en la detección de defectos en las fases de diseño y codificación.
+
+- Revisiones Estructuradas: Aplicación de revisiones personales (Self-Review) antes de las revisiones grupales.
+
+- Checklists: Uso de listas de verificación específicas para diseño y código, adaptadas a los estándares del equipo.
+
+- Mejora Continua: Documentación de propuestas de mejora del proceso en cada Post Mortem.
+
+🚀 Conclusiones
+La aplicación disciplinada del Personal Software Process fue un factor crítico de éxito en este proyecto formativo. Permitió:
+
+- Entregar un sistema de reservas funcional y bien estructurado.
+
+- Mejorar la precisión en la estimación y planificación del trabajo.
+
+- Incrementar la calidad del software al reducir significativamente los defectos en fases tardías.
+
+- Desarrollar y documentar un proceso de ingeniería de software maduro y basado en métricas.
+
+🧑‍💻 Equipo de Desarrollo:
+
+James Arias
+
+Juan Zamudio
+
+Jimena Reyes
+
+Ana Hernandez
