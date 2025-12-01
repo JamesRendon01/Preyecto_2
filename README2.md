@@ -1,10 +1,12 @@
-🌍 Escapade Parfaite: Sistema de Reservas Turísticas en Línea
+# 🌍 Escapade Parfaite: Sistema de Reservas Turísticas en Línea
+<br>
 🌟 Visión General del Proyecto
+
 Este proyecto es el desarrollo de un sistema web para la gestión de reservas de planes turísticos en línea. Se concibió como un proyecto formativo clave, aplicando rigurosamente el Personal Software Process (PSP) en todo el ciclo de vida.
 
 El objetivo principal fue desarrollar una solución funcional mientras se mejoraban las habilidades de planificación, estimación, calidad del software y análisis de datos del proceso de desarrollo.
 
-🎯 Objetivos del Proyecto
+# 🎯 Objetivos del Proyecto
 - Desarrollar un sistema funcional de reservas turísticas robusto y confiable.
 
 - Aplicar y documentar el PSP para mejorar la precisión de las estimaciones y la planificación.
@@ -13,7 +15,7 @@ El objetivo principal fue desarrollar una solución funcional mientras se mejora
 
 - Fortalecer habilidades profesionales clave en el desarrollo de software, como la estimación, la planificación y el trabajo colaborativo.
 
-Desarrollo del Sistema
+# Desarrollo del Sistema
 
 El sistema es una plataforma completa para la gestión de viajes y reservas:
 - Módulo: Funcionalidades Principales
@@ -22,7 +24,7 @@ El sistema es una plataforma completa para la gestión de viajes y reservas:
 - Gestión de Usuarios: Autenticación de clientes y administración de perfiles.
 - Panel Administrativo: Control de disponibilidad, gestión de planes turísticos e historial de reservas.
 
-Proceso de Desarrollo
+# Proceso de Desarrollo
 El proyecto se estructuró en cuatro fases principales, con la aplicación de PSP en cada una:
 
 1. Planificación: Análisis de requisitos, estimación de tamaño (LOC) y esfuerzo (PROBE), asignación de tareas y elaboración del cronograma.
@@ -33,7 +35,8 @@ El proyecto se estructuró en cuatro fases principales, con la aplicación de PS
 
 4. Post Mortem: Evaluación del cumplimiento del cronograma, análisis de precisión de las estimaciones y documentación de aprendizajes.
 
-Aplicación y Resultados del Personal Software Process (PSP)
+# Aplicación y Resultados del Personal Software Process (PSP)
+
 El desarrollo siguió los niveles del PSP, integrando métricas y revisiones en cada etapa para lograr un proceso disciplinado y basado en datos.
 
 1. PSP0 / PSP0.1 – Disciplina y Medición Inicial
@@ -57,7 +60,7 @@ Actividades: Incorporación de revisión de diseño y revisión de código antes
 
 Resultado: Reducción significativa de defectos en las fases tardías del proceso, mejorando la confiabilidad del producto final.
 
-📈 Métricas y Seguimiento
+# 📈 Métricas y Seguimiento
 La toma de decisiones y el seguimiento del proyecto se basaron en la recopilación y análisis de datos clave:
 
 Métricas Recolectadas
@@ -69,14 +72,14 @@ Métricas Recolectadas
 
 - Precisión de estimaciones y Rendimiento del proceso.
 
-Herramientas de Planificación y Seguimiento
+# Herramientas de Planificación y Seguimiento
 - PROBE: Para estimación del tamaño y el esfuerzo con base estadística.
 
 - Valor Ganado (Earned Value): Para la evaluación objetiva del progreso del proyecto.
 
 - Análisis Estadístico: Uso de gráficos de correlación y regresión para analizar tendencias y ajustar el proceso.
 
-✅ Gestión de la Calidad
+# ✅ Gestión de la Calidad
 La confiabilidad del sistema se sustentó en un enfoque preventivo de calidad:
 
 - Detección Temprana: Prioridad en la detección de defectos en las fases de diseño y codificación.
@@ -87,7 +90,7 @@ La confiabilidad del sistema se sustentó en un enfoque preventivo de calidad:
 
 - Mejora Continua: Documentación de propuestas de mejora del proceso en cada Post Mortem.
 
-🚀 Conclusiones
+# 🚀 Conclusiones
 La aplicación disciplinada del Personal Software Process fue un factor crítico de éxito en este proyecto formativo. Permitió:
 
 - Entregar un sistema de reservas funcional y bien estructurado.
@@ -98,7 +101,7 @@ La aplicación disciplinada del Personal Software Process fue un factor crítico
 
 - Desarrollar y documentar un proceso de ingeniería de software maduro y basado en métricas.
 
-🧑‍💻 Equipo de Desarrollo:
+# 🧑‍💻 Equipo de Desarrollo:
 
 James Arias
 
