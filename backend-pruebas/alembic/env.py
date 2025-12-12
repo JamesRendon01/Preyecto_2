@@ -11,7 +11,7 @@ import os
 # Agregar path raíz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from db import Base, MARIADB_URL
+from db import Base
 from models import (
     Turista, Hotel, Reserva, Administrador, Favorito, Informe,
     Plan, Ubicacion, Ciudad, AuditoriaPlan, PersonaReserva, Tarjeta, Estadia
