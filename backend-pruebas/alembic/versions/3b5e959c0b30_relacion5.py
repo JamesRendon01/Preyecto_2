@@ -46,7 +46,9 @@ def downgrade() -> None:
     op.drop_column('turista', 'estado')
     op.drop_column('plan', 'mostrar_en_carrusel')
     op.drop_column('plan', 'fecha_creacion')
-    op.drop_index(op.f('ix_informe_id'), table_name='informe')
+    indexes = [i['Key_name'] for i in conn.execute("SHOW INDEXES FROM informe")]
+    if 'ix_informe_id' in indexes:
+        op.drop_index(op.f('ix_informe_id'), table_name='informe')
     op.alter_column('informe', 'fecha_creacion',
                existing_type=sa.DateTime(),
                type_=sa.DATE(),
@@ -55,5 +57,4 @@ def downgrade() -> None:
                existing_type=sa.VARCHAR(length=100),
                type_=mysql.VARCHAR(length=30),
                nullable=True)
-    op.drop_column('informe', 'ruta_pdf')
     # ### end Alembic commands ###
