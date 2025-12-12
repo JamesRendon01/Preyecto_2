@@ -30,11 +30,12 @@ def upgrade() -> None:
 
     columns = [row['Field'] for row in conn.execute(text("SHOW COLUMNS FROM plan")).mappings()]
 
-if 'fecha_creacion' not in columns:
-    op.add_column(
-        'plan',
-        sa.Column('fecha_creacion', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True)
-    )
+    # Solo agregar la columna si no existe
+    if 'fecha_creacion' not in columns:
+        op.add_column(
+            'plan',
+            sa.Column('fecha_creacion', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True)
+        )
     op.add_column('plan', sa.Column('mostrar_en_carrusel', sa.Boolean(), nullable=True))
     op.add_column('turista', sa.Column('estado', sa.Boolean(), nullable=True))
     op.add_column('turista', sa.Column('fecha_registro', sa.DateTime(), nullable=True))
@@ -47,7 +48,10 @@ def downgrade() -> None:
     op.drop_column('turista', 'fecha_registro')
     op.drop_column('turista', 'estado')
     op.drop_column('plan', 'mostrar_en_carrusel')
-    op.drop_column('plan', 'fecha_creacion')
+    columns = [row['Field'] for row in conn.execute(text("SHOW COLUMNS FROM plan")).mappings()]
+    
+    if 'fecha_creacion' in columns:
+        op.drop_column('plan', 'fecha_creacion')
 
     indexes = [i['Key_name'] for i in conn.execute(text("SHOW INDEXES FROM informe")).mappings()]
 
