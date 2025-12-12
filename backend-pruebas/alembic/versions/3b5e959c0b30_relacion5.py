@@ -28,8 +28,13 @@ def upgrade() -> None:
     if 'ix_informe_id' not in indexes:
         op.create_index(op.f('ix_informe_id'), 'informe', ['id'], unique=False)
 
-    op.add_column('plan', sa.Column('fecha_creacion', sa.DateTime(timezone=True),
-                                    server_default=sa.text('now()'), nullable=True))
+    columns = [row['Field'] for row in conn.execute(text("SHOW COLUMNS FROM plan")).mappings()]
+
+if 'fecha_creacion' not in columns:
+    op.add_column(
+        'plan',
+        sa.Column('fecha_creacion', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True)
+    )
     op.add_column('plan', sa.Column('mostrar_en_carrusel', sa.Boolean(), nullable=True))
     op.add_column('turista', sa.Column('estado', sa.Boolean(), nullable=True))
     op.add_column('turista', sa.Column('fecha_registro', sa.DateTime(), nullable=True))
