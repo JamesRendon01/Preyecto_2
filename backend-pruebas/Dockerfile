@@ -23,7 +23,7 @@ WORKDIR /app
 COPY . /app
 
 # Instalar dependencias desde backend-pruebas
-WORKDIR /app/backend-pruebas
+WORKDIR /app
 RUN pip install --no-cache-dir --upgrade pip wheel setuptools && \
     pip install --no-cache-dir -r requirements.txt
 
