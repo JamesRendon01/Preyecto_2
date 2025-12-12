@@ -28,7 +28,7 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 # 🚀 FIX IMPORTANTE: Reemplazar mysql:// → mysql+pymysql://
-MYSQL_URL = os.getenv("MYSQL_URL", MARIADB_URL)
+MYSQL_URL = os.getenv("MYSQL_URL")
 
 if MYSQL_URL:
     MYSQL_URL = MYSQL_URL.replace("mysql://", "mysql+pymysql://")
