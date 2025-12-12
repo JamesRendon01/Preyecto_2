@@ -18,7 +18,7 @@ RUN apt-get update && \
         libffi-dev \
         && rm -rf /var/lib/apt/lists/*
 
-# Copiar solo el backend
+# Copiar backend
 WORKDIR /app
 COPY backend-pruebas/ .
 
@@ -29,5 +29,5 @@ RUN pip install --no-cache-dir --upgrade pip wheel setuptools && \
 ENV PORT=8000
 EXPOSE 8000
 
-# Ejecutar la app
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port $PORT"]
+# EJECUTAR ALEMBIC ANTES DE INICIAR UVICORN
+CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT"]
