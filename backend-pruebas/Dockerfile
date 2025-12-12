@@ -19,7 +19,7 @@ RUN apt-get update && \
         && rm -rf /var/lib/apt/lists/*
 
 # Copiar todo el proyecto
-WORKDIR /app
+WORKDIR /app/backend-pruebas
 COPY . /app
 
 # Instalar dependencias desde backend-pruebas
