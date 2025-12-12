@@ -23,7 +23,7 @@ def upgrade() -> None:
                type_=sa.DateTime(),
                nullable=False)
 
-    indexes = [i['Key_name'] for i in conn.execute(text("SHOW INDEXES FROM informe"))]
+    indexes = [i['Key_name'] for i in conn.execute(text("SHOW INDEXES FROM informe")).mappings()]
 
     if 'ix_informe_id' not in indexes:
         op.create_index(op.f('ix_informe_id'), 'informe', ['id'], unique=False)
@@ -44,7 +44,8 @@ def downgrade() -> None:
     op.drop_column('plan', 'mostrar_en_carrusel')
     op.drop_column('plan', 'fecha_creacion')
 
-    indexes = [i['Key_name'] for i in conn.execute(text("SHOW INDEXES FROM informe"))]
+    indexes = [i['Key_name'] for i in conn.execute(text("SHOW INDEXES FROM informe")).mappings()]
+
     if 'ix_informe_id' in indexes:
         op.drop_index(op.f('ix_informe_id'), table_name='informe')
 
