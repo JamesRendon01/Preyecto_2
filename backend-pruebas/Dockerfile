@@ -18,18 +18,16 @@ RUN apt-get update && \
         libffi-dev \
         && rm -rf /var/lib/apt/lists/*
 
-# Copiar todo el proyecto
-WORKDIR /app/backend-pruebas
-COPY . /app
-
-# Instalar dependencias desde backend-pruebas
+# Copiar solo el backend
 WORKDIR /app
+COPY backend-pruebas/ .
+
+# Instalar dependencias
 RUN pip install --no-cache-dir --upgrade pip wheel setuptools && \
     pip install --no-cache-dir -r requirements.txt
 
-# Railway asigna puerto automáticamente
 ENV PORT=8000
 EXPOSE 8000
 
-# Iniciar la app (ajusta main:app si el archivo se llama distinto)
+# Ejecutar la app
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port $PORT"]
