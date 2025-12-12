@@ -36,8 +36,14 @@ def upgrade() -> None:
             'plan',
             sa.Column('fecha_creacion', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True)
         )
+    if 'mostrar_en_carrusel' not in columns_plan:
     op.add_column('plan', sa.Column('mostrar_en_carrusel', sa.Boolean(), nullable=True))
+    columns_turista = [row['Field'] for row in conn.execute(text("SHOW COLUMNS FROM turista")).mappings()]
+
+if 'estado' not in columns_turista:
     op.add_column('turista', sa.Column('estado', sa.Boolean(), nullable=True))
+
+if 'fecha_registro' not in columns_turista:
     op.add_column('turista', sa.Column('fecha_registro', sa.DateTime(), nullable=True))
 
 
@@ -45,12 +51,15 @@ def downgrade() -> None:
     """Downgrade schema."""
     conn = op.get_bind()  # <<--- Definición antes de usar
 
-    op.drop_column('turista', 'fecha_registro')
-    op.drop_column('turista', 'estado')
-    op.drop_column('plan', 'mostrar_en_carrusel')
-    columns = [row['Field'] for row in conn.execute(text("SHOW COLUMNS FROM plan")).mappings()]
-    
-    if 'fecha_creacion' in columns:
+    columns_turista = [row['Field'] for row in conn.execute(text("SHOW COLUMNS FROM turista")).mappings()]
+    if 'fecha_registro' in columns_turista:
+        op.drop_column('turista', 'fecha_registro')
+    if 'estado' in columns_turista:
+        op.drop_column('turista', 'estado')
+    columns_plan = [row['Field'] for row in conn.execute(text("SHOW COLUMNS FROM plan")).mappings()]
+    if 'mostrar_en_carrusel' in columns_plan:
+        op.drop_column('plan', 'mostrar_en_carrusel')
+    if 'fecha_creacion' in columns_plan:
         op.drop_column('plan', 'fecha_creacion')
 
     indexes = [i['Key_name'] for i in conn.execute(text("SHOW INDEXES FROM informe")).mappings()]
