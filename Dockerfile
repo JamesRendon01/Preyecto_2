@@ -50,5 +50,4 @@ ENV PORT=8000
 # Exponer puerto (Railway lo reemplaza, pero evita warnings)
 EXPOSE 8000
 
-# Comando para iniciar (incluye migraciones)
 CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT"]
