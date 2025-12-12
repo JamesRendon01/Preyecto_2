@@ -29,6 +29,8 @@ def upgrade() -> None:
                existing_type=sa.DATE(),
                type_=sa.DateTime(),
                nullable=False)
+    indexes = [i['Key_name'] for i in conn.execute("SHOW INDEXES FROM informe")]
+if 'ix_informe_id' not in indexes:
     op.create_index(op.f('ix_informe_id'), 'informe', ['id'], unique=False)
     op.add_column('plan', sa.Column('fecha_creacion', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True))
     op.add_column('plan', sa.Column('mostrar_en_carrusel', sa.Boolean(), nullable=True))
