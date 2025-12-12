@@ -8,6 +8,7 @@ from alembic import context
 import sys
 import os
 
+
 # Agregar path raíz
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
